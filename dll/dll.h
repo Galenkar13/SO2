@@ -10,7 +10,7 @@
 #define MAX 50 //tamanho do buffer 
 #define SIZE 20 //dimensão da mensagem e do nome 
 
-
+//algumas destas merdas sao no servidor
 #define nVidas
 #define NumClientes
 #define NumInvaders
@@ -21,6 +21,7 @@
 #define ProbabilidadeTiroInvader //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
 #define DuracaoPowerUP //igual para todos 
 #define NumPowerUP
+#define MaxDisparos
 
 /*
 //Mecanismos de sincronização para o buffer
@@ -38,6 +39,14 @@ MutexLer = CreateSemaphore(NULL, FALSE, TEXT("MutexLer"));
 
 //O cliente só envia dois tipos de mensagem: ou quer iniciar o jogo ou quer fazer uma jogada
 
+typedef enum Tecla {
+	CIMA,
+	BAIXO,
+	ESQUERDA,
+	DIREITA,
+	ESPACO
+};
+
 typedef enum _TipoMensagemCLI {
 	INICIO,
 	JOGANDO
@@ -49,8 +58,7 @@ typedef enum _TipoMensagemCLI {
 
 typedef enum _TipoMensagemSER {
 	INICIO_JOGO,
-	JOGADA,
-	PONTUAÇÃO1O
+	JOGADA
 } TipoMensagemSER;
 
 typedef enum CicloDeVida {
@@ -88,23 +96,29 @@ typedef struct Area {
 typedef struct Pontuacao {
 	int pontos;
 	TCHAR quem[SIZE];
- //falta aqui a cena da data que não me lembro
+	SYSTEMTIME data;
 } Pontuacao;
 
 //Array de Invaders, Defenders, Disparos? PowerUps? 
 typedef struct Jogo {
 
-	Area Janela;
+	int altura, comprimento;
 
 	//Invader Invaders[NumInvaders];
 
 	//Defender Defenders[NumClientes];
 
+	//PowerUP PowerUP[NumPowerUP];
+
+	//Disparo Disparos[MaxDisparos];
 	//Ver como são os power ups e os disparos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	CicloDeVida CicloDeVida;
 
 }Jogo;
 
 typedef struct Invader {
+	TipoInvader tipo;
 	Area area;
 	int vidas;
 	int velocidade;
@@ -112,10 +126,12 @@ typedef struct Invader {
 
 typedef struct Defender {
 	Area area;
-	int id;
+	TCHAR nome[SIZE];
 	Pontuacao pontos;
 	int vidas;
 	int velocidade;
+	PowerUP powerUP;
+	//estado do jogo é possivel
 } Defender;
 
 //As bombas e os tiros têm uma estrutura práticamente igual, portanto ficam na mesma estrutura
@@ -131,7 +147,6 @@ typedef struct PowerUP {
 	TipoPowerUP tipo;
 	Area area;
 	int duracao; //cada powerup tem efeito durante x tempo
-	int probabilidade;
 	int velocidade;
 } PowerUP;
 
@@ -147,14 +162,20 @@ typedef struct PowerUP {
 typedef struct MsgCLI {
 	TipoMensagemCLI mensagem;
 	int id;
-	TCHAR quem[SIZE];
+	TCHAR nome[SIZE];
+	TCHAR tecla[SIZE];
 } MsgCLI;
 
 //Mensagem que vai do Gateway para o cliente
 typedef struct MsgSER {
 	TipoMensagemSER mensagem;
-	int id;
-	TCHAR nome[SIZE];
-
+	
+	Jogo Jogo;
+	//para mensagens depois disto enviar as estruturas todas mas só com as mudanças
+	//o que não muda fica igual
 	
 } MsgSER;
+
+typedef struct MsgPontuacao {
+	Pontuacao Lista[10];
+} MsgPontuacao;
