@@ -179,3 +179,4 @@ typedef struct MsgSER {
 typedef struct MsgPontuacao {
 	Pontuacao Lista[10];
 } MsgPontuacao;
+
