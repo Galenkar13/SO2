@@ -1,4 +1,4 @@
-#include "servidor.h"
+#include "gateway.h"
 
 
 
@@ -7,7 +7,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	TCHAR resp;
 	DWORD threadId;
 
-//	Jogo Jogo;
+	//	Jogo Jogo;
 
 	MutexRead = CreateMutex(NULL, FALSE, NULL);
 	MutexWrite = CreateMutex(NULL, FALSE, NULL);
@@ -21,7 +21,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
-		hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens);
+
+		hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens);
 		//hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo),NULL);
 
 		if (SemaforoVazio == NULL || SemaforoItem == NULL || hMemoriaBuffer == NULL) {
@@ -29,7 +30,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 			return -1;
 		}
 
-		mensagens = (PBufferMensagens)MapViewOfFile(hMemoriaBuffer, FILE_MAP_READ | FILE_MAP_WRITE,0,0,0);
+		mensagens = (PBufferMensagens)MapViewOfFile(hMemoriaBuffer, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 		if (mensagens == NULL) {
 			_tprintf(TEXT("[Erro]Mapeamento da memória partilhada no buffer (%d)\n"), GetLastError());
@@ -39,26 +40,26 @@ int _tmain(int argc, LPTSTR argv[]) {
 		mensagens->in = 0;
 		mensagens->out = 0;
 		mensagens->contadorMensagens = 0;
-	
 
-		hThreadLeitor = CreateThread(NULL, 0,(LPTHREAD_START_ROUTINE)ThreadConsumidor,NULL,0,&threadId);
+
+		hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 		if (hThreadLeitor != NULL)
 			_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
 		else {
 			_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 			return -1;
 		}
-		
-	//	PtrJogo = MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(Jogo)); 
+
+		//	PtrJogo = MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(Jogo)); 
 		//Isto será só assim???????????????????????????????????????????????????'
 
-	//	if (PtrJogo == NULL) {
+		//	if (PtrJogo == NULL) {
 		//	_tprintf(TEXT("[Erro]Mapeamento da memória partilhada no jogo (%d)\n"), GetLastError());
 		//	return -1;
-		
+	
 	//}
 
-	WaitForSingleObject(hThreadLeitor,INFINITE);
+	WaitForSingleObject(hThreadLeitor, INFINITE);
 	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
 
 	UnmapViewOfFile(mensagens);
@@ -73,13 +74,14 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 DWORD WINAPI ThreadProdutor(LPVOID param) { //LADO DO GATEWAY
 	MsgCLI msg;
-	_tprintf(TEXT("Mensagem para memoria partilhada?"));
-	_tscanf_s(TEXT("%c"), &msg.tecla, 1);
-	if (_tcsncmp(msg.tecla, TEXT("sair"), 5) == 0)
-		continua = 0;
 	while (continua == 1) {
 		WaitForSingleObject(SemaforoVazio, INFINITE);
+		_tprintf(TEXT("Mensagem para memoria partilhada?"));
+		_tscanf_s(TEXT("%c"), &msg.tecla, 1);
+		if (_tcsncmp(msg.tecla, TEXT("sair"), 5) == 0)
+			continua = 0;
 		WaitForSingleObject(MutexRead, INFINITE);
+		
 		mensagens->buffer[mensagens->in] = msg;
 		mensagens->in = (mensagens->in + 1) % MAX;
 		ReleaseMutex(MutexRead);
