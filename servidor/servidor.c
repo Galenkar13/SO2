@@ -1,19 +1,17 @@
 #include "servidor.h"
 
 
-
 int _tmain(int argc, LPTSTR argv[]) {
 
-	TCHAR resp;
+//	TCHAR resp;
 	DWORD threadId;
-
-//	Jogo Jogo;
+	int numInvaders = 0, numDefenders = 0, numDisparos = 0, numPowerUps = 0;
+	int numInvadersBase = 0, numInvadersEsquivo = 0, numInvadersOutros = 0;
 
 	MutexRead = CreateMutex(NULL, FALSE, NULL);
 	MutexWrite = CreateMutex(NULL, FALSE, NULL);
-	SemaforoVazio = CreateSemaphore(NULL, MAX, MAX, TEXT("SemLeR ")); //vazios
-	SemaforoItem = CreateSemaphore(NULL, 0, MAX, TEXT("SemEscrever")); //itens
-
+	SemaforoEscrever = CreateSemaphore(NULL, MAX, MAX, NomeSemaforoPodeLer); //vazios
+	SemaforoLer = CreateSemaphore(NULL, 0, MAX, NomeSemaforoPodeEscrever); //is
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -21,10 +19,34 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
-		hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens);
-		//hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo),NULL);
+	//Input dos valores para o Jogo
+	_tprintf(TEXT("Introduza o número de Invaders: \n"));
+	//scanf("%d", &numInvaders);
+	_tscanf_s(TEXT("%d"), &numInvaders);
 
-		if (SemaforoVazio == NULL || SemaforoItem == NULL || hMemoriaBuffer == NULL) {
+
+	numInvadersEsquivo = numInvaders * 0.10; //Pode ser porque o MIN está defenido com 10
+	numInvadersOutros = numInvaders * 0.10;
+	numInvaders = numInvaders - numInvadersEsquivo;
+	_tprintf(TEXT("Numero Esquivos: %d \n"), numInvadersEsquivo);
+
+	
+	numInvaders = numInvaders - numInvadersOutros;
+	_tprintf(TEXT("Numero Outros: %d \n"), numInvadersOutros);
+
+	numInvadersBase = numInvaders;
+	_tprintf(TEXT("Numero Base: %d \n"), numInvaders);
+
+	_tprintf(TEXT("Introduza o número de Defenders:\n"));
+	_tscanf_s(TEXT("%d"), &numDefenders);
+	_tprintf(TEXT("Introduza o número de Disparos:\n"));
+	_tscanf_s(TEXT("%d"), &numDisparos);
+	_tprintf(TEXT("Introduza o número de PowerUps:\n"));
+	_tscanf_s(TEXT("%d"), &numPowerUps);
+	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
+	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo),NULL);
+
+		if (SemaforoEscrever == NULL || SemaforoLer == NULL || hMemoriaBuffer == NULL || hMemoriaJogo == NULL) {
 			_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
 			return -1;
 		}
@@ -48,59 +70,92 @@ int _tmain(int argc, LPTSTR argv[]) {
 			_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 			return -1;
 		}
-		
-	//	PtrJogo = MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(Jogo)); 
-		//Isto será só assim???????????????????????????????????????????????????'
 
-	//	if (PtrJogo == NULL) {
-		//	_tprintf(TEXT("[Erro]Mapeamento da memória partilhada no jogo (%d)\n"), GetLastError());
-		//	return -1;
+		jogo = (PJogo)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+		if (jogo == NULL) {
+			_tprintf(TEXT("[Erro]Mapeamento da memória partilhada ´do Jogo (%d)\n"), GetLastError());
+			return -1;
+		}
 		
-	//}
+		hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
 
 	WaitForSingleObject(hThreadLeitor,INFINITE);
 	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
 
 	UnmapViewOfFile(mensagens);
-	//UnmapViewOfFile(PtrJogo);
-	CloseHandle(SemaforoVazio);
-	CloseHandle(SemaforoItem);
+	UnmapViewOfFile(jogo);
+	CloseHandle(SemaforoEscrever);
+	CloseHandle(SemaforoLer);
 	CloseHandle(hMemoriaBuffer);
 	CloseHandle(hMemoriaJogo);
 	return 0;
 }
 
-
+/*
 DWORD WINAPI ThreadProdutor(LPVOID param) { //LADO DO GATEWAY
-	MsgCLI msg;
+	TCHAR cenas[1];
 	_tprintf(TEXT("Mensagem para memoria partilhada?"));
-	_tscanf_s(TEXT("%c"), &msg.tecla, 1);
-	if (_tcsncmp(msg.tecla, TEXT("sair"), 5) == 0)
-		continua = 0;
-	while (continua == 1) {
-		WaitForSingleObject(SemaforoVazio, INFINITE);
+	_tscanf_s(TEXT("%c"), &cenas, 1);
+	while (continua == 1) { //Isto é para passar para a DLL
+		WaitForSingleObject(SemaforoEscrever, INFINITE);
 		WaitForSingleObject(MutexRead, INFINITE);
-		mensagens->buffer[mensagens->in] = msg;
+		//mensagens->buffer[mensagens->in] = cenas;
+		_tcscpy_s(mensagens->buffer[mensagens->out].tecla, sizeof(mensagens->buffer[mensagens->out].tecla), cenas);
+		mensagens->contadorMensagens++;
 		mensagens->in = (mensagens->in + 1) % MAX;
 		ReleaseMutex(MutexRead);
-		ReleaseSemaphore(SemaforoItem, 1, NULL);
+		ReleaseSemaphore(SemaforoLer, 1, NULL);
+	}
+	return 0;
+}
+
+DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR
+	TCHAR cenas[SIZE];
+	while (continua == 1) { //Isto é para passar para a DLL
+		WaitForSingleObject(SemaforoLer, INFINITE);
+		WaitForSingleObject(MutexWrite, INFINITE);
+		//cenas = mensagens->buffer[mensagens->out];
+		_tcscpy_s(cenas, sizeof(cenas), mensagens->buffer[mensagens->out].tecla);
+		_tprintf(_TEXT("Mensagem: %c /n"), cenas);
+		_tcscpy_s(mensagens->buffer[mensagens->out].tecla, sizeof(mensagens->buffer[mensagens->out].tecla),TEXT("\0"));
+		// TCHAR tecla[SIZE];
+		mensagens->contadorMensagens--;
+		mensagens->out = (mensagens->out + 1) % MAX;
+		ReleaseMutex(MutexWrite);
+		ReleaseSemaphore(SemaforoEscrever, 1, NULL);
+	}
+	 
+	return 0;
+}
+
+*/
+DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR
+	int x = 0;
+	while (continua == 1) { //Isto é para passar para a DLL
+	
+		WaitForSingleObject(SemaforoLer, INFINITE);
+		WaitForSingleObject(MutexWrite, INFINITE);
+		x = mensagens->buffer[mensagens->out].id;
+		_tprintf(_TEXT("Mensagem: %d \n"), x);
+		mensagens->buffer[mensagens->out].id = 0;
+		mensagens->contadorMensagens--;
+		mensagens->out = (mensagens->out + 1) % MAX;
+		ReleaseMutex(MutexWrite);
+		ReleaseSemaphore(SemaforoEscrever, 1, NULL);
 	}
 
 	return 0;
 }
 
-DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR
-	MsgCLI msg;
-	while (continua == 1) {
-		WaitForSingleObject(SemaforoVazio, INFINITE);
-		WaitForSingleObject(MutexWrite, INFINITE);
-		msg = mensagens->buffer[mensagens->out];
-		_tprintf(_TEXT("Mensagem: %s /n"), msg.tecla);
-		strcpy_s(mensagens->buffer[mensagens->out].tecla, sizeof(mensagens->buffer[mensagens->out].tecla), NULL);
-		mensagens->out = (mensagens->out + 1) % MAX;
-		ReleaseMutex(MutexWrite);
-		ReleaseSemaphore(SemaforoItem, 1, NULL);
-	}
+DWORD WINAPI ThreadInvadersBase(LPVOID param) { 
+	return 0;
+}
 
+DWORD WINAPI ThreadInvadersEsquivo(LPVOID param) {
+	return 0;
+}
+
+DWORD WINAPI ThreadInvadersOutro(LPVOID param) {
 	return 0;
 }

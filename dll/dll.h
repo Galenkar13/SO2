@@ -11,16 +11,16 @@
 
 //algumas destas merdas sao no servidor
 #define nVidas
-#define NumClientes
-#define NumInvaders
-#define velocidadeTiro
+#define MaxClientes 10
+#define MaxInvaders 10
+#define velocidadeTiro 
 #define velocidadeDefensor
 #define velocidadeInvaderBase //A esquiva tem velocidadeInvaderBase + (velocidadeInvaderBase*0.10)
 #define velocidadePowerUP
 #define ProbabilidadeTiroInvader //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
 #define DuracaoPowerUP //igual para todos 
-#define NumPowerUP
-#define MaxDisparos
+#define MaxPowerUP 10
+#define MaxDisparos 10
 
 /*
 //Mecanismos de sincronização para o buffer
@@ -103,13 +103,13 @@ typedef struct Jogo {
 
 	int altura, comprimento;
 
-	//Invader Invaders[NumInvaders];
+	Invader Invaders[MaxInvaders];
 
-	//Defender Defenders[NumClientes];
+	Defender Defenders[MaxClientes];
 
-	//PowerUP PowerUP[NumPowerUP];
+	PowerUP PowerUP[MaxPowerUP];
 
-	//Disparo Disparos[MaxDisparos];
+	Disparos Disparos[MaxDisparos];
 	//Ver como são os power ups e os disparos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	CicloDeVida CicloDeVida;
