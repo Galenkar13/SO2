@@ -1,12 +1,12 @@
 #include "servidor.h"
+#include "../DlltpSO2/dll.h"
 
 
 int _tmain(int argc, LPTSTR argv[]) {
 
 //	TCHAR resp;
 	DWORD threadId;
-	int numInvaders = 0, numDefenders = 0, numDisparos = 0, numPowerUps = 0;
-	int numInvadersBase = 0, numInvadersEsquivo = 0, numInvadersOutros = 0;
+	Input Input;
 
 	MutexRead = CreateMutex(NULL, FALSE, NULL);
 	MutexWrite = CreateMutex(NULL, FALSE, NULL);
@@ -19,30 +19,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
-	//Input dos valores para o Jogo
-	_tprintf(TEXT("Introduza o número de Invaders: \n"));
-	//scanf("%d", &numInvaders);
-	_tscanf_s(TEXT("%d"), &numInvaders);
 
+	Input = RecebeInput();
 
-	numInvadersEsquivo = numInvaders * 0.10; //Pode ser porque o MIN está defenido com 10
-	numInvadersOutros = numInvaders * 0.10;
-	numInvaders = numInvaders - numInvadersEsquivo;
-	_tprintf(TEXT("Numero Esquivos: %d \n"), numInvadersEsquivo);
-
-	
-	numInvaders = numInvaders - numInvadersOutros;
-	_tprintf(TEXT("Numero Outros: %d \n"), numInvadersOutros);
-
-	numInvadersBase = numInvaders;
-	_tprintf(TEXT("Numero Base: %d \n"), numInvaders);
-
-	_tprintf(TEXT("Introduza o número de Defenders:\n"));
-	_tscanf_s(TEXT("%d"), &numDefenders);
-	_tprintf(TEXT("Introduza o número de Disparos:\n"));
-	_tscanf_s(TEXT("%d"), &numDisparos);
-	_tprintf(TEXT("Introduza o número de PowerUps:\n"));
-	_tscanf_s(TEXT("%d"), &numPowerUps);
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
 	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo),NULL);
 
@@ -148,14 +127,108 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersBase(LPVOID param) { 
+//Tenho de pensar melhor sobre estes algoritmos
+//Provavelmente uma função é que vai inicializar os arrays e não aqui
+
+DWORD WINAPI ThreadInvadersBase(int num) { 
+	int i ;
+
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersEsquivo(LPVOID param) {
+DWORD WINAPI ThreadInvadersEsquivo(int num) {
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersOutro(LPVOID param) {
+DWORD WINAPI ThreadInvadersOutro(int num) {
 	return 0;
+}
+
+Input RecebeInput() {
+	Input aux;
+	//Input dos valores para o Jogo
+	_tprintf(TEXT("Introduza o número de Invaders: \n"));
+	//scanf("%d", &numInvaders);
+	_tscanf_s(TEXT("%d"), &aux.numInvaders);
+
+	aux.numInvadersEsquivo = aux.numInvaders * 0.10; //Pode ser porque o MIN está defenido com 10
+	aux.numInvadersOutros = aux.numInvaders * 0.10;
+	aux.numInvaders = aux.numInvaders - aux.numInvadersEsquivo;
+	_tprintf(TEXT("Numero Esquivos: %d \n"), aux.numInvadersEsquivo);
+
+
+	aux.numInvaders = aux.numInvaders - aux.numInvadersOutros;
+	_tprintf(TEXT("Numero Outros: %d \n"), aux.numInvadersOutros);
+
+	aux.numInvadersBase = aux.numInvaders;
+	_tprintf(TEXT("Numero Base: %d \n"), aux.numInvaders);
+
+	_tprintf(TEXT("Introduza o número de Defenders:\n"));
+	_tscanf_s(TEXT("%d"), &aux.numDefenders);
+	_tprintf(TEXT("Introduza o número de Disparos:\n"));
+	_tscanf_s(TEXT("%d"), &aux.numDisparos);
+	_tprintf(TEXT("Introduza o número de PowerUps:\n"));
+	_tscanf_s(TEXT("%d"), &aux.numPowerUps);
+
+	return aux;
+}
+
+/*
+PInput RecebeInput() {
+PInput aux;
+//Input dos valores para o Jogo
+_tprintf(TEXT("Introduza o número de Invaders: \n"));
+//scanf("%d", &numInvaders);
+_tscanf_s(TEXT("%d"), aux->numInvaders);
+
+aux->numInvadersEsquivo = aux->numInvaders * 0.10; //Pode ser porque o MIN está defenido com 10
+aux->numInvadersOutros = aux->numInvaders * 0.10;
+aux->numInvaders = aux->numInvaders - aux->numInvadersEsquivo;
+_tprintf(TEXT("Numero Esquivos: %d \n"), aux->numInvadersEsquivo);
+
+
+aux->numInvaders = aux->numInvaders - aux->numInvadersOutros;
+_tprintf(TEXT("Numero Outros: %d \n"), aux->numInvadersOutros);
+
+aux->numInvadersBase = aux->numInvaders;
+_tprintf(TEXT("Numero Base: %d \n"), aux->numInvaders);
+
+_tprintf(TEXT("Introduza o número de Defenders:\n"));
+_tscanf_s(TEXT("%d"), aux->numDefenders);
+_tprintf(TEXT("Introduza o número de Disparos:\n"));
+_tscanf_s(TEXT("%d"), aux->numDisparos);
+_tprintf(TEXT("Introduza o número de PowerUps:\n"));
+_tscanf_s(TEXT("%d"), aux->numPowerUps);
+
+return aux;
+}
+*/
+
+//É preciso fazer isto?
+
+void InicializaJogo() { //acabar isto
+	int i;
+	for (i = 0; i < MaxInvaders - 1; i++) { //mudar isto tudo, é só exemplo
+			jogo->Invaders[i].area.x = 0;
+			jogo->Invaders[i].area.y = 0;
+			jogo->Invaders[i].area.altura = 0;
+			jogo->Invaders[i].area.comprimento = 0;
+			jogo->Invaders[i].tipo = BASICO;
+			jogo->Invaders[i].velocidade = 0;
+			jogo->Invaders[i].vidas = 0;
+
+	}
+
+	for (i = 0; i < MaxClientes; i++) {
+		jogo->Defenders[i].area.x = 0;
+		jogo->Defenders[i].area.y = 0;
+		jogo->Defenders[i].area.altura = 0;
+		jogo->Defenders[i].area.comprimento = 0;
+		jogo->Defenders[i].pontos.pontos = 0;
+		jogo->Defenders[i].velocidade = 0;
+		jogo->Defenders[i].vidas = 0;
+		jogo->Defenders[i].powerUP.area.x = 0;
+	}
+	return 0;
+
 }

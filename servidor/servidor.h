@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>  
 #include <stdlib.h> 
+#include "../DlltpSO2/dll.h"
+
 
 //#define _CRT_SECURE_NO_WARNINGS
 
@@ -81,6 +83,15 @@ typedef enum TipoInvader {
 	EXTRA
 } TipoInvader;
 
+typedef struct _Input { 
+	int numInvaders;
+	int	numDefenders;
+	int numDisparos;
+	int	numPowerUps;
+	int numInvadersBase;
+	int	numInvadersEsquivo;
+	int	numInvadersOutros;
+} Input, *PInput;
 
 
 //Mensagem que vai do Cliente para o Gateway
@@ -169,8 +180,11 @@ PJogo jogo = NULL;
 
 DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 DWORD WINAPI ThreadConsumidor(LPVOID param); //LADO DO GATEWAY
-DWORD WINAPI ThreadInvadersBase(LPVOID param);
-DWORD WINAPI ThreadInvadersEsquivo(LPVOID param);
-DWORD WINAPI ThreadInvadersOutro(LPVOID param);
+DWORD WINAPI ThreadInvadersBase(int num);
+DWORD WINAPI ThreadInvadersEsquivo(int num);
+DWORD WINAPI ThreadInvadersOutro(int num);
+
+void InicializaJogo();
+Input RecebeInput();
 
 TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeEscrever[] = TEXT("Semáforo Pode Escrever");
