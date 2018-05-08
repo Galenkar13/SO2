@@ -22,7 +22,7 @@
     <ClInclude Include="gateway.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GatewayV2.c" />
+    <ClCompile Include="GatewayV2.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -88,6 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\marco\Desktop\TP_DLL\TPSO2\DLLTP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
