@@ -28,7 +28,8 @@
 #define ProbabilidadeTiroInvader 5 //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
 #define DuracaoPowerUP 5//igual para todos 
 
-
+#define ComprimentoJanela 100
+#define AlturaJanela 80
 
 #define ComprimentoInvader 5
 #define AlturaInvader 5
@@ -59,6 +60,9 @@ DWORD WINAPI ThreadInvadersEsquivo(int num);
 DWORD WINAPI ThreadInvadersOutro(int num);
 
 void InicializaJogo();
+void ColocaInvaders();
 Input RecebeInput();
+
+void IniciaInvaders(Input inp);
 //void CreateThreadsJogo();
 

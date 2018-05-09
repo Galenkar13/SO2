@@ -4,9 +4,8 @@
 
 int _tmain(int argc, LPTSTR argv[]) {
 
-//	TCHAR resp;
+
 	DWORD threadId;
-//	DWORD *threadIdJogo;
 	Input Input;
 
 	IniciaSinc();
@@ -61,7 +60,13 @@ int _tmain(int argc, LPTSTR argv[]) {
 			_tprintf(TEXT("[Erro]Mapeamento da memória partilhada ´do Jogo (%d)\n"), GetLastError());
 			return -1;
 		}
-		
+
+
+		IniciaInvaders(Input);
+		ColocaInvaders();
+
+		//Aqui é que se cria Threads por tipo
+
 		//CreateThreadsJogo(threadIdJogo, Input);
 //		server->hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, Input.numInvadersBase, 0, &threadIdJogo);
 	//	server->hThreadInvadersEsquivos = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, Input.numInvadersEsquivo + Input.numInvadersBase, 0, &threadIdJogo);
@@ -129,13 +134,13 @@ Input RecebeInput() {
 
 	if (aux.numInvaders <= 20) {
 		aux.numInvadersEsquivo = 2;
-		aux.numInvadersOutros = 1;
+		aux.numInvadersOutros = 0;
 		aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
 	}
 	else 
 		if (aux.numInvaders <= 40) {
 			aux.numInvadersEsquivo = 10;
-			aux.numInvadersOutros = 5;
+			aux.numInvadersOutros = 0;
 			aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
 		}
 
@@ -161,16 +166,6 @@ void CreateThreadsJogo(DWORD *threadIdJogo, Input aux) {
 
 void InicializaJogo() { //acabar isto
 	int i;
-	for (i = 0; i < MaxInvaders - 1; i++) { //mudar isto tudo, é só exemplo
-			jogo->Invaders[i].area.x = 0;
-			jogo->Invaders[i].area.y = 0;
-			jogo->Invaders[i].area.altura = 0;
-			jogo->Invaders[i].area.comprimento = 0;
-			jogo->Invaders[i].tipo = BASICO;
-			jogo->Invaders[i].velocidade = 0;
-			jogo->Invaders[i].vidas = 0;
-
-	}
 
 	for (i = 0; i < MaxClientes; i++) {
 		jogo->Defenders[i].area.x = 0;
@@ -203,4 +198,45 @@ void IniciaBuffer() {
 		_tcscpy(mensagens->buffer[i].nome, TEXT("nada"));
 		_tcscpy(mensagens->buffer[i].tecla, TEXT("nada"));
 	}
+}
+
+void IniciaInvaders(Input inp) {
+	_tprintf(TEXT("[Erro]Mapeamento da memória partilhada ´do Jogo (%d)\n"), GetLastError());
+	_tprintf(TEXT("%d"), inp.numInvaders);
+	int i = 0;
+	for (i = 0; i < inp.numInvaders; i++) {
+		if (i < inp.numInvadersBase) {
+			jogo->Invaders[i].area.x = 0;
+			jogo->Invaders[i].area.y = 0;
+			jogo->Invaders[i].area.altura = AlturaInvader;
+			jogo->Invaders[i].area.comprimento = ComprimentoInvader;
+			jogo->Invaders[i].tipo = BASICO;
+			jogo->Invaders[i].velocidade = velocidadeInvaderBase;
+			jogo->Invaders[i].vidas = 1;
+		}
+		else
+			if (i < inp.numInvadersBase + inp.numInvadersEsquivo) {
+				jogo->Invaders[i].area.x = 0;
+				jogo->Invaders[i].area.y = 0;
+				jogo->Invaders[i].area.altura = AlturaInvader;
+				jogo->Invaders[i].area.comprimento = ComprimentoInvader;
+				jogo->Invaders[i].tipo = ESQUIVO;
+				jogo->Invaders[i].velocidade = velocidadeInvaderBase * 0.40;
+				jogo->Invaders[i].vidas = 3;
+			}
+			else
+			{
+				jogo->Invaders[i].area.x = 0;
+				jogo->Invaders[i].area.y = 0;
+				jogo->Invaders[i].area.altura = 0;
+				jogo->Invaders[i].area.comprimento = 0;
+				jogo->Invaders[i].tipo = OUTRO;
+				jogo->Invaders[i].velocidade = 0;
+				jogo->Invaders[i].vidas = 0;
+			}
+	}
+}
+
+void ColocaInvaders() {
+
 }
