@@ -13,4 +13,6 @@
 HANDLE hThreadEscritor;
 
 DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
-
+
+
+

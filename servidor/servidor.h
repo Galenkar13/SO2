@@ -8,18 +8,13 @@
 #include <stdlib.h> 
 #include "../DlltpSO2/dll.h"
 
-
-//#define _CRT_SECURE_NO_WARNINGS
-
-//Passar os mutexs e a sua criação para a dll
-
-
 #define nVidas 5
 
 
 #define MinClientes 1
 #define MinInvaders 10
 
+//faltam defines
 
 #define velocidadeTiro  5
 #define velocidadeDefensor 5
@@ -36,7 +31,7 @@
 
 //int continua = 1;
 
-
+int CreateThreadsInvaders();
 
 
 //PBufferMensagens mensagens = NULL;
@@ -46,23 +41,24 @@
 //Estrutura "servidor" que leva o ponteiro do Jogo , Input Handlers e o tal continua
 
 
-	int continua = 0;
-	HANDLE hThreadLeitor;
-	HANDLE hThreadInvadersBase;
-	HANDLE hThreadInvadersEsquivos;
-	HANDLE hThreadsInvadersOutros;
+int continua = 0;
+HANDLE hThreadLeitor;
+HANDLE hThreadInvadersBase;
+HANDLE hThreadInvadersEsquivos;
+HANDLE hThreadsInvadersExtras;
 
-	void IniciaBuffer();
+void IniciaBuffer();
 
 DWORD WINAPI ThreadConsumidor(LPVOID param); //LADO DO GATEWAY
-DWORD WINAPI ThreadInvadersBase(int num);
-DWORD WINAPI ThreadInvadersEsquivo(int num);
-DWORD WINAPI ThreadInvadersOutro(int num);
+DWORD WINAPI ThreadInvadersBase(Input inp);
+DWORD WINAPI ThreadInvadersEsquivo(Input inp);
+DWORD WINAPI ThreadInvadersExtra(Input inp);
 
 void InicializaJogo();
 void ColocaInvaders();
 Input RecebeInput();
 
-void IniciaInvaders(Input inp);
-//void CreateThreadsJogo();
+void IniciaInvaders(Input inp); //Inicialização dos invaders
+ //Função que lança as Threads que vão controlar as funcionalidades dos Invaders
+								//Uma Thread por tipo de Invader
 

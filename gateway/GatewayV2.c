@@ -58,6 +58,10 @@ int _tmain(int argc, LPTSTR argv[]) {
 	CloseHandle(SemaforoLer);
 	CloseHandle(hMemoriaBuffer);
 	CloseHandle(hMemoriaJogo);
+	CloseHandle(hMutexJogoSer);
+	CloseHandle(hMutexJogoCli);
+	CloseHandle(hEventActiva);
+	CloseHandle(hEventLida);
 	return 0;
 }
 

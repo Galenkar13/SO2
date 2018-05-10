@@ -22,7 +22,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	_tprintf(TEXT("Numero Esquivos: %d \n"), Input.numInvadersEsquivo);
 
-	_tprintf(TEXT("Numero Outros: %d \n"), Input.numInvadersOutros);
+	_tprintf(TEXT("Numero Extras: %d \n"), Input.numInvadersOutros);
 
 	_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
 
@@ -41,11 +41,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		}
 
 		IniciaBuffer();
-		mensagens->in = 0;
-		mensagens->out = 0;
-		mensagens->contadorMensagens = 0;
-	
-
+		
 		hThreadLeitor = CreateThread(NULL, 0,(LPTHREAD_START_ROUTINE)ThreadConsumidor,NULL,0,&threadId);
 		if (hThreadLeitor != NULL)
 			_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
@@ -61,22 +57,13 @@ int _tmain(int argc, LPTSTR argv[]) {
 			return -1;
 		}
 
+		//Isto futuramente vai estar dentro de um ciclo de jogo 
+		//Ter em anteção os niveis na criação desse mesmo ciclo
 
-		IniciaInvaders(Input);
-		ColocaInvaders();
-
-		//Aqui é que se cria Threads por tipo
-
-		//CreateThreadsJogo(threadIdJogo, Input);
-//		server->hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, Input.numInvadersBase, 0, &threadIdJogo);
-	//	server->hThreadInvadersEsquivos = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, Input.numInvadersEsquivo + Input.numInvadersBase, 0, &threadIdJogo);
-		//server->hThreadsInvadersOutros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersOutro, Input.numInvaders, 0, &threadIdJogo);
-
-		//Uma so thread para criar todos faz mais sentido
-
-		//função para os colocar
-
-		//função movimento das threads só arranca depois
+		IniciaInvaders(Input); //Inicializa valores dos invaders
+		ColocaInvaders();		//Coloca invaders nas posições correctas
+		CreateThreadsInvaders(); //Cria Thread por tipo de Invader
+	
 
 	WaitForSingleObject(hThreadLeitor,INFINITE);
 	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
@@ -87,41 +74,96 @@ int _tmain(int argc, LPTSTR argv[]) {
 	CloseHandle(SemaforoLer);
 	CloseHandle(hMemoriaBuffer);
 	CloseHandle(hMemoriaJogo);
+	CloseHandle(hMutexJogoSer);
+	CloseHandle(hMutexJogoCli);
+	CloseHandle(hEventActiva);
+	CloseHandle(hEventLida);
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersBase(int num) { 
-	int i ;
-	for (i = 0; i < num; i++) {
-		jogo->Invaders[i].vidas = 1;
-		jogo->Invaders[i].velocidade = velocidadeInvaderBase;
-		jogo->Invaders[i].tipo = BASICO;
+int CreateThreadsInvaders() {
 
+	hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, 0, 0, NULL);
+	hThreadInvadersEsquivos = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, 0, 0, NULL);
+	hThreadsInvadersExtras = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersExtra, 0, 0, NULL);
+
+	if (hThreadInvadersBase == NULL || hThreadInvadersEsquivos == NULL || hThreadsInvadersExtras == NULL) {
+		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
+		return -1;
 	}
+
 	return 0;
+
 }
 
-DWORD WINAPI ThreadInvadersEsquivo(int num) {
-	int i;
-	for (i = 0; i < num; i++) {
-		if (jogo->Invaders[i].tipo != BASICO) {
-			jogo->Invaders[i].vidas = 1;
-			jogo->Invaders[i].velocidade = velocidadeInvaderBase;
-			jogo->Invaders[i].tipo = ESQUIVO;
+DWORD WINAPI ThreadInvadersBase(Input inp) { 
+	_tprintf(TEXT("Iniciei Thread Tipo Invaders Base \n"));
+	/*int i;
+	int contador;
+	do
+	for (i = 0; i < inp.numInvaders; i++) {
+		if (jogo->Invaders[i].tipo == BASICO) {
+			//se tiver vida == 0;
+			//contador ++;
+
+			//se tiver espaço
+			//movimentoInvaderBase();
+
+			//calcular probabilidade para disparar 
+			//se sim CreatheThreadDisparo();
 		}
+		Sleep(jogo->Invaders[i]);
 	}
+	while (contador != inp.numInvadersBase)
+	*/
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersOutro(int num) {
+DWORD WINAPI ThreadInvadersEsquivo(Input inp) {
+	_tprintf(TEXT("Iniciei Thread Tipo Invaders Esquivo \n"));
+	/*
 	int i;
-	for (i = 0; i < num; i++) {
-		if (jogo->Invaders[i].tipo != BASICO && jogo->Invaders[i].tipo != ESQUIVO) {
-			jogo->Invaders[i].vidas = 1;
-			jogo->Invaders[i].velocidade = velocidadeInvaderBase;
-			jogo->Invaders[i].tipo = OUTRO;
+	do
+	int contador=0
+	for (i = 0; i < inp.numInvaders; i++) {
+		if (jogo->Invaders[i].tipo == ESQUIVO) {
+			//se tiver espaço
+			//movimentoInvadersEsquivo();
+
+			//calcular probabilidade para disparar 
+			//se sim CreatheThreadDisparo();
+
+		
 		}
+		Sleep(jogo->Invaders[i]);
 	}
+	while (contador != inp.numInvadersEsquivos)
+
+	*/
+	return 0;
+}
+
+DWORD WINAPI ThreadInvadersExtra(Input inp) {
+	_tprintf(TEXT("Iniciei Thread Tipo Invaders Extra \n"));
+	/*
+	int i;
+	do
+	int contador=0
+	for (i = 0; i < inp.numInvaders; i++) {
+	if (jogo->Invaders[i].tipo == Extra) {
+	//se tiver espaço
+	//movimentoInvadersEsquivo();
+
+	//calcular probabilidade para disparar
+	//se sim CreatheThreadDisparo();
+
+
+	}
+	Sleep(jogo->Invaders[i]);
+	}
+	while (contador != inp.numInvadersExtra)
+
+	*/
 	return 0;
 }
 
@@ -144,25 +186,11 @@ Input RecebeInput() {
 			aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
 		}
 
-	_tprintf(TEXT("Introduza o número de Defenders:\n"));
-	_tscanf_s(TEXT("%d"), &aux.numDefenders);
-	_tprintf(TEXT("Introduza o número de Disparos:\n"));
-	_tscanf_s(TEXT("%d"), &aux.numDisparos);
-	_tprintf(TEXT("Introduza o número de PowerUps:\n"));
-	_tscanf_s(TEXT("%d"), &aux.numPowerUps);
-
 	return aux;
 }
-/*
-void CreateThreadsJogo(DWORD *threadIdJogo, Input aux) {
 
-	hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, aux.numInvadersBase, 0, threadIdJogo);
-	hThreadInvadersEsquivos= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, aux.numInvadersEsquivo + aux.numInvadersBase, 0, threadIdJogo);
-	hThreadsInvadersOutros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersOutro, aux.numInvadersOutros, 0, threadIdJogo);
-	//fazer o mesmo para Defenders, disparos e powerups
-}
-*/
-//É preciso fazer isto?
+
+
 
 void InicializaJogo() { //acabar isto
 	int i;
@@ -192,6 +220,11 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 
 void IniciaBuffer() {
 	int i;
+	
+	mensagens->in = 0;
+	mensagens->out = 0;
+	mensagens->contadorMensagens = 0;
+
 	for (i = 0; i < MAX; i++) {
 		mensagens->buffer[i].id = 0;
 		mensagens->buffer[i].mensagem = '0';
@@ -201,7 +234,6 @@ void IniciaBuffer() {
 }
 
 void IniciaInvaders(Input inp) {
-	_tprintf(TEXT("[Erro]Mapeamento da memória partilhada ´do Jogo (%d)\n"), GetLastError());
 	_tprintf(TEXT("%d"), inp.numInvaders);
 	int i = 0;
 	for (i = 0; i < inp.numInvaders; i++) {
@@ -213,6 +245,7 @@ void IniciaInvaders(Input inp) {
 			jogo->Invaders[i].tipo = BASICO;
 			jogo->Invaders[i].velocidade = velocidadeInvaderBase;
 			jogo->Invaders[i].vidas = 1;
+			jogo->Invaders[i].id_invader = i;
 		}
 		else
 			if (i < inp.numInvadersBase + inp.numInvadersEsquivo) {
@@ -223,6 +256,7 @@ void IniciaInvaders(Input inp) {
 				jogo->Invaders[i].tipo = ESQUIVO;
 				jogo->Invaders[i].velocidade = velocidadeInvaderBase * 0.40;
 				jogo->Invaders[i].vidas = 3;
+				jogo->Invaders[i].id_invader = i;
 			}
 			else
 			{
@@ -230,9 +264,10 @@ void IniciaInvaders(Input inp) {
 				jogo->Invaders[i].area.y = 0;
 				jogo->Invaders[i].area.altura = 0;
 				jogo->Invaders[i].area.comprimento = 0;
-				jogo->Invaders[i].tipo = OUTRO;
+				jogo->Invaders[i].tipo = EXTRA;
 				jogo->Invaders[i].velocidade = 0;
 				jogo->Invaders[i].vidas = 0;
+				jogo->Invaders[i].id_invader = i;
 			}
 	}
 }

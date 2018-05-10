@@ -33,6 +33,10 @@ HANDLE MutexRead;
 HANDLE MutexWrite;
 HANDLE hMemoriaBuffer;
 HANDLE hMemoriaJogo;
+HANDLE hMutexJogoSer;
+HANDLE hMutexJogoCli;
+HANDLE hEventActiva;
+HANDLE hEventLida;
 
 
 
@@ -82,7 +86,8 @@ typedef enum TipoPowerUP {
 typedef enum TipoInvader {
 	BASICO,
 	ESQUIVO,
-	EXTRA
+	EXTRA,
+	MORTO
 } TipoInvader;
 
 typedef struct _Input {
@@ -113,6 +118,7 @@ typedef struct Pontuacao {
 
 typedef struct Invader {
 	TipoInvader tipo;
+	int id_invader; //inicializar isto na funcao
 	Area area;
 	int vidas;
 	int velocidade;
@@ -121,6 +127,7 @@ typedef struct Invader {
 
 typedef struct PowerUP {
 	TipoPowerUP tipo;
+	int id_powerUP;
 	Area area;
 	int duracao; //cada powerup tem efeito durante x tempo
 	int velocidade;
@@ -129,11 +136,13 @@ typedef struct PowerUP {
 
 typedef struct Defender {
 	Area area;
+	int id_defender;
 	TCHAR nome[SIZE];
 	Pontuacao pontos;
 	int vidas;
 	int velocidade;
 	PowerUP powerUP;
+	TCHAR proximaTecla[SIZE]; //para guardar utilixção por ciclo jogo
 	//estado do jogo é possivel
 } Defender;
 
@@ -144,6 +153,7 @@ typedef struct Disparos {
 				  //bombas ficam com 1 tiros ficam com 0 !!!!!!!!!!!! Não sei se não é TRUE or FALSE
 	TCHAR dono[SIZE]; //para incrementar a pontuação dos clientes
 	int velocidade;
+	int id_disparos;
 } Disparos;
 
 
@@ -165,7 +175,16 @@ typedef struct _Jogo {
 
 }Jogo, *PJogo;
 
+//rever com o Antonio
 
+typedef struct _PosicoesJogo{
+	int x;
+} PosicoesJogo, *PPosicoesJogo;
+
+typedef struct _MsgSER {
+	TipoMensagemSER tipo_mensagem;
+	PosicoesJogo ImprimeJogo;
+} MsgSER, *PMsgSER;
 
 
 TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeEscrever[] = TEXT("Semáforo Pode Escrever");
@@ -174,20 +193,15 @@ TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeE
 
 extern "C" {
 #endif
-	//Variável global da DLL
-	extern DlltpSO2 int nDLL;	
+
 
 	extern DlltpSO2 PBufferMensagens mensagens;
 
 	extern DlltpSO2 PJogo jogo;
 	//Funções a serem exportadas/importadas
-	DlltpSO2 int UmaString(void);
 
 
 	DlltpSO2 void IniciaSinc();
-
-	
-
 	DlltpSO2 void TrataMensagem();
 	DlltpSO2 void EnviaMensagem();
 
