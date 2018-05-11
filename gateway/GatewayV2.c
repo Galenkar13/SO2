@@ -18,8 +18,10 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
+	Sleep(10000);
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
 	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Jogo), NULL);
+//	_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), &hMemoriaJogo);
 
 
 	if (hMemoriaBuffer == NULL || hMemoriaJogo == NULL) {
@@ -49,6 +51,16 @@ int _tmain(int argc, LPTSTR argv[]) {
 			return -1;
 		}
 
+		hThreadRecebeAtualizacao = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadAtualizacao, NULL, 0, 0);
+		if (hThreadRecebeAtualizacao != NULL)
+			_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
+		else {
+			_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
+			return -1;
+		}
+
+		_tprintf(TEXT("Invader %d: x - %d    y - %d  !!!!!!!!!!!\n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
+
 	WaitForSingleObject(hThreadEscritor, INFINITE);
 	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
 
@@ -67,3 +79,30 @@ DWORD WINAPI ThreadProdutor(LPVOID param) { //LADO DO GATEWAY
 	}
 	return 0;
 }
+
+DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
+
+	while (1) { //Isto é para passar para a DLL
+		RecebeAtualizacao(10);
+	}
+	return 0;
+}
+
+
+
+
+void RecebeAtualizacao(int id) {
+
+	WaitForSingleObject(hEventActiva, INFINITE);
+	ResetEvent(hEventLida);
+	ReleaseMutex(hMutexJogo2);
+	WaitForSingleObject(hMutexJogo, INFINITE);
+	WaitForSingleObject(hMutexJogo2, INFINITE);
+
+	_tprintf(TEXT("Invader %d: x - %d    y - %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
+
+	SetEvent(hEventLida);
+	ReleaseMutex(hMutexJogo);
+
+}
+

@@ -41,8 +41,8 @@ HANDLE MutexRead;
 HANDLE MutexWrite;
 HANDLE hMemoriaBuffer;
 HANDLE hMemoriaJogo;
-HANDLE hMutexJogoSer;
-HANDLE hMutexJogoCli;
+HANDLE hMutexJogo;
+HANDLE hMutexJogo2;
 HANDLE hEventActiva;
 HANDLE hEventLida;
 
@@ -92,9 +92,6 @@ typedef enum TipoInvader {
 	EXTRA,
 	MORTO
 } TipoInvader;
-
-
-
 
 
 //Mensagem que vai do Cliente para o Gateway
@@ -151,8 +148,6 @@ typedef struct Disparos {
 	int id_disparos;
 } Disparos;
 
-
-
 typedef struct _Jogo {
 
 	int altura, comprimento;
@@ -169,44 +164,50 @@ typedef struct _Jogo {
 	CicloDeVida CicloDeVida;
 
 }Jogo, *PJogo;
-
-
 //Apenas uma coisa de cada tipo de obecto do jogo porque vai ser feita a actualização 1 a 1
 
-typedef struct _PosicoesJogo{
+typedef struct _MsgPosicoesJogo{
 	Invader Invader;
 	Defender Defender;
 	PowerUP PowerUP;
 	Disparos Disparo;
 	CicloDeVida CicloDeVida;
-} PosicoesJogo, *PPosicoesJogo;
+} MsgPosicoesJogo, *PMsgPosicoesJogo;
 
 //Gateway manda para o cliente uma estrutura com uma cena de cada
 //e actualiza a cada alteraçaao 
 
 typedef struct _MsgSER {
-	PosicoesJogo ImprimeJogo;
+	Pontuacao TOP[10];
 } MsgSER, *PMsgSER;
 
+typedef enum _Direcao {
+	direita,
+	baixo,
+	cima,
+	esquerda
+} Direcao;
+
+#define MOVEMENT_INCREMENT 2
 
 TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeEscrever[] = TEXT("Semáforo Pode Escrever");
 
 #ifdef __cpluplus
-
 extern "C" {
 #endif
 
 
-	extern DlltpSO2 PBufferMensagens mensagens;
+	 DlltpSO2 PBufferMensagens mensagens;
 
-	extern DlltpSO2 PJogo jogo;
+	DlltpSO2 PJogo jogo;
 	//Funções a serem exportadas/importadas
 
 
-	DlltpSO2 void IniciaSinc();
+	DlltpSO2 int IniciaSinc();
 	DlltpSO2 void AcabaSinc();
 	DlltpSO2 void TrataMensagem();
-	DlltpSO2 void EnviaMensagem();
+	DlltpSO2 void EnviaMensagem(); 
+	
 
 #ifdef __cplusplus
 }

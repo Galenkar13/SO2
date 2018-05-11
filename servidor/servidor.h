@@ -1,4 +1,5 @@
 #pragma once
+#define DlltpSO2_EXPORTS 
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
@@ -7,6 +8,7 @@
 #include <string.h>  
 #include <stdlib.h> 
 #include "../DlltpSO2/dll.h"
+
 
 #define nVidas 5
 
@@ -31,7 +33,7 @@
 #define velocidadeDisparoMin 1
 
 #define velocidadeInvaderBaseMax 10
-#define velocidadeInvaderBase 5 //A esquiva tem velocidadeInvaderBase + (velocidadeInvaderBase*0.10)
+#define velocidadeInvaderBase 5000 //A esquiva tem velocidadeInvaderBase + (velocidadeInvaderBase*0.10)
 #define velocidadeInvaderBaseMin 1
 
 #define velocidadePowerUPMax 10
@@ -62,6 +64,10 @@
 #define MAXVIDASJOGADOR 10
 #define VIDASJOGADOR 5
 #define MINVIDASJOGADOR 1
+
+
+PBufferMensagens mensagens = NULL;
+PJogo jogo = NULL;
 
 
 int CreateThreadsInvaders();
@@ -101,9 +107,9 @@ typedef struct _Input {
 void IniciaBuffer();
 
 DWORD WINAPI ThreadConsumidor(LPVOID param); //LADO DO GATEWAY
-DWORD WINAPI ThreadInvadersBase(Input inp);
-DWORD WINAPI ThreadInvadersEsquivo(Input inp);
-DWORD WINAPI ThreadInvadersExtra(Input inp);
+DWORD WINAPI ThreadInvadersBase();
+DWORD WINAPI ThreadInvadersEsquivo();
+DWORD WINAPI ThreadInvadersExtra();
 
 void InicializaJogo();
 void ColocaInvaders(Input inp);
@@ -113,3 +119,4 @@ void IniciaInvaders(Input inp); //Inicialização dos invaders
  //Função que lança as Threads que vão controlar as funcionalidades dos Invaders
 								//Uma Thread por tipo de Invader
 
+void MoveInvaderBase(int id, int x, int y, int num);

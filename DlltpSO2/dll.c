@@ -1,25 +1,24 @@
-#include <windows.h>
+#define DlltpSO2_EXPORTS 
+#include <windows.h>	
 #include "dll.h"
 
 
-PBufferMensagens mensagens = NULL;
-PJogo jogo = NULL;
-
-void IniciaSinc() {
+int IniciaSinc() {
 	MutexRead = CreateMutex(NULL, FALSE, NULL);
 	MutexWrite = CreateMutex(NULL, FALSE, NULL);
 	SemaforoEscrever = CreateSemaphore(NULL, MAX, MAX, NomeSemaforoPodeLer); //vazios
 	SemaforoLer = CreateSemaphore(NULL, 0, MAX, NomeSemaforoPodeEscrever); //is
-	hMutexJogoSer = CreateMutex(NULL, FALSE, NULL);
-	hMutexJogoCli = CreateMutex(NULL, FALSE, NULL);
+	hMutexJogo = CreateMutex(NULL, FALSE, NULL);
+	hMutexJogo2 = CreateMutex(NULL, FALSE, NULL);
 	hEventActiva = CreateEvent(NULL,TRUE, FALSE, NULL);
 	hEventLida = CreateEvent(NULL,TRUE, FALSE, NULL);
 
-	if (SemaforoEscrever == NULL || SemaforoLer == NULL || MutexRead == NULL || MutexWrite == NULL || hMutexJogoCli == NULL || hMutexJogoSer == NULL || hEventActiva == NULL || hEventLida == NULL) {
+	if (SemaforoEscrever == NULL || SemaforoLer == NULL || MutexRead == NULL || MutexWrite == NULL || hMutexJogo2 == NULL || hMutexJogo == NULL || hEventActiva == NULL || hEventLida == NULL) {
 		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
 		return -1;
 	}
 
+	return 0;
 }
 
 void AcabaSinc() {
@@ -27,15 +26,14 @@ void AcabaSinc() {
 	CloseHandle(SemaforoLer);
 	CloseHandle(hMemoriaBuffer);
 	CloseHandle(hMemoriaJogo);
-	CloseHandle(hMutexJogoSer);
-	CloseHandle(hMutexJogoCli);
+	CloseHandle(hMutexJogo);
+	CloseHandle(hMutexJogo2);
 	CloseHandle(hEventActiva);
 	CloseHandle(hEventLida);
 }
 
 void EnviaMensagem() {
-	int x;
-	TCHAR msg[TAM];
+		TCHAR msg[TAM];
 	_tprintf(TEXT("Inserir mensagem teste memoria partilhada?"));
 	_fgetts(msg, TAM, stdin);
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
@@ -50,7 +48,6 @@ void EnviaMensagem() {
 }
 
 void TrataMensagem() {
-	int x;
 	WaitForSingleObject(SemaforoLer, INFINITE);
 	WaitForSingleObject(MutexWrite, INFINITE);  //isto é que fica como função na dll
 	_tprintf(_TEXT("Mensagem: %s \n"), mensagens->buffer[mensagens->out].tecla);
@@ -60,3 +57,6 @@ void TrataMensagem() {
 	ReleaseMutex(MutexWrite);
 	ReleaseSemaphore(SemaforoEscrever, 1, NULL);
 }
+
+
+

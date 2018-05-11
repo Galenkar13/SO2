@@ -28,6 +28,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
 	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo),NULL);
+//	_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), &hMemoriaJogo);
+
 
 	if (hMemoriaBuffer == NULL || hMemoriaJogo == NULL) {
 		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
@@ -60,6 +62,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 		//Isto futuramente vai estar dentro de um ciclo de jogo 
 		//Ter em anteção os niveis na criação desse mesmo ciclo
 
+		Sleep(10000);
+
 		IniciaInvaders(Input); //Inicializa valores dos invaders
 		ColocaInvaders(Input);		//Coloca invaders nas posições correctas
 
@@ -67,6 +71,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		for (int j = 0; j < Input.numInvaders; j++) {
 			_tprintf(TEXT("Invader %d: x - %d    y - %d \n"),j,jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
 		}
+
 		CreateThreadsInvaders(); //Cria Thread por tipo de Invader
 	
 
@@ -94,30 +99,24 @@ int CreateThreadsInvaders() {
 
 }
 
-DWORD WINAPI ThreadInvadersBase(Input inp) { 
+DWORD WINAPI ThreadInvadersBase() { 
 	_tprintf(TEXT("Iniciei Thread Tipo Invaders Base \n"));
-	/*int i;
-	int contador;
-	do
-	for (i = 0; i < inp.numInvaders; i++) {
-		if (jogo->Invaders[i].tipo == BASICO) {
-			//se tiver vida == 0;
-			//contador ++;
 
-			//se tiver espaço
-			//movimentoInvaderBase();
+	while (continua == 1) {
+		_tprintf(TEXT("cenas \n"));
 
-			//calcular probabilidade para disparar 
-			//se sim CreatheThreadDisparo();
-		}
-		Sleep(jogo->Invaders[i]);
+		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
+
+
+		MoveInvaderBase(jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y, MaxInvaders);
+		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
+
+		Sleep(velocidadeInvaderBase);
 	}
-	while (contador != inp.numInvadersBase)
-	*/
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersEsquivo(Input inp) {
+DWORD WINAPI ThreadInvadersEsquivo() {
 	_tprintf(TEXT("Iniciei Thread Tipo Invaders Esquivo \n"));
 	/*
 	int i;
@@ -141,7 +140,7 @@ DWORD WINAPI ThreadInvadersEsquivo(Input inp) {
 	return 0;
 }
 
-DWORD WINAPI ThreadInvadersExtra(Input inp) {
+DWORD WINAPI ThreadInvadersExtra() {
 	_tprintf(TEXT("Iniciei Thread Tipo Invaders Extra \n"));
 	/*
 	int i;
@@ -255,7 +254,7 @@ void IniciaInvaders(Input inp) {
 				jogo->Invaders[i].area.altura = AlturaInvader;
 				jogo->Invaders[i].area.comprimento = ComprimentoInvader;
 				jogo->Invaders[i].tipo = ESQUIVO;
-				jogo->Invaders[i].velocidade = velocidadeInvaderBase * 0.40;
+				jogo->Invaders[i].velocidade = (int)(velocidadeInvaderBase * 0.40);
 				jogo->Invaders[i].vidas = 3;
 				jogo->Invaders[i].id_invader = i;
 			}
@@ -304,4 +303,51 @@ void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque aind
 			}
 		}		
 	}
+}
+
+
+
+void MoveInvaderBase(int id, int x, int y, int num) {
+	//	_tprintf(TEXT("cenas2345 \n"));
+
+	int nRandonNumber = rand() % 3;
+	int i;
+
+	//	_tprintf(TEXT("cenas123 \n"));
+
+	WaitForSingleObject(hMutexJogo, INFINITE);
+	SetEvent(hEventActiva);
+
+
+	for (i = 0; i < num; i++)
+	{
+
+		if (jogo->Invaders[i].id_invader == id) {
+			_tprintf(TEXT("cenas2312312345 \n"));
+
+			if (nRandonNumber == (int)direita)
+			{
+				jogo->Invaders[i].area.x = jogo->Invaders[i].area.x + MOVEMENT_INCREMENT;
+			}
+			if (nRandonNumber == (int)esquerda)
+			{
+				jogo->Invaders[i].area.x = jogo->Invaders[i].area.x - MOVEMENT_INCREMENT;
+			}
+			if (nRandonNumber == (int)baixo)
+			{
+				jogo->Invaders[i].area.y = jogo->Invaders[i].area.y + MOVEMENT_INCREMENT;
+			}
+			if (nRandonNumber == (int)cima)
+			{
+				jogo->Invaders[i].area.y = jogo->Invaders[i].area.y - MOVEMENT_INCREMENT;
+			}
+		}
+	}
+	
+
+	WaitForSingleObject(hMutexJogo2, INFINITE);
+	ReleaseMutex(hMutexJogo2);
+	ResetEvent(hEventActiva);
+	ReleaseMutex(hMutexJogo);
+	WaitForSingleObject(hEventLida, INFINITE);
 }
