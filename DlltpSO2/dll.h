@@ -20,10 +20,18 @@
 #define mPartilhadaMensagens TEXT("memPartilhadaMensagens")
 #define TAMANHOBUFFER sizeof(BufferMensagens)
 
+//Estes defines tem de estar na dll porque vão ser utilizados para a memoria partilhada jogo
+#define ComprimentoJanelaMAX 100
+#define AlturaJanelaMAX 80
+#define ComprimentoJanelaMIN 80
+#define AlturaJanelaMIN 40
+
+
+
 #define MaxClientes 10
 #define MaxInvaders 60
 #define MaxPowerUP 10
-#define MaxDisparos 10
+#define MaxDisparos 25
 
 
 
@@ -44,11 +52,6 @@ typedef enum _TipoMensagemCLI {
 	INICIO,
 	JOGANDO
 } TipoMensagemCLI;
-
-typedef enum _TipoMensagemSER {
-	INICIO_JOGO,
-	JOGADA
-} TipoMensagemSER;
 
 typedef struct _MsgCLI {
 	TipoMensagemCLI mensagem;
@@ -90,15 +93,7 @@ typedef enum TipoInvader {
 	MORTO
 } TipoInvader;
 
-typedef struct _Input {
-	int numInvaders;
-	int	numDefenders;
-	int numDisparos;
-	int	numPowerUps;
-	int numInvadersBase;
-	int	numInvadersEsquivo;
-	int	numInvadersOutros;
-} Input, *PInput;
+
 
 
 
@@ -175,14 +170,21 @@ typedef struct _Jogo {
 
 }Jogo, *PJogo;
 
-//rever com o Antonio
+
+//Apenas uma coisa de cada tipo de obecto do jogo porque vai ser feita a actualização 1 a 1
 
 typedef struct _PosicoesJogo{
-	int x;
+	Invader Invader;
+	Defender Defender;
+	PowerUP PowerUP;
+	Disparos Disparo;
+	CicloDeVida CicloDeVida;
 } PosicoesJogo, *PPosicoesJogo;
 
+//Gateway manda para o cliente uma estrutura com uma cena de cada
+//e actualiza a cada alteraçaao 
+
 typedef struct _MsgSER {
-	TipoMensagemSER tipo_mensagem;
 	PosicoesJogo ImprimeJogo;
 } MsgSER, *PMsgSER;
 
@@ -202,6 +204,7 @@ extern "C" {
 
 
 	DlltpSO2 void IniciaSinc();
+	DlltpSO2 void AcabaSinc();
 	DlltpSO2 void TrataMensagem();
 	DlltpSO2 void EnviaMensagem();
 

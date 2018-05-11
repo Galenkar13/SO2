@@ -22,12 +22,21 @@ void IniciaSinc() {
 
 }
 
-
+void AcabaSinc() {
+	CloseHandle(SemaforoEscrever);
+	CloseHandle(SemaforoLer);
+	CloseHandle(hMemoriaBuffer);
+	CloseHandle(hMemoriaJogo);
+	CloseHandle(hMutexJogoSer);
+	CloseHandle(hMutexJogoCli);
+	CloseHandle(hEventActiva);
+	CloseHandle(hEventLida);
+}
 
 void EnviaMensagem() {
 	int x;
 	TCHAR msg[TAM];
-	_tprintf(TEXT("Introduzir numero memoria partilhadas?"));
+	_tprintf(TEXT("Inserir mensagem teste memoria partilhada?"));
 	_fgetts(msg, TAM, stdin);
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
 	WaitForSingleObject(MutexRead, INFINITE);
@@ -51,4 +60,3 @@ void TrataMensagem() {
 	ReleaseMutex(MutexWrite);
 	ReleaseSemaphore(SemaforoEscrever, 1, NULL);
 }
-

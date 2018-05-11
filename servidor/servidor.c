@@ -61,7 +61,12 @@ int _tmain(int argc, LPTSTR argv[]) {
 		//Ter em anteção os niveis na criação desse mesmo ciclo
 
 		IniciaInvaders(Input); //Inicializa valores dos invaders
-		ColocaInvaders();		//Coloca invaders nas posições correctas
+		ColocaInvaders(Input);		//Coloca invaders nas posições correctas
+
+
+		for (int j = 0; j < Input.numInvaders; j++) {
+			_tprintf(TEXT("Invader %d: x - %d    y - %d \n"),j,jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
+		}
 		CreateThreadsInvaders(); //Cria Thread por tipo de Invader
 	
 
@@ -70,14 +75,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	UnmapViewOfFile(mensagens);
 	UnmapViewOfFile(jogo);
-	CloseHandle(SemaforoEscrever);
-	CloseHandle(SemaforoLer);
-	CloseHandle(hMemoriaBuffer);
-	CloseHandle(hMemoriaJogo);
-	CloseHandle(hMutexJogoSer);
-	CloseHandle(hMutexJogoCli);
-	CloseHandle(hEventActiva);
-	CloseHandle(hEventLida);
+	AcabaSinc();
 	return 0;
 }
 
@@ -185,12 +183,15 @@ Input RecebeInput() {
 			aux.numInvadersOutros = 0;
 			aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
 		}
+		else
+		{
+			aux.numInvadersEsquivo = 20;
+			aux.numInvadersOutros = 0;
+			aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
+		}
 
 	return aux;
 }
-
-
-
 
 void InicializaJogo() { //acabar isto
 	int i;
@@ -272,6 +273,35 @@ void IniciaInvaders(Input inp) {
 	}
 }
 
-void ColocaInvaders() {
+void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque ainda não temos o jogo totalmente incializado
+	int i;
+	int espaco = 2;
+	int flag = 1;
+	int fila = 1;
+	int comp = ComprimentoJanelaMAX;
+	for (i = 0; i < inp.numInvaders; i++) {
 
+		if (flag == 1) {
+			jogo->Invaders[i].area.x = espaco;
+			if(fila == 1)	
+				jogo->Invaders[i].area.y = (fila * espaco);
+			else
+				jogo->Invaders[i].area.y = (fila * espaco) + (jogo->Invaders[i].area.altura *( fila-1));
+			flag = 0;
+		}
+		else
+		{
+			jogo->Invaders[i].area.x = jogo->Invaders[i - 1].area.x + jogo->Invaders[i].area.comprimento + espaco;
+			if (fila == 1)
+				jogo->Invaders[i].area.y = (fila * espaco);
+			else
+				jogo->Invaders[i].area.y = (fila * espaco) + (jogo->Invaders[i].area.altura *(fila - 1));
+
+			if ((jogo->Invaders[i].area.x + jogo->Invaders[i].area.comprimento) >= (comp - espaco)) {
+				fila++;
+				flag = 1;
+				i--;
+			}
+		}		
+	}
 }

@@ -54,14 +54,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	UnmapViewOfFile(mensagens);
 	UnmapViewOfFile(jogo);
-	CloseHandle(SemaforoEscrever);
-	CloseHandle(SemaforoLer);
-	CloseHandle(hMemoriaBuffer);
-	CloseHandle(hMemoriaJogo);
-	CloseHandle(hMutexJogoSer);
-	CloseHandle(hMutexJogoCli);
-	CloseHandle(hEventActiva);
-	CloseHandle(hEventLida);
+	AcabaSinc();
 	return 0;
 }
 
