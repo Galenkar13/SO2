@@ -1,5 +1,5 @@
 #pragma once
-#define DlltpSO2_EXPORTS 
+
 
 #include <windows.h>
 #include <tchar.h>
@@ -13,8 +13,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 
-PBufferMensagens mensagens = NULL;
-PJogo jogo = NULL;
 
 
 HANDLE hThreadEscritor;
@@ -22,6 +20,5 @@ HANDLE hThreadRecebeAtualizacao;
 
 DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 DWORD WINAPI ThreadAtualizacao(LPVOID param); //LADO DO GATEWAY
- void RecebeAtualizacao(int id);
 
 

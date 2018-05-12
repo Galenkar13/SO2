@@ -27,7 +27,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
 
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
-	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo),NULL);
+	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo), TEXT("memPartilhadaJogo"));
 //	_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), &hMemoriaJogo);
 
 
@@ -61,8 +61,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 		//Isto futuramente vai estar dentro de um ciclo de jogo 
 		//Ter em anteção os niveis na criação desse mesmo ciclo
-
-		Sleep(10000);
 
 		IniciaInvaders(Input); //Inicializa valores dos invaders
 		ColocaInvaders(Input);		//Coloca invaders nas posições correctas
@@ -104,9 +102,6 @@ DWORD WINAPI ThreadInvadersBase() {
 
 	while (continua == 1) {
 		_tprintf(TEXT("cenas \n"));
-
-		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
-
 
 		MoveInvaderBase(jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y, MaxInvaders);
 		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
@@ -303,51 +298,4 @@ void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque aind
 			}
 		}		
 	}
-}
-
-
-
-void MoveInvaderBase(int id, int x, int y, int num) {
-	//	_tprintf(TEXT("cenas2345 \n"));
-
-	int nRandonNumber = rand() % 3;
-	int i;
-
-	//	_tprintf(TEXT("cenas123 \n"));
-
-	WaitForSingleObject(hMutexJogo, INFINITE);
-	SetEvent(hEventActiva);
-
-
-	for (i = 0; i < num; i++)
-	{
-
-		if (jogo->Invaders[i].id_invader == id) {
-			_tprintf(TEXT("cenas2312312345 \n"));
-
-			if (nRandonNumber == (int)direita)
-			{
-				jogo->Invaders[i].area.x = jogo->Invaders[i].area.x + MOVEMENT_INCREMENT;
-			}
-			if (nRandonNumber == (int)esquerda)
-			{
-				jogo->Invaders[i].area.x = jogo->Invaders[i].area.x - MOVEMENT_INCREMENT;
-			}
-			if (nRandonNumber == (int)baixo)
-			{
-				jogo->Invaders[i].area.y = jogo->Invaders[i].area.y + MOVEMENT_INCREMENT;
-			}
-			if (nRandonNumber == (int)cima)
-			{
-				jogo->Invaders[i].area.y = jogo->Invaders[i].area.y - MOVEMENT_INCREMENT;
-			}
-		}
-	}
-	
-
-	WaitForSingleObject(hMutexJogo2, INFINITE);
-	ReleaseMutex(hMutexJogo2);
-	ResetEvent(hEventActiva);
-	ReleaseMutex(hMutexJogo);
-	WaitForSingleObject(hEventLida, INFINITE);
 }

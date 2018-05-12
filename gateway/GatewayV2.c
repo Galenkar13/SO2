@@ -1,7 +1,6 @@
 #include "gateway.h"
 
 
-
 int _tmain(int argc, LPTSTR argv[]) {
 
 //	TCHAR resp;
@@ -18,9 +17,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
-	Sleep(10000);
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
-	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Jogo), NULL);
+	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Jogo), TEXT("memPartilhadaJogo"));
 //	_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), &hMemoriaJogo);
 
 
@@ -59,7 +57,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 			return -1;
 		}
 
-		_tprintf(TEXT("Invader %d: x - %d    y - %d  !!!!!!!!!!!\n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
+		jogo->Invaders[20].id_invader = 123;
+
 
 	WaitForSingleObject(hThreadEscritor, INFINITE);
 	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
@@ -88,21 +87,4 @@ DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
 	return 0;
 }
 
-
-
-
-void RecebeAtualizacao(int id) {
-
-	WaitForSingleObject(hEventActiva, INFINITE);
-	ResetEvent(hEventLida);
-	ReleaseMutex(hMutexJogo2);
-	WaitForSingleObject(hMutexJogo, INFINITE);
-	WaitForSingleObject(hMutexJogo2, INFINITE);
-
-	_tprintf(TEXT("Invader %d: x - %d    y - %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
-
-	SetEvent(hEventLida);
-	ReleaseMutex(hMutexJogo);
-
-}
 

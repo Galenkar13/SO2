@@ -1,5 +1,4 @@
 #pragma once
-#define DlltpSO2_EXPORTS 
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
@@ -66,8 +65,7 @@
 #define MINVIDASJOGADOR 1
 
 
-PBufferMensagens mensagens = NULL;
-PJogo jogo = NULL;
+
 
 
 int CreateThreadsInvaders();
@@ -119,4 +117,3 @@ void IniciaInvaders(Input inp); //Inicialização dos invaders
  //Função que lança as Threads que vão controlar as funcionalidades dos Invaders
 								//Uma Thread por tipo de Invader
 
-void MoveInvaderBase(int id, int x, int y, int num);
