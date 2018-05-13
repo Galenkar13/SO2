@@ -18,13 +18,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	continua = 1;
 	
-	Input = RecebeInput();
 
-	_tprintf(TEXT("Numero Esquivos: %d \n"), Input.numInvadersEsquivo);
 
-	_tprintf(TEXT("Numero Extras: %d \n"), Input.numInvadersOutros);
-
-	_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
 
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
 	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo), TEXT("memPartilhadaJogo"));
@@ -61,6 +56,15 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 		//Isto futuramente vai estar dentro de um ciclo de jogo 
 		//Ter em anteção os niveis na criação desse mesmo ciclo
+
+		Input = RecebeInput();
+
+
+		_tprintf(TEXT("Numero Esquivos: %d \n"), Input.numInvadersEsquivo);
+
+		_tprintf(TEXT("Numero Extras: %d \n"), Input.numInvadersOutros);
+
+		_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
 
 		IniciaInvaders(Input); //Inicializa valores dos invaders
 		ColocaInvaders(Input);		//Coloca invaders nas posições correctas
@@ -101,7 +105,6 @@ DWORD WINAPI ThreadInvadersBase() {
 	_tprintf(TEXT("Iniciei Thread Tipo Invaders Base \n"));
 
 	while (continua == 1) {
-		_tprintf(TEXT("cenas \n"));
 
 		MoveInvaderBase(jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y, MaxInvaders);
 		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);

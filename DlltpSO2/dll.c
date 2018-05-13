@@ -66,16 +66,15 @@ void TrataMensagem() {
 
 
 void MoveInvaderBase(int id, int x, int y, int num) {
-	//	_tprintf(TEXT("cenas2345 \n"));
+
 
 	int nRandonNumber = rand() % 3;
 	int i;
 
-	//	_tprintf(TEXT("cenas123 \n"));
+
 
 	WaitForSingleObject(hMutexJogo, INFINITE);
 	SetEvent(hEventActiva);
-
 
 	for (i = 0; i < num; i++)
 	{
@@ -118,7 +117,6 @@ void RecebeAtualizacao(int id) {
 	WaitForSingleObject(hEventActiva, INFINITE);
 	ResetEvent(hEventLida);
 	ReleaseMutex(hMutexJogo2);
-
 
 	WaitForSingleObject(hMutexJogo, INFINITE);
 	WaitForSingleObject(hMutexJogo2, INFINITE);
