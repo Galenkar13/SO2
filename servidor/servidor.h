@@ -102,8 +102,6 @@ typedef struct _Input {
 
 } Input, *PInput;
 
-void IniciaBuffer();
-
 DWORD WINAPI ThreadConsumidor(LPVOID param); //LADO DO GATEWAY
 DWORD WINAPI ThreadInvadersBase();
 DWORD WINAPI ThreadInvadersEsquivo();

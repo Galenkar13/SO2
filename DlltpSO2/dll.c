@@ -1,6 +1,9 @@
 #define DlltpSO2_EXPORTS 
-#include <windows.h>	
+#include <windows.h>
+#include <fcntl.h>
 #include "dll.h"
+#include "comunicacao.h"
+
 
 PBufferMensagens mensagens = NULL;
 PJogo jogo = NULL;
@@ -126,4 +129,89 @@ void RecebeAtualizacao(int id) {
 	SetEvent(hEventLida);
 	ReleaseMutex(hMutexJogo);
 
+}
+
+void IniciaBuffer() {
+	int i;
+
+	mensagens->in = 0;
+	mensagens->out = 0;
+	mensagens->contadorMensagens = 0;
+
+	for (i = 0; i < MAX; i++) {
+		mensagens->buffer[i].id = 0;
+		mensagens->buffer[i].tipo_mensagem = '0';
+		_tcscpy(mensagens->buffer[i].nome, TEXT("nada"));
+		_tcscpy(mensagens->buffer[i].tecla, TEXT("nada"));
+	}
+}
+
+
+// CRIA A MEMORIA PARTILHADA COM O TAMANHO PARA RECEBER 100 MENSAGENS E 100 UPDATES
+BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
+{
+#ifdef UNICODE
+	_setmode(_fileno(stdin), _O_WTEXT);
+	_setmode(_fileno(stdout), _O_WTEXT);
+#endif
+
+	// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		// MENSAGENS
+
+
+		hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
+
+		if (hMemoriaBuffer == NULL)
+		{
+			_tprintf(TEXT("\nErro na memória partilhada. (Erro: %d)"), GetLastError());
+			return FALSE;
+		}
+
+
+		mensagens = (PBufferMensagens)MapViewOfFile(hMemoriaBuffer, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+
+		if (mensagens == NULL)
+		{
+			_tprintf(TEXT("\nErro na view da memória partilhada. (Erro: %d)"), GetLastError());
+			CloseHandle(hMemoriaBuffer);
+			return FALSE;
+		}
+
+		BOOL primeiroProcesso = GetLastError() != ERROR_ALREADY_EXISTS;
+
+
+		// DADOS DO JOGO
+		hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Jogo), TEXT("memPartilhadaJogo"));
+
+
+		if (hMemoriaJogo == NULL)
+		{
+			_tprintf(TEXT("\nErro na memória partilhada. (Erro: %d)"), GetLastError());
+			return FALSE;
+		}
+
+		
+		jogo = (PJogo)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+		
+		if (primeiroProcesso) {
+			IniciaBuffer();
+			IniciaSinc();
+		}
+
+	
+		break;
+	case DLL_THREAD_ATTACH:
+		break;
+	case DLL_THREAD_DETACH:
+		break;
+	case DLL_PROCESS_DETACH: // apenas limpa memória quando todos os processos fecharem
+		AcabaSinc();
+		break;
+	}
+	return TRUE;
 }

@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="comunicacao_gat.h" />
     <ClInclude Include="gateway.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="comunicacao_gat.c" />
     <ClCompile Include="GatewayV2.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

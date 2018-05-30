@@ -1,5 +1,8 @@
+#pragma once
 #include <windows.h>
 #include <tchar.h>
+#include "comunicacao.h"
+
 //Definir uma constante para facilitar a leitura do protótipo da função
 //Este .h deve ser incluído no projeto que o vai usar (modo implícito)
 #define TAM 256
@@ -20,18 +23,7 @@
 #define mPartilhadaMensagens TEXT("memPartilhadaMensagens")
 #define TAMANHOBUFFER sizeof(BufferMensagens)
 
-//Estes defines tem de estar na dll porque vão ser utilizados para a memoria partilhada jogo
-#define ComprimentoJanelaMAX 100
-#define AlturaJanelaMAX 80
-#define ComprimentoJanelaMIN 80
-#define AlturaJanelaMIN 40
 
-
-
-#define MaxClientes 10
-#define MaxInvaders 60
-#define MaxPowerUP 10
-#define MaxDisparos 25
 
 
 
@@ -48,138 +40,18 @@ HANDLE hEventLida;
 
 
 
-typedef enum _TipoMensagemCLI {
-	INICIO,
-	JOGANDO
-} TipoMensagemCLI;
-
-typedef struct _MsgCLI {
-	TipoMensagemCLI mensagem;
-	int id;
-	TCHAR nome[SIZE];
-	TCHAR tecla[SIZE];
-} MsgCLI, *PMsgCLI;
-
-typedef struct _BufferMensagens {
-	MsgCLI buffer[MAX];
-	int in;
-	int out;
-	int contadorMensagens;
-} BufferMensagens, *PBufferMensagens;
 
 
-typedef enum _CicloDeVida {
-	CRIACAO,
-	ASSOCIACAO,
-	INICIO_CICLO_JOGO,
-	DECORRER,
-	FINAL
-} CicloDeVida;
-
-typedef enum TipoPowerUP {
-	ESCUDO,
-	GELO,
-	BATERIA,
-	MAIS,
-	VIDA,
-	ALCOOL,
-	OUTRO
-} TipoPowerUP;
-
-typedef enum TipoInvader {
-	BASICO,
-	ESQUIVO,
-	EXTRA,
-	MORTO
-} TipoInvader;
 
 
-//Mensagem que vai do Cliente para o Gateway
-
-
-typedef struct Area {
-	int x, y;
-	int comprimento, altura;
-} Area;
-
-typedef struct Pontuacao {
-	int pontos;
-	TCHAR quem[SIZE];
-	SYSTEMTIME data;
-} Pontuacao;
-
-typedef struct Invader {
-	TipoInvader tipo;
-	int id_invader; //inicializar isto na funcao
-	Area area;
-	int vidas;
-	int velocidade;
-} Invader;
-
-
-typedef struct PowerUP {
-	TipoPowerUP tipo;
-	int id_powerUP;
-	Area area;
-	int duracao; //cada powerup tem efeito durante x tempo
-	int velocidade;
-} PowerUP;
-
-
-typedef struct Defender {
-	Area area;
-	int id_defender;
-	TCHAR nome[SIZE];
-	Pontuacao pontos;
-	int vidas;
-	int velocidade;
-	PowerUP powerUP;
-	TCHAR proximaTecla[SIZE]; //para guardar utilixção por ciclo jogo
-	//estado do jogo é possivel
-} Defender;
-
-//As bombas e os tiros têm uma estrutura práticamente igual, portanto ficam na mesma estrutura
-typedef struct Disparos {
-	int x, y; //só ocupam um ponto por isso são não se usa area
-	BOOL direcao; //As bombas sobes e os tiros descem
-				  //bombas ficam com 1 tiros ficam com 0 !!!!!!!!!!!! Não sei se não é TRUE or FALSE
-	TCHAR dono[SIZE]; //para incrementar a pontuação dos clientes
-	int velocidade;
-	int id_disparos;
-} Disparos;
-
-typedef struct _Jogo {
-
-	int altura, comprimento;
-
-	Invader Invaders[MaxInvaders];
-
-	Defender Defenders[MaxClientes];
-
-	PowerUP PowerUP[MaxPowerUP];
-
-	Disparos Disparos[MaxDisparos];
-	//Ver como são os power ups e os disparos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	CicloDeVida CicloDeVida;
-
-}Jogo, *PJogo;
 //Apenas uma coisa de cada tipo de obecto do jogo porque vai ser feita a actualização 1 a 1
 
-typedef struct _MsgPosicoesJogo{
-	Invader Invader;
-	Defender Defender;
-	PowerUP PowerUP;
-	Disparos Disparo;
-	CicloDeVida CicloDeVida;
-} MsgPosicoesJogo, *PMsgPosicoesJogo;
+
 
 //Gateway manda para o cliente uma estrutura com uma cena de cada
 //e actualiza a cada alteraçaao 
 
-typedef struct _MsgSER {
-	Pontuacao TOP[10];
-} MsgSER, *PMsgSER;
+
 
 typedef enum _Direcao {
 	direita,
@@ -205,7 +77,6 @@ TCHAR Mutex4[] = TEXT("MutexRecebeBuffer");
 extern "C" {
 #endif
 
-
 	DlltpSO2 PBufferMensagens mensagens;
 
 	 DlltpSO2 PJogo jogo;
@@ -218,6 +89,7 @@ extern "C" {
 	DlltpSO2 void EnviaMensagem(); 
 	DlltpSO2 void MoveInvaderBase(int id, int x, int y, int num);
 	DlltpSO2  void RecebeAtualizacao(int id);
+	DlltpSO2 void IniciaBuffer();
 
 
 #ifdef __cplusplus

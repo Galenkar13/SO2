@@ -18,9 +18,15 @@
     <ClInclude Include="gateway.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="comunicacao_gat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GatewayV2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="comunicacao_gat.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

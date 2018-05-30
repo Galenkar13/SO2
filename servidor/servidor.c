@@ -8,7 +8,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 	DWORD threadId;
 	Input Input;
 
-	IniciaSinc();
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -16,73 +15,47 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
+	//IniciaSinc();
+
 	continua = 1;
-	
 
-
-
-	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,TAMANHOBUFFER,mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
-	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(Jogo), TEXT("memPartilhadaJogo"));
-//	_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), &hMemoriaJogo);
-
-
-	if (hMemoriaBuffer == NULL || hMemoriaJogo == NULL) {
-		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
+	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
+	if (hThreadLeitor != NULL)
+		_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
+	else {
+		_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 		return -1;
 	}
-		mensagens = (PBufferMensagens)MapViewOfFile(hMemoriaBuffer, FILE_MAP_READ | FILE_MAP_WRITE,0,0,0);
-
-		if (mensagens == NULL) {
-			_tprintf(TEXT("[Erro]Mapeamento da memória partilhada no buffer (%d)\n"), GetLastError());
-			return -1;
-		}
-
-		IniciaBuffer();
-		
-		hThreadLeitor = CreateThread(NULL, 0,(LPTHREAD_START_ROUTINE)ThreadConsumidor,NULL,0,&threadId);
-		if (hThreadLeitor != NULL)
-			_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
-		else {
-			_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
-			return -1;
-		}
-
-		jogo = (PJogo)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-
-		if (jogo == NULL) {
-			_tprintf(TEXT("[Erro]Mapeamento da memória partilhada ´do Jogo (%d)\n"), GetLastError());
-			return -1;
-		}
-
-		//Isto futuramente vai estar dentro de um ciclo de jogo 
-		//Ter em anteção os niveis na criação desse mesmo ciclo
-
-		Input = RecebeInput();
 
 
-		_tprintf(TEXT("Numero Esquivos: %d \n"), Input.numInvadersEsquivo);
+	//Isto futuramente vai estar dentro de um ciclo de jogo 
+	//Ter em anteção os niveis na criação desse mesmo ciclo
 
-		_tprintf(TEXT("Numero Extras: %d \n"), Input.numInvadersOutros);
-
-		_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
-
-		IniciaInvaders(Input); //Inicializa valores dos invaders
-		ColocaInvaders(Input);		//Coloca invaders nas posições correctas
+	Input = RecebeInput();
 
 
-		for (int j = 0; j < Input.numInvaders; j++) {
-			_tprintf(TEXT("Invader %d: x - %d    y - %d \n"),j,jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
-		}
+	_tprintf(TEXT("Numero Esquivos: %d \n"), Input.numInvadersEsquivo);
 
-		CreateThreadsInvaders(); //Cria Thread por tipo de Invader
-	
+	_tprintf(TEXT("Numero Extras: %d \n"), Input.numInvadersOutros);
 
-	WaitForSingleObject(hThreadLeitor,INFINITE);
+	_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
+
+	IniciaInvaders(Input); //Inicializa valores dos invaders
+	ColocaInvaders(Input);		//Coloca invaders nas posições correctas
+
+
+	for (int j = 0; j < Input.numInvaders; j++) {
+		_tprintf(TEXT("Invader %d: x - %d    y - %d \n"), j, jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
+	}
+
+	CreateThreadsInvaders(); //Cria Thread por tipo de Invader
+
+
+	WaitForSingleObject(hThreadLeitor, INFINITE);
 	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
 
-	UnmapViewOfFile(mensagens);
-	UnmapViewOfFile(jogo);
-	AcabaSinc();
+
+	//AcabaSinc();
 	return 0;
 }
 
@@ -101,7 +74,7 @@ int CreateThreadsInvaders() {
 
 }
 
-DWORD WINAPI ThreadInvadersBase() { 
+DWORD WINAPI ThreadInvadersBase() {
 	_tprintf(TEXT("Iniciei Thread Tipo Invaders Base \n"));
 
 	while (continua == 1) {
@@ -125,10 +98,10 @@ DWORD WINAPI ThreadInvadersEsquivo() {
 			//se tiver espaço
 			//movimentoInvadersEsquivo();
 
-			//calcular probabilidade para disparar 
+			//calcular probabilidade para disparar
 			//se sim CreatheThreadDisparo();
 
-		
+
 		}
 		Sleep(jogo->Invaders[i]);
 	}
@@ -174,7 +147,7 @@ Input RecebeInput() {
 		aux.numInvadersOutros = 0;
 		aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
 	}
-	else 
+	else
 		if (aux.numInvaders <= 40) {
 			aux.numInvadersEsquivo = 10;
 			aux.numInvadersOutros = 0;
@@ -198,7 +171,7 @@ void InicializaJogo() { //acabar isto
 		jogo->Defenders[i].area.y = 0;
 		jogo->Defenders[i].area.altura = 0;
 		jogo->Defenders[i].area.comprimento = 0;
-		jogo->Defenders[i].pontos.pontos = 0;
+		jogo->Defenders[i].pontos = 0;
 		jogo->Defenders[i].velocidade = 0;
 		jogo->Defenders[i].vidas = 0;
 		jogo->Defenders[i].powerUP.area.x = 0;
@@ -216,20 +189,6 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 	return 0;
 }
 
-void IniciaBuffer() {
-	int i;
-	
-	mensagens->in = 0;
-	mensagens->out = 0;
-	mensagens->contadorMensagens = 0;
-
-	for (i = 0; i < MAX; i++) {
-		mensagens->buffer[i].id = 0;
-		mensagens->buffer[i].mensagem = '0';
-		_tcscpy(mensagens->buffer[i].nome, TEXT("nada"));
-		_tcscpy(mensagens->buffer[i].tecla, TEXT("nada"));
-	}
-}
 
 void IniciaInvaders(Input inp) {
 	_tprintf(TEXT("%d"), inp.numInvaders);
@@ -280,10 +239,10 @@ void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque aind
 
 		if (flag == 1) {
 			jogo->Invaders[i].area.x = espaco;
-			if(fila == 1)	
+			if (fila == 1)
 				jogo->Invaders[i].area.y = (fila * espaco);
 			else
-				jogo->Invaders[i].area.y = (fila * espaco) + (jogo->Invaders[i].area.altura *( fila-1));
+				jogo->Invaders[i].area.y = (fila * espaco) + (jogo->Invaders[i].area.altura *(fila - 1));
 			flag = 0;
 		}
 		else
@@ -299,6 +258,6 @@ void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque aind
 				flag = 1;
 				i--;
 			}
-		}		
+		}
 	}
 }
