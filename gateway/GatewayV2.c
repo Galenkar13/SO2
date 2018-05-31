@@ -45,20 +45,4 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 
 
-DWORD WINAPI ThreadProdutor(LPVOID param) { //LADO DO GATEWAY
-
-	while (1) { //Isto é para passar para a DLL
-		EnviaMensagem();
-	}
-	return 0;
-}
-
-DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
-
-	while (1) { //Isto é para passar para a DLL
-		RecebeAtualizacao(10);
-	}
-	return 0;
-}
-
 

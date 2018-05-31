@@ -5,9 +5,31 @@
 #include "comunicacao.h"
 
 
-PBufferMensagens mensagens = NULL;
-PJogo jogo = NULL;
+//PBufferMensagens mensagens = NULL;
+//PJogo jogo = NULL;
 
+
+
+HANDLE SemaforoEscrever;
+HANDLE SemaforoLer;
+HANDLE MutexRead;
+HANDLE MutexWrite;
+HANDLE hMemoriaBuffer;
+HANDLE hMemoriaJogo;
+HANDLE hMutexJogo;
+HANDLE hMutexJogo2;
+HANDLE hEventActiva;
+HANDLE hEventLida;
+
+
+TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeEscrever[] = TEXT("Semáforo Pode Escrever");
+TCHAR EventoManda[] = TEXT("EventoManda");TCHAR EventoRecebe[] = TEXT("EventoRecebe");
+
+TCHAR Mutex1[] = TEXT("MutexEnvia");
+TCHAR Mutex2[] = TEXT("MutexRecebe");
+
+TCHAR Mutex3[] = TEXT("MutexEnviaBuffer");
+TCHAR Mutex4[] = TEXT("MutexRecebeBuffer");
 
 
 int IniciaSinc() {
@@ -39,15 +61,14 @@ void AcabaSinc() {
 	CloseHandle(hEventLida);
 }
 
-void EnviaMensagem() {
-		TCHAR msg[TAM];
-	_tprintf(TEXT("Inserir mensagem teste memoria partilhada?"));
-	_fgetts(msg, TAM, stdin);
+void EnviaMensagem(MsgCLI dados){
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
 	WaitForSingleObject(MutexRead, INFINITE);
-	//mensagens->buffer[mensagens->in] = cenas;
-	//	_tcscpy_s(mensagens->buffer[mensagens->out].tecla, sizeof(mensagens->buffer[mensagens->out].tecla), cenas);
-	_tcscpy_s(mensagens->buffer[mensagens->out].tecla, (sizeof(TCHAR)* TAM), msg);
+	_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados.nome);
+	mensagens->buffer[mensagens->out].id = dados.id;
+	mensagens->buffer[mensagens->out].tipo_mensagem = dados.tipo_mensagem;
+	//_tcscpy_s(mensagens->buffer[mensagens->out].tecla, (sizeof(TCHAR)* TAM), dados.tecla);
+	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
 	mensagens->contadorMensagens++;
 	mensagens->in = (mensagens->in + 1) % MAX;
 	ReleaseMutex(MutexRead);
@@ -58,6 +79,12 @@ void TrataMensagem() {
 	WaitForSingleObject(SemaforoLer, INFINITE);
 	WaitForSingleObject(MutexWrite, INFINITE);  //isto é que fica como função na dll
 	_tprintf(_TEXT("Mensagem: %s \n"), mensagens->buffer[mensagens->out].tecla);
+
+	_tprintf(TEXT(" TIPO %d \n"), mensagens->buffer[mensagens->out].tipo_mensagem);
+	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
+	_tprintf(TEXT(" ID %d \n"), mensagens->buffer[mensagens->out].id);
+
+
 	mensagens->buffer[mensagens->out].id = 0;
 	mensagens->contadorMensagens--;
 	mensagens->out = (mensagens->out + 1) % MAX;
@@ -155,12 +182,17 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif
 
+	
 	// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
 		// MENSAGENS
+		//PBufferMensagens mensagens = NULL;
+		//PJogo jogo = NULL;
 
+		mensagens = NULL;
+		
 
 		hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
 
@@ -181,8 +213,8 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 			return FALSE;
 		}
 
-		BOOL primeiroProcesso = GetLastError() != ERROR_ALREADY_EXISTS;
-
+		//BOOL primeiroProcesso = GetLastError() != ERROR_ALREADY_EXISTS;
+		jogo = NULL;
 
 		// DADOS DO JOGO
 		hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Jogo), TEXT("memPartilhadaJogo"));
@@ -198,10 +230,10 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 		jogo = (PJogo)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 		
-		if (primeiroProcesso) {
+	
 			IniciaBuffer();
 			IniciaSinc();
-		}
+		
 
 	
 		break;

@@ -24,26 +24,6 @@
 #define TAMANHOBUFFER sizeof(BufferMensagens)
 
 
-
-
-
-HANDLE SemaforoEscrever;
-HANDLE SemaforoLer;
-HANDLE MutexRead;
-HANDLE MutexWrite;
-HANDLE hMemoriaBuffer;
-HANDLE hMemoriaJogo;
-HANDLE hMutexJogo;
-HANDLE hMutexJogo2;
-HANDLE hEventActiva;
-HANDLE hEventLida;
-
-
-
-
-
-
-
 //Apenas uma coisa de cada tipo de obecto do jogo porque vai ser feita a actualização 1 a 1
 
 
@@ -62,15 +42,6 @@ typedef enum _Direcao {
 
 #define MOVEMENT_INCREMENT 2
 
-TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeEscrever[] = TEXT("Semáforo Pode Escrever");
-TCHAR EventoManda[] = TEXT("EventoManda");TCHAR EventoRecebe[] = TEXT("EventoRecebe");
-
-TCHAR Mutex1[] = TEXT("MutexEnvia");
-TCHAR Mutex2[] = TEXT("MutexRecebe");
-
-TCHAR Mutex3[] = TEXT("MutexEnviaBuffer");
-TCHAR Mutex4[] = TEXT("MutexRecebeBuffer");
-
 
 
 #ifdef __cpluplus
@@ -79,14 +50,14 @@ extern "C" {
 
 	DlltpSO2 PBufferMensagens mensagens;
 
-	 DlltpSO2 PJogo jogo;
+	DlltpSO2 PJogo jogo;
 	//Funções a serem exportadas/importadas
 
 
 	DlltpSO2 int IniciaSinc();
 	DlltpSO2 void AcabaSinc();
 	DlltpSO2 void TrataMensagem();
-	DlltpSO2 void EnviaMensagem(); 
+	DlltpSO2 void EnviaMensagem(MsgCLI dados); 
 	DlltpSO2 void MoveInvaderBase(int id, int x, int y, int num);
 	DlltpSO2  void RecebeAtualizacao(int id);
 	DlltpSO2 void IniciaBuffer();
