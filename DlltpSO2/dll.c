@@ -10,28 +10,6 @@
 
 
 
-HANDLE SemaforoEscrever;
-HANDLE SemaforoLer;
-HANDLE MutexRead;
-HANDLE MutexWrite;
-HANDLE hMemoriaBuffer;
-HANDLE hMemoriaJogo;
-HANDLE hMutexJogo;
-HANDLE hMutexJogo2;
-HANDLE hEventActiva;
-HANDLE hEventLida;
-
-
-TCHAR NomeSemaforoPodeLer[] = TEXT("Semáforo Pode Ler");TCHAR NomeSemaforoPodeEscrever[] = TEXT("Semáforo Pode Escrever");
-TCHAR EventoManda[] = TEXT("EventoManda");TCHAR EventoRecebe[] = TEXT("EventoRecebe");
-
-TCHAR Mutex1[] = TEXT("MutexEnvia");
-TCHAR Mutex2[] = TEXT("MutexRecebe");
-
-TCHAR Mutex3[] = TEXT("MutexEnviaBuffer");
-TCHAR Mutex4[] = TEXT("MutexRecebeBuffer");
-
-
 int IniciaSinc() {
 	MutexRead = CreateMutex(NULL, FALSE, Mutex4);
 	MutexWrite = CreateMutex(NULL, FALSE, Mutex3);
@@ -61,14 +39,20 @@ void AcabaSinc() {
 	CloseHandle(hEventLida);
 }
 
-void EnviaMensagem(MsgCLI dados){
+void EnviaMensagem(MsgCLI * dados){
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
 	WaitForSingleObject(MutexRead, INFINITE);
-	_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados.nome);
-	mensagens->buffer[mensagens->out].id = dados.id;
-	mensagens->buffer[mensagens->out].tipo_mensagem = dados.tipo_mensagem;
+	_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados->nome);
+	mensagens->buffer[mensagens->out].id = dados->id;
+	mensagens->buffer[mensagens->out].tipo_mensagem = dados->tipo_mensagem;
 	//_tcscpy_s(mensagens->buffer[mensagens->out].tecla, (sizeof(TCHAR)* TAM), dados.tecla);
 	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
+
+	_tprintf(_TEXT("Mensagem: %s \n"), mensagens->buffer[mensagens->out].nome);
+
+	_tprintf(TEXT(" TIPO %d \n"), mensagens->buffer[mensagens->out].tipo_mensagem);
+
+	_tprintf(TEXT(" ID %d \n"), mensagens->buffer[mensagens->out].id);
 	mensagens->contadorMensagens++;
 	mensagens->in = (mensagens->in + 1) % MAX;
 	ReleaseMutex(MutexRead);
@@ -78,7 +62,7 @@ void EnviaMensagem(MsgCLI dados){
 void TrataMensagem() {
 	WaitForSingleObject(SemaforoLer, INFINITE);
 	WaitForSingleObject(MutexWrite, INFINITE);  //isto é que fica como função na dll
-	_tprintf(_TEXT("Mensagem: %s \n"), mensagens->buffer[mensagens->out].tecla);
+	_tprintf(_TEXT("Mensagem: %s \n"), mensagens->buffer[mensagens->out].nome);
 
 	_tprintf(TEXT(" TIPO %d \n"), mensagens->buffer[mensagens->out].tipo_mensagem);
 	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
@@ -192,7 +176,8 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 		//PJogo jogo = NULL;
 
 		mensagens = NULL;
-		
+
+		BOOL primeiroProcesso = GetLastError() != ERROR_ALREADY_EXISTS;
 
 		hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
 
@@ -213,7 +198,7 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 			return FALSE;
 		}
 
-		//BOOL primeiroProcesso = GetLastError() != ERROR_ALREADY_EXISTS;
+		
 		jogo = NULL;
 
 		// DADOS DO JOGO
@@ -230,10 +215,11 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 		jogo = (PJogo)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 		
-	
-			IniciaBuffer();
+		if (primeiroProcesso) {
 			IniciaSinc();
+			IniciaBuffer();
 		
+		}
 
 	
 		break;

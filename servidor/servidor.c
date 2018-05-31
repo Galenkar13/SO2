@@ -15,12 +15,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
-	//IniciaSinc();
-
 	continua = 1;
-
-//	IniciaBuffer();
-	//IniciaSinc();
 
 	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
 	if (hThreadLeitor != NULL)

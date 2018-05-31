@@ -200,8 +200,8 @@ int arrancaComunicao()
 			_tprintf(TEXT(" NOME  %s\n"), Pipe[i].chRequest.nome);
 			_tprintf(TEXT(" ID %d \n"), Pipe[i].chRequest.id);
 
-			hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, &Pipe[i], 0, NULL);
-
+			//hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, &Pipe[i], 0, NULL);
+			EnviaMensagem(Pipe[i].chRequest);
 
 			//EnviaMensagem(Pipe[i].chRequest);
 
