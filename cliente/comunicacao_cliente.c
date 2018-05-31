@@ -9,8 +9,6 @@
 
 int arrancaComunicacaoCliente()
 {
-	MsgCLI MensagemVindaDoCLiente;
-	MsgCliGat MensagemVindaDoGateway;
 
 	HANDLE hPipe;
 	LPTSTR lpvMessage = TEXT("Default message from client.");
@@ -69,19 +67,19 @@ int arrancaComunicacaoCliente()
 		return -1;
 	}
 
-	MensagemVindaDoCLiente.tipo_mensagem = INICIO;
-	_tcscpy(MensagemVindaDoCLiente.nome,TEXT("ZE FINOS"));
-	MensagemVindaDoCLiente.id = 0;
-	_tcscpy(MensagemVindaDoCLiente.tecla, TEXT("esquerda"));
-
-
 	// Send a message to the pipe server. 
 
 //	_tprintf(TEXT("Sending %d byte message: \"%s\"\n"), cbToWrite, lpvMessage);
 
+	MsgCLI Teste;
+	Teste.tipo_mensagem = INICIO;
+	_tcscpy_s(Teste.nome, _countof(Teste.nome)  ,_T("ZE FINOS"));
+	Teste.id = 123;
+	//_tcscpy(Teste.tecla, TEXT("esquerda"));
+
 	fSuccess = WriteFile(
 		hPipe,                  // pipe handle 
-		(void *)&MensagemVindaDoCLiente,             // message 
+		(void *)&Teste,             // message 
 		sizeof(MsgCLI),              // message length 
 		&cbWritten,             // bytes written 
 		NULL);                  // not overlapped 
@@ -98,9 +96,11 @@ int arrancaComunicacaoCliente()
 	{
 		// Read from the pipe. 
 
+		MsgCliGat cenas;
+
 		fSuccess = ReadFile(
 			hPipe,    // pipe handle 
-			(void *)&MensagemVindaDoGateway,    // buffer to receive reply 
+			(void *)&cenas,    // buffer to receive reply 
 			sizeof(MsgCliGat),  // size of buffer 
 			&cbRead,  // number of bytes read 
 			NULL);    // not overlapped 
@@ -108,7 +108,7 @@ int arrancaComunicacaoCliente()
 		if (!fSuccess && GetLastError() != ERROR_MORE_DATA)
 			break;
 
-		_tprintf(TEXT("\"%d\"\n"), MensagemVindaDoGateway.cenas2.pontos);
+		_tprintf(TEXT("\"%d\"\n"), cenas.cenas2.pontos);
 	} while (!fSuccess);  // repeat loop if ERROR_MORE_DATA 
 
 	if (!fSuccess)

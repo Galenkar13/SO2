@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <strsafe.h>
+#include <fcntl.h>
+#include <Windows.h>
+#include <tchar.h>
+#include <fcntl.h>
+#include <io.h>
+#include <stdio.h>
 #include "gateway.h"
 #include "../DlltpSO2/comunicacao.h"
 
@@ -14,14 +20,11 @@
 
 typedef struct
 {
-	MsgCLI MensagemVindaDoCLiente;
-	MsgCliGat MensagemVindaDoGateway;
-
 	OVERLAPPED oOverlap;
 	HANDLE hPipeInst;
-	TCHAR chRequest[BUFSIZE];
+	MsgCLI chRequest;
 	DWORD cbRead;
-	TCHAR chReply[BUFSIZE];
+	MsgCliGat chReply;
 	DWORD cbToWrite;
 	DWORD dwState;
 	BOOL fPendingIO;
@@ -40,6 +43,7 @@ int arrancaComunicao()
 	DWORD i, dwWait, cbRet, dwErr;
 	BOOL fSuccess;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
+
 
 	// The initial loop creates several instances of a named pipe 
 	// along with an event object for each instance.  An 
@@ -178,12 +182,16 @@ int arrancaComunicao()
 		case READING_STATE:
 			fSuccess = ReadFile(
 				Pipe[i].hPipeInst,
-				Pipe[i].chRequest,
+				(void *)&Pipe[i].chRequest,
 				BUFSIZE * sizeof(TCHAR),
 				&Pipe[i].cbRead,
 				&Pipe[i].oOverlap);
 
 			// The read operation completed successfully. 
+
+			_tprintf(TEXT(" TIPO %d \n"), Pipe[i].chRequest.tipo_mensagem);
+			_tprintf(TEXT(" NOME  %s\n"), Pipe[i].chRequest.nome);
+			_tprintf(TEXT(" ID %d \n"), Pipe[i].chRequest.id);
 
 			if (fSuccess && Pipe[i].cbRead != 0)
 			{
@@ -211,12 +219,14 @@ int arrancaComunicao()
 			// Get the reply data and write it to the client. 
 
 		case WRITING_STATE:
-			GetAnswerToRequest(&Pipe[i]);
+			//GetAnswerToRequest(&Pipe[i]);
+
+			Pipe[0].chReply.cenas2.pontos = 111;
 
 			fSuccess = WriteFile(
-				Pipe[i].hPipeInst,
-				Pipe[i].chReply,
-				Pipe[i].cbToWrite,
+				Pipe[0].hPipeInst,
+				(void *)&Pipe[0].chReply,
+				sizeof(MsgCliGat),
 				&cbRet,
 				&Pipe[i].oOverlap);
 
@@ -325,7 +335,164 @@ BOOL ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
 
 VOID GetAnswerToRequest(LPPIPEINST pipe)
 {
-	_tprintf(TEXT("[%d] %s\n"), pipe->hPipeInst, pipe->chRequest);
-	StringCchCopy(pipe->chReply, BUFSIZE, TEXT("Default answer from server"));
-	pipe->cbToWrite = (lstrlen(pipe->chReply) + 1) * sizeof(TCHAR);
+//	_tprintf(TEXT("[%d] %s\n"), pipe->hPipeInst, pipe->chRequest);
+//	StringCchCopy(pipe->chReply, BUFSIZE, TEXT("Default answer from server"));
+//	pipe->cbToWrite = (lstrlen(pipe->chReply) + 1) * sizeof(TCHAR);
 }
+
+
+/*
+#include <Windows.h>
+#include <tchar.h>
+#include <fcntl.h>
+#include <io.h>
+#include <stdio.h>
+
+#define PIPE_NAME TEXT("\\\\.\\pipe\\teste")
+#define MAX_NUM_CLIENTS 10
+
+HANDLE hConnectedPipes[MAX_NUM_CLIENTS];
+HANDLE hThreadClientCommunication[MAX_NUM_CLIENTS];
+HANDLE hIOReady[MAX_NUM_CLIENTS];
+HANDLE hMutexPipe;
+HANDLE hPipe;
+
+DWORD WINAPI AtendeCliente(LPVOID lpParam) {
+	HANDLE hPipe = (HANDLE)lpParam;
+	BOOL ret;
+	TCHAR buf[256];
+	DWORD n;
+
+	HANDLE IOReady;
+	OVERLAPPED Ov;
+
+	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	while (1) {
+		ZeroMemory(&Ov, sizeof(Ov));
+		ResetEvent(IOReady);
+		Ov.hEvent = IOReady;
+
+		ReadFile(hPipe, buf, sizeof(buf), &n, &Ov);
+
+//		WaitForSingleObject(IOReady, INFINITE);
+		ret = GetOverlappedResult(hPipe, &Ov, &n, FALSE);
+
+		if (!ret || !n) {
+			_tprintf(TEXT("[ESCRITOR] %d %d... (ReadFile)\n"), ret, n);
+			break;
+		}
+
+		buf[n / sizeof(TCHAR)] = '\0';
+		_tprintf(TEXT("[ESCRITOR] Recebi %d bytes: '%s'... (ReadFile)\n"), n, buf);
+	}
+
+	CloseHandle(IOReady);
+	return 0;
+}
+
+DWORD WINAPI RecebeClientes(LPVOID lpParam) {
+	TCHAR buf[256];
+	int i;
+
+	for (int i = 0; i < MAX_NUM_CLIENTS; i++)
+		hConnectedPipes[i] = INVALID_HANDLE_VALUE;
+
+	_tprintf(TEXT("[ESCRITOR] Criar uma cópia do pipe '%s' ... (CreateNamedPipe)\n"), PIPE_NAME);
+
+	while (1) {
+		hPipe = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, PIPE_UNLIMITED_INSTANCES, sizeof(buf), sizeof(buf), 1000, NULL);
+		if (hPipe == INVALID_HANDLE_VALUE) {
+			_tprintf(TEXT("[ERRO] Criar Named Pipe! (CreateNamedPipe)"));
+			exit(-1);
+		}
+		_tprintf(TEXT("[ESCRITOR] Esperar ligação de um leitor... (ConnectNamedPipe)\n"));
+
+		if (!ConnectNamedPipe(hPipe, NULL)) {
+			_tprintf(TEXT("[ERRO] Ligação ao leitor! (ConnectNamedPipe\n"));
+			exit(-1);
+		}
+		else {
+		//	WaitForSingleObject(hMutexPipe, INFINITE);
+			for (i = 0; i < MAX_NUM_CLIENTS; i++) {
+				if (hConnectedPipes[i] == INVALID_HANDLE_VALUE) {
+					hConnectedPipes[i] = hPipe;
+					break;
+				}
+			}
+			
+			ReleaseMutex(hMutexPipe);
+		}
+		hThreadClientCommunication[i] = CreateThread(NULL, 0, AtendeCliente, (LPVOID)hConnectedPipes[i], 0, NULL);
+	}
+
+	return 0;
+}
+
+int arrancaComunicao(){
+	DWORD n;
+	HANDLE hThread;
+	TCHAR buf[256];
+	BOOL ret;
+
+
+	hThread = CreateThread(NULL, 0, RecebeClientes, NULL, 0, NULL);
+	hMutexPipe = CreateMutex(NULL, FALSE, NULL);
+
+	HANDLE IOReady;
+	OVERLAPPED Ov;
+
+	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	do {
+		_tprintf(TEXT("[ESCRITOR] Frase: "));
+		_fgetts(buf, 256, stdin);
+		buf[_tcslen(buf) - 1] = '\0';
+
+	//	WaitForSingleObject(hMutexPipe, INFINITE);
+		for (int i = 0; i < MAX_NUM_CLIENTS; i++) {
+			if (hConnectedPipes[i] != INVALID_HANDLE_VALUE) {
+				ZeroMemory(&Ov, sizeof(Ov));
+				ResetEvent(IOReady);
+				Ov.hEvent = IOReady;
+
+				WriteFile(hConnectedPipes[i], buf, _tcslen(buf) * sizeof(TCHAR), &n, &Ov);
+
+				WaitForSingleObject(IOReady, INFINITE);
+				ret = GetOverlappedResult(hPipe, &Ov, &n, FALSE);
+
+				if (!ret) {
+					_tprintf(TEXT("[ERRO] Escrever no pipe! (WriteFile)\n"));
+					exit(-1);
+				}
+
+				_tprintf(TEXT("[ESCRITOR] Enviei %d bytes ao leitor %d... (WriteFile)\n"), n, i + 1);
+			}
+		}
+//		ReleaseMutex(hMutexPipe);
+
+	} while (_tcscmp(buf, TEXT("fim")));
+
+	_tprintf(TEXT("[ESCRITOR] Desligar os pipes (DisconnectNamedPipe)\n"));
+
+	WaitForSingleObject(hMutexPipe, INFINITE);
+	for (int i = 0; i < MAX_NUM_CLIENTS; i++) {
+		if (hConnectedPipes[i] != INVALID_HANDLE_VALUE) {
+			if (!DisconnectNamedPipe(hConnectedPipes[i])) {
+				_tprintf(TEXT("[ERRO] Desligar o pipe!(DisconnectNamedPipe)"));
+				exit(-1);
+			}
+		}
+	}
+
+	for (int i = 0; i < MAX_NUM_CLIENTS; i++) {
+		if (hConnectedPipes[i] != INVALID_HANDLE_VALUE)
+			CloseHandle(hConnectedPipes[i]);
+	}
+
+	CloseHandle(IOReady);
+	CloseHandle(hThread);
+	ReleaseMutex(hMutexPipe);
+
+	exit(0);
+}*/
