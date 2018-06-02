@@ -118,6 +118,10 @@
   <ItemGroup>
     <ClInclude Include="cliente.h" />
     <ClInclude Include="comunicacao_cliente.h" />
+    <ClInclude Include="resource2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cliente2.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
