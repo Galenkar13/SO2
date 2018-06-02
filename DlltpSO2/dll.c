@@ -76,6 +76,15 @@ void TrataMensagem() {
 	ReleaseSemaphore(SemaforoEscrever, 1, NULL);
 }
 
+MsgCliGat EnviaUpdate() {
+
+	MsgCliGat cenas;
+	cenas.tipo = ATUALIZACAO;
+	cenas.cenas3.altura = jogo->altura;
+	return cenas;
+
+
+}
 
 
 

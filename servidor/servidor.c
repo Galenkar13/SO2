@@ -7,7 +7,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	DWORD threadId;
 	Input Input;
-
+	HANDLE hEvento, hMutexJogo;
+	TCHAR command[80];
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -25,6 +26,13 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return -1;
 	}
 
+	_tprintf(TEXT("Command:"));
+	//_tscanf_s(TEXT(" %s"), command, 80);
+	_fgetts(command, 80, stdin);
+	command[_tcslen(command) - 1] = '\0';
+
+	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
+	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
 
 	//Isto futuramente vai estar dentro de um ciclo de jogo 
 	//Ter em anteção os niveis na criação desse mesmo ciclo
@@ -40,6 +48,17 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	IniciaInvaders(Input); //Inicializa valores dos invaders
 	ColocaInvaders(Input);		//Coloca invaders nas posições correctas
+
+
+	WaitForSingleObject(hMutexJogo, INFINITE);
+
+	jogo->altura = 2345;
+	_tprintf(TEXT("[Event Generated] \n"));
+
+	SetEvent(hEvento);
+	ResetEvent(hEvento);
+	//Sleep(3*1000);
+	ReleaseMutex(hMutexJogo);
 
 
 	for (int j = 0; j < Input.numInvaders; j++) {

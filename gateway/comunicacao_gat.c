@@ -38,12 +38,15 @@ VOID GetAnswerToRequest(LPPIPEINST);
 PIPEINST Pipe[INSTANCES];
 HANDLE hEvents[INSTANCES];
 
-int arrancaComunicao()
+int arrancaComunicao(Jogo jogo)
 {
 	DWORD i, dwWait, cbRet, dwErr;
 	BOOL fSuccess;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
+	HANDLE hEvento, hMutexJogo;
 
+	hMutexJogo = OpenMutex(SYNCHRONIZE, FALSE, TEXT("GoMtex"));
+	hEvento = OpenEvent(SYNCHRONIZE, FALSE, TEXT("GoEvent"));
 
 	// The initial loop creates several instances of a named pipe 
 	// along with an event object for each instance.  An 
@@ -230,10 +233,18 @@ int arrancaComunicao()
 			// The request was successfully read from the client. 
 			// Get the reply data and write it to the client. 
 
+
+			
+
 		case WRITING_STATE:
 			//GetAnswerToRequest(&Pipe[i]);
+			WaitForSingleObject(hEvento, INFINITE);
+			WaitForSingleObject(hMutexJogo, INFINITE);
+			Pipe[0].chReply.cenas3.altura = jogo.altura;
+			ReleaseMutex(hMutexJogo);
 
-			Pipe[0].chReply.cenas2.pontos = 111;
+			_tprintf(TEXT(" ALTURA %d \n"), Pipe[0].chReply.cenas3.altura);
+		
 
 			fSuccess = WriteFile(
 				Pipe[0].hPipeInst,
@@ -243,6 +254,7 @@ int arrancaComunicao()
 				&Pipe[i].oOverlap);
 
 			// The write operation completed successfully. 
+			
 
 			if (fSuccess && cbRet == Pipe[i].cbToWrite)
 			{

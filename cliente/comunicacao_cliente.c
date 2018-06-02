@@ -108,7 +108,7 @@ int arrancaComunicacaoCliente()
 		if (!fSuccess && GetLastError() != ERROR_MORE_DATA)
 			break;
 
-		_tprintf(TEXT("\"%d\"\n"), cenas.cenas2.pontos);
+		_tprintf(TEXT("\"%d\"\n"), cenas.cenas3.altura);
 	} while (!fSuccess);  // repeat loop if ERROR_MORE_DATA 
 
 	if (!fSuccess)
@@ -119,7 +119,6 @@ int arrancaComunicacaoCliente()
 
 	printf("\n<End of message, press ENTER to terminate connection and exit>");
 	_getch();
-
 	CloseHandle(hPipe);
 
 	return 0;

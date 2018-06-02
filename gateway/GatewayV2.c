@@ -16,7 +16,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
-	arrancaComunicao();
+	arrancaComunicao(jogo);
 
 		hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 		if (hThreadEscritor!= NULL)
