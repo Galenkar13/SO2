@@ -1,3 +1,5 @@
 #pragma once
+//#include "../DlltpSO2/dll.h"
 
-int arrancaComunicacaoCliente();
+//DWORD WINAPI arrancaComunicacaoCliente();
+// hThread;

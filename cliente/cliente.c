@@ -7,17 +7,20 @@
 #include <WinUser.h>
 #include <conio.h>
 #include <CommCtrl.h>
-#include "comunicacao_cliente.h"
+#include "cliente.h"
 #include "resource2.h"
 
 
 int _tmain() {
 
-	arrancaComunicacaoCliente();
+	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
+
+	WaitForSingleObject(hThread, INFINITE);
 
 	return 0;
 
 }
+
 
 
 // GT_HelloWorldWin32.cpp  

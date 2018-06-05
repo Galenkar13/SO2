@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>  
 #include <stdlib.h> 
-//#include "../DlltpSO2/dll.h"
+#include "../DlltpSO2/dll.h"
 
 
 
@@ -22,4 +22,5 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 DWORD WINAPI ThreadAtualizacao(LPVOID param); //LADO DO GATEWAY
 
 
-int arrancaComunicao();
+DWORD WINAPI arrancaComunicacaoGateway();
+DWORD WINAPI  EnviaUpdateCliente();

@@ -9,7 +9,6 @@
 #include <io.h>
 #include <stdio.h>
 #include "gateway.h"
-#include "../DlltpSO2/comunicacao.h"
 
 #define CONNECTING_STATE 0 
 #define READING_STATE 1 
@@ -17,7 +16,7 @@
 #define INSTANCES 4 
 #define PIPE_TIMEOUT 5000
 #define BUFSIZE 4096
-
+/*
 typedef struct
 {
 	OVERLAPPED oOverlap;
@@ -198,7 +197,7 @@ int arrancaComunicao(Jogo jogo)
 			if (hThreadEscritor == NULL){
 				_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 				return -1;
-			}*/
+			}
 			_tprintf(TEXT(" TIPO %d \n"), Pipe[i].chRequest.tipo_mensagem);
 			_tprintf(TEXT(" NOME  %s\n"), Pipe[i].chRequest.nome);
 			_tprintf(TEXT(" ID %d \n"), Pipe[i].chRequest.id);
@@ -356,14 +355,11 @@ BOOL ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
 
 	return fPendingIO;
 }
+*/
+
+HANDLE hEvento, hMutexJogo;
 
 
-DWORD WINAPI ThreadProdutor(LPVOID param) { //LADO DO GATEWAY
-	MsgCLI *msg;
-	msg = (MsgCLI *)param;
-	EnviaMensagem(msg);
-	return 0;
-}
 
 DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
 
@@ -374,3 +370,243 @@ DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
 	return 0;
 }
 
+#define PIPE_BUFFER 4096
+#define PIPE_TIMEOUT 5000
+
+int idJogador;
+HANDLE hThreadCliente;
+HANDLE hPipe;
+HANDLE eventWriteReady;
+HANDLE eventReadReady;
+HANDLE hThreadCriaNamedPipes;
+
+DWORD WINAPI RecebeMensagensClientes()
+{
+	
+	BOOL fSuccess = FALSE;
+
+	OVERLAPPED overlRd = { 0 };
+	DWORD cbBytesRead = 0;
+	MsgCLI msg;
+
+	if (hPipe == NULL)
+	{
+		_tprintf(TEXT("Named Pipe Inválido!\n"));
+		return -1;
+	}
+
+	while (1)
+	{
+		ZeroMemory(&overlRd, sizeof(overlRd));
+		ResetEvent(eventReadReady);
+		overlRd.hEvent = eventReadReady;
+
+		fSuccess = ReadFile(hPipe, &msg, sizeof(MsgCLI), &cbBytesRead, &overlRd);
+
+		WaitForSingleObject(eventReadReady, INFINITE);
+
+		BOOL erro = GetOverlappedResult(hPipe, &overlRd, &cbBytesRead, FALSE);
+
+		_tprintf(TEXT("Recebido %d %d\n"), cbBytesRead, erro);
+
+		if (cbBytesRead < sizeof(MsgCLI))
+		{
+			DWORD result = GetLastError();
+			_tprintf(TEXT("Ocorreu um erro a comunicar com o cliente. ( %d )\n"), result);
+
+			if (result == ERROR_BROKEN_PIPE)
+			{
+				break;
+			}
+		}
+		else
+		{
+
+		//	RecebeMensagem(msg);
+
+			EnviaMensagem(msg);
+
+			_tprintf(TEXT(" TIPO %d \n"), msg.tipo_mensagem);
+			_tprintf(TEXT(" NOME  %s\n"), msg.nome);
+			_tprintf(TEXT(" ID %d \n"), msg.id);
+
+			_tprintf(TEXT("Mensagem recebida \n"));
+		}
+	}
+
+	// remover cliente 
+	FlushFileBuffers(hPipe);
+	DisconnectNamedPipe(hPipe);
+	CloseHandle(hPipe);
+
+	_tprintf(TEXT("Thread de comunicação terminada\n"));
+
+	return 0;
+}
+
+DWORD WINAPI arrancaComunicacaoGateway()
+{
+
+
+	/*TCHAR * szSD = TEXT("D:")
+	TEXT("(A;OICI;GA;;;BG)")
+	TEXT("(A;OICI;GA;;;AN)")
+	TEXT("(A;OICI;GA;;;AU)")
+	TEXT("(A;OICI;GA;;;BA)");
+
+	SECURITY_ATTRIBUTES sa;
+
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.bInheritHandle = FALSE;*/
+
+	_tprintf(TEXT("\n\n Listen for pipe clients ON AND OK \n\n"));
+
+	//ConvertStringSecurityDescriptorToSecurityDescriptor(szSD, SDDL_REVISION_1, &(sa.lpSecurityDescriptor), NULL);
+
+	BOOL fConnected = FALSE;
+	TCHAR* lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipetestes");
+	HANDLE hPipeAux = INVALID_HANDLE_VALUE, hThreadAux = NULL;
+
+	while (1)
+	{
+		hPipeAux = CreateNamedPipe(
+			lpszPipename,
+			PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
+			PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+			PIPE_UNLIMITED_INSTANCES,
+			PIPE_BUFFER,
+			PIPE_BUFFER,
+			PIPE_TIMEOUT,
+			NULL); // &sa
+
+		if (hPipeAux == INVALID_HANDLE_VALUE)
+		{
+			_tprintf(TEXT("Error creating a new pipe instance! ( %d )"), GetLastError());
+			continue;
+		}
+
+		fConnected = ConnectNamedPipe(hPipeAux, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
+
+		// TODO limitar n clientes
+		if (fConnected)
+		{
+
+			
+			hPipe = hPipeAux;
+
+			eventWriteReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+		eventReadReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+		hThreadCliente = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeMensagensClientes, NULL, 0, NULL);
+
+			
+		}
+		else
+		{
+			CloseHandle(hPipeAux);
+		}
+	}
+
+	return 0;
+}
+
+
+
+
+DWORD WINAPI  EnviaUpdateCliente() {
+	DWORD cbWritten = 0;
+	OVERLAPPED overlWr = { 0 };
+	hMutexJogo = OpenMutex(SYNCHRONIZE, FALSE, TEXT("GoMtex"));
+	hEvento = OpenEvent(SYNCHRONIZE, FALSE, TEXT("GoEvent"));
+	
+		MsgCliGat update;
+		//WaitForSingleObject(cliente->hMutex, INFINITE);
+
+		//_tprintf(TEXT("[GATEWAY] a enviar ao cliente %d\n"), cliente->idJogador);
+
+		ZeroMemory(&overlWr, sizeof(overlWr));
+
+		ResetEvent(eventWriteReady);
+
+		overlWr.hEvent = eventWriteReady;
+
+		WaitForSingleObject(hEvento, INFINITE);
+		WaitForSingleObject(hMutexJogo, INFINITE);
+		update.cenas3.altura = jogo->altura;
+		ReleaseMutex(hMutexJogo);
+
+		_tprintf(TEXT(" ALTURA %d \n"), update.cenas3.altura);
+
+
+		WriteFile(
+			hPipe,     // pipe handle 
+			(void*)&update,     // message 
+			sizeof(update),		// message length 
+			&cbWritten,         // bytes written 
+			&overlWr);          // overlapped 
+
+		WaitForSingleObject(eventWriteReady, INFINITE);
+
+		BOOL fSuccess = GetOverlappedResult(hPipe, &overlWr, &cbWritten, FALSE);
+
+		if (!fSuccess || cbWritten < sizeof(update))
+		{
+			_tprintf(TEXT("WriteFile to pipe failed. GLE=%d\n"), GetLastError());
+		}
+		else
+		{
+			_tprintf(TEXT("Enviado UPDATE %d\n"), cbWritten);
+		}
+	
+	//ReleaseMutex(cliente->hMutex);
+
+	return 0;
+}
+
+/*
+BOOL BroadcastUpdatesCliente(PGATEWAY gateway, UPDATE update)
+{
+	_tprintf(TEXT("[GATEWAY] A enviar update aos clientes\n"));
+
+	for (int i = 0; i < gateway->clientesLigados; i++) {
+		if (gateway->clientes[i] != NULL && gateway->clientes[i]->hPipe != INVALID_HANDLE_VALUE) {
+			if (update.tipo != _IDJOGADOR || update.idJogador == gateway->clientes[i]->idJogador)
+			{
+				EnviaUpdateCliente(gateway->clientes[i], update);
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+
+DWORD WINAPI LeUpdateServidor(LPVOID param)
+{
+	PGATEWAY gateway = (PGATEWAY)param;
+
+	while (gateway->continuar) {
+		UPDATE update = LeProximoUpdate();
+
+		BroadcastUpdatesCliente(gateway, update);
+	}
+
+	return 0;
+}
+
+BOOL InicializaThreadsUpdates()
+{
+	_tprintf(TEXT("[GATEWAY] A criar thread para receber updates do servidor \n"));
+
+	hThreadLeUpdates = CreateThread(NULL, 0, LeUpdateServidor, gateway, 0, NULL);
+
+	if (gateway->hThreadLeUpdates == NULL)
+	{
+		_tprintf(TEXT("[GATEWAY] Ocorreu um erro ( %d ) \n"), GetLastError());
+		return FALSE;
+	}
+
+	_tprintf(TEXT("[GATEWAY] Thread criada: receber updates do servidor \n"));
+
+	return TRUE;
+}*/

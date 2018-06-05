@@ -17,6 +17,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 #endif
 
 	continua = 1;
+	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
+	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
 
 	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
 	if (hThreadLeitor != NULL)
@@ -31,8 +33,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_fgetts(command, 80, stdin);
 	command[_tcslen(command) - 1] = '\0';
 
-	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
-	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
+	
 
 	//Isto futuramente vai estar dentro de um ciclo de jogo 
 	//Ter em anteção os niveis na criação desse mesmo ciclo

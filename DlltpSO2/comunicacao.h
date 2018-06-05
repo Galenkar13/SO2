@@ -4,7 +4,7 @@
 
 #define MAX 50 //tamanho do buffer 
 #define SIZE 20 //dimensão da mensagem e do nome 
-
+#define TAM 254
 //Estes defines tem de estar na dll porque vão ser utilizados para a memoria partilhada jogo
 #define ComprimentoJanelaMAX 100
 #define AlturaJanelaMAX 80

@@ -5,20 +5,20 @@
 #include "comunicacao.h"
 
 
-//PBufferMensagens mensagens = NULL;
-//PJogo jogo = NULL;
+PBufferMensagens mensagens = NULL;
+PJogo jogo = NULL;
 
 
 
 int IniciaSinc() {
-	MutexRead = CreateMutex(NULL, FALSE, Mutex4);
-	MutexWrite = CreateMutex(NULL, FALSE, Mutex3);
-	SemaforoEscrever = CreateSemaphore(NULL, MAX, MAX, NomeSemaforoPodeLer); //vazios
-	SemaforoLer = CreateSemaphore(NULL, 0, MAX, NomeSemaforoPodeEscrever); //is
-	hMutexJogo = CreateMutex(NULL, FALSE, Mutex1);
-	hMutexJogo2 = CreateMutex(NULL, FALSE, Mutex2);
-	hEventActiva = CreateEvent(NULL,TRUE, FALSE, EventoManda);
-	hEventLida = CreateEvent(NULL,TRUE, FALSE, EventoRecebe);
+	MutexRead = CreateMutex(NULL, FALSE, TEXT("MutexRecebeBuffer"));
+	MutexWrite = CreateMutex(NULL, FALSE, TEXT("MutexEnviaBuffer"));
+	SemaforoEscrever = CreateSemaphore(NULL, MAX, MAX, TEXT("Semáforo Pode Ler")); //vazios
+	SemaforoLer = CreateSemaphore(NULL, 0, MAX, TEXT("Semáforo Pode Escrever")); //is
+	hMutexJogo = CreateMutex(NULL, FALSE, TEXT("MutexEnvia"));
+	hMutexJogo2 = CreateMutex(NULL, FALSE, TEXT("MutexRecebe"));
+	hEventActiva = CreateEvent(NULL,TRUE, FALSE, TEXT("EventoManda"));
+	hEventLida = CreateEvent(NULL,TRUE, FALSE, TEXT("EventoRecebe"));
 
 	if (SemaforoEscrever == NULL || SemaforoLer == NULL || MutexRead == NULL || MutexWrite == NULL || hMutexJogo2 == NULL || hMutexJogo == NULL || hEventActiva == NULL || hEventLida == NULL) {
 		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
@@ -39,12 +39,12 @@ void AcabaSinc() {
 	CloseHandle(hEventLida);
 }
 
-void EnviaMensagem(MsgCLI * dados){
+void EnviaMensagem(MsgCLI dados){
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
 	WaitForSingleObject(MutexRead, INFINITE);
-	_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados->nome);
-	mensagens->buffer[mensagens->out].id = dados->id;
-	mensagens->buffer[mensagens->out].tipo_mensagem = dados->tipo_mensagem;
+	_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados.nome);
+	mensagens->buffer[mensagens->out].id = dados.id;
+	mensagens->buffer[mensagens->out].tipo_mensagem = dados.tipo_mensagem;
 	//_tcscpy_s(mensagens->buffer[mensagens->out].tecla, (sizeof(TCHAR)* TAM), dados.tecla);
 	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
 
