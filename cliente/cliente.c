@@ -10,7 +10,7 @@
 #include "cliente.h"
 #include "resource2.h"
 
-
+/*
 int _tmain() {
 
 	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
@@ -19,7 +19,7 @@ int _tmain() {
 
 	return 0;
 
-}
+}*/
 
 
 
@@ -29,7 +29,7 @@ int _tmain() {
 //#include "resource.h"
 
 // Global variables  
-/*
+
 // The main window class name.  
 static TCHAR szWindowClass[] = _T("win32app");
 
@@ -41,11 +41,8 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 HINSTANCE hInst;
 
-typedef struct _cenas {
-	TCHAR yo[254];
-} cenas;
 
-cenas cenas123;
+//cenas cenas123;
 
 
 int CALLBACK WinMain(
@@ -55,7 +52,7 @@ int CALLBACK WinMain(
 	_In_ int       nCmdShow
 )
 {
-
+	 hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
 	WNDCLASSEX wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -71,7 +68,8 @@ int CALLBACK WinMain(
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 
-	arrancaComunicacaoCliente();
+	JOGANDO_CLI = FALSE;
+	//arrancaComunicacaoCliente();
 
 	if (!RegisterClassEx(&wcex))
 	{
@@ -148,6 +146,7 @@ int CALLBACK WinMain(
 LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
+
 	// DIALOGO DE CONFIGURAÇÃO DE PARAMETROS DE JOGO
 	switch (message)
 	{
@@ -162,8 +161,8 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		{
 		case IDOK:
 		{
-			TCHAR buff[254];
-			GetWindowText(GetDlgItem(hWnd, IDC_EDIT_INPUT), cenas123.yo, sizeof(buff));
+			if(!JOGANDO_CLI)
+				Login(hWnd);	
 		}
 
 		break;
@@ -235,4 +234,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
-*/
+
+
+int Login(HWND hWnd) {
+	TCHAR buff[254];
+	MsgCLI mensagem_cli;
+	mensagem_cli.id = -1;
+	_tcscpy_s(mensagem_cli.tecla, _countof(mensagem_cli.tecla), _T("ZE FINOS"));
+	mensagem_cli.tipo_mensagem = INICIO;
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT_INPUT), mensagem_cli.nome, sizeof(buff));
+	EnviaMensagemCLI(mensagem_cli);
+	JOGANDO_CLI = TRUE;
+
+}
