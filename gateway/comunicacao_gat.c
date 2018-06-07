@@ -373,7 +373,8 @@ DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
 #define PIPE_BUFFER 4096
 #define PIPE_TIMEOUT 5000
 
-int idJogador;
+//Passar isto para estrutura
+
 HANDLE hThreadCliente;
 HANDLE hPipe;
 HANDLE eventWriteReady;
@@ -520,6 +521,7 @@ DWORD WINAPI  EnviaUpdateCliente() {
 	hEvento = OpenEvent(SYNCHRONIZE, FALSE, TEXT("GoEvent"));
 	
 		MsgCliGat update;
+		int i;
 		//WaitForSingleObject(cliente->hMutex, INFINITE);
 
 		//_tprintf(TEXT("[GATEWAY] a enviar ao cliente %d\n"), cliente->idJogador);
@@ -532,10 +534,10 @@ DWORD WINAPI  EnviaUpdateCliente() {
 
 		WaitForSingleObject(hEvento, INFINITE);
 		WaitForSingleObject(hMutexJogo, INFINITE);
-		update.cenas3.altura = jogo->altura;
+		update = EnviaUpdate(jogo->CicloDeVida);
 		ReleaseMutex(hMutexJogo);
 
-		_tprintf(TEXT(" ALTURA %d \n"), update.cenas3.altura);
+		_tprintf(TEXT(" ALTURA %d \n"), update.JogoCopia.altura);
 
 
 		WriteFile(
@@ -561,6 +563,36 @@ DWORD WINAPI  EnviaUpdateCliente() {
 	//ReleaseMutex(cliente->hMutex);
 
 	return 0;
+}
+
+MsgCliGat EnviaUpdate(int estado) {
+	MsgCliGat teste;
+	int temp = jogo->nDefenders;
+	
+	switch (estado)
+	{
+	case ASSOCIACAO:
+	{
+		teste.mensagensCliente.id = temp;
+		teste.tipo = PRIMEIRA;
+	}
+		break;
+	case FINAL:
+	{
+		teste.tipo = PONTUACAO;
+	}
+		break;
+	case DECORRER:
+	{
+		memcpy(&teste.JogoCopia, jogo, sizeof(&jogo));
+		teste.tipo = ATUALIZACAO;
+	}
+		break;
+	default:
+		break;
+	}
+
+	return teste;
 }
 
 /*

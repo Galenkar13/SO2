@@ -7,7 +7,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	DWORD threadId;
 	Input Input;
-	HANDLE hEvento, hMutexJogo;
+	
 	TCHAR command[80];
 
 #ifdef UNICODE 
@@ -16,9 +16,15 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 #endif
 
+	jogo->CicloDeVida = CRIACAO; //este vai ser para o botao de configuraçao
+	jogo->CicloDeVida = ASSOCIACAO;
+
 	continua = 1;
 	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
 	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
+
+	IniciaDefenders();
+
 
 	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
 	if (hThreadLeitor != NULL)
@@ -49,8 +55,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	IniciaInvaders(Input); //Inicializa valores dos invaders
 	ColocaInvaders(Input);		//Coloca invaders nas posições correctas
-
-
+/*
 	WaitForSingleObject(hMutexJogo, INFINITE);
 
 	jogo->altura = 2345;
@@ -60,7 +65,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	ResetEvent(hEvento);
 	//Sleep(3*1000);
 	ReleaseMutex(hMutexJogo);
-
+	*/
 
 	for (int j = 0; j < Input.numInvaders; j++) {
 		_tprintf(TEXT("Invader %d: x - %d    y - %d \n"), j, jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
@@ -200,13 +205,37 @@ void InicializaJogo() { //acabar isto
 DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servidor
 	int x = 0;
 	while (continua == 1) { //Isto é para passar para a DLL
-
+		
 		TrataMensagem();
+	//	WaitForSingleObject(hMutexJogo, INFINITE);
+		_tprintf(TEXT("[Event Generated] \n"));
+		SetEvent(hEvento);
+		ResetEvent(hEvento);
+		ReleaseMutex(hMutexJogo);
+
 	}
 
 	return 0;
 }
 
+void IniciaDefenders()
+{
+	jogo->nDefenders = -1;
+	int i = 0;
+	for (i = 0; i < MaxClientes; i++)
+	{
+
+		jogo->Defenders[i].area.x = 0;
+		jogo->Defenders[i].area.y = 0;
+		jogo->Defenders[i].id_defender = -1;
+		_tcscpy_s(jogo->Defenders[i].nome, sizeof(jogo->Defenders[i].nome), TEXT("nada"));
+		jogo->Defenders[i].pontos = 0;
+		jogo->Defenders[i].velocidade = 0;
+		jogo->Defenders[i].vidas = 0;
+
+	}
+	
+}
 
 void IniciaInvaders(Input inp) {
 	_tprintf(TEXT("%d"), inp.numInvaders);
@@ -279,3 +308,4 @@ void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque aind
 		}
 	}
 }
+

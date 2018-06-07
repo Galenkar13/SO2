@@ -77,10 +77,9 @@ DWORD WINAPI arrancaComunicacaoCliente()
 		return -1;
 	}
 
-//	EnviaMensagemCLI();
-	Sleep(1000);
+
 	RecebeUpdates();
-	Sleep(10000000);
+
 	return 0;
 }
 
@@ -117,7 +116,20 @@ BOOL RecebeUpdates()
 
 		OutputDebugString(TEXT("\n\n\nRecebi update \n\n\n"));
 
-		_tprintf(TEXT("\"%d\"\n"), update.cenas3.altura);
+		switch(update.tipo)
+		{
+		case PRIMEIRA:
+		{
+			idJogador = update.mensagensCliente.id;
+		}
+			break;
+		case PONTUACAO:
+			break;
+		case ATUALIZACAO:
+			break;
+		default:
+			break;
+		}
 	}
 
 	CloseHandle(hPipe);

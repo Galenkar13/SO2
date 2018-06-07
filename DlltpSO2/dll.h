@@ -74,7 +74,7 @@ extern "C" {
 	DlltpSO2 void MoveInvaderBase(int id, int x, int y, int num);
 	DlltpSO2  void RecebeAtualizacao(int id);
 	DlltpSO2 void IniciaBuffer();
-	DlltpSO2 MsgCliGat EnviaUpdate();
+	DlltpSO2 MsgCliGat EnviaUpdate(int id);
 
 
 #ifdef __cplusplus

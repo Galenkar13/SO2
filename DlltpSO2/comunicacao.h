@@ -122,12 +122,16 @@ typedef struct _Jogo {
 	int altura, comprimento;
 
 	Invader Invaders[MaxInvaders];
+	int nInvaders;
 
 	Defender Defenders[MaxClientes];
+	int nDefenders;
 
 	PowerUP PowerUP[MaxPowerUP];
+	int nPowerUPs;
 
 	Disparos Disparos[MaxDisparos];
+	int nDisparos;
 	//Ver como são os power ups e os disparos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	CicloDeVida CicloDeVida;
@@ -155,8 +159,8 @@ typedef struct _MsgCliGat {
 	TipoMensagemGAT tipo;
 	union data
 	{
-		MsgSER cenas1;
-		Pontuacao cenas2;
-		Jogo cenas3;
+		MsgCLI mensagensCliente;
+		MsgSER pontuacaoFinal;
+		Jogo JogoCopia;
 	};
 } MsgCliGat, *PMsgCliGat;

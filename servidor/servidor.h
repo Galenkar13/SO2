@@ -8,6 +8,7 @@
 #include <stdlib.h> 
 #include "../DlltpSO2/dll.h"
 
+HANDLE hEvento, hMutexJogo;
 
 #define nVidas 5
 
@@ -110,6 +111,8 @@ DWORD WINAPI ThreadInvadersExtra();
 void InicializaJogo();
 void ColocaInvaders(Input inp);
 Input RecebeInput();
+void IniciaDefenders();
+
 
 void IniciaInvaders(Input inp); //Inicialização dos invaders
  //Função que lança as Threads que vão controlar as funcionalidades dos Invaders
