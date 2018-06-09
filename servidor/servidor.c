@@ -202,11 +202,16 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case SinalUser:
 	{
 
-		TCHAR aux[15] ;
 		//aux = jogo->nDefenders + 1;
 		//tcscpy_s(aux, _countof(aux),jogo->nDefenders);
-		sprintf(aux, "%d", jogo->nDefenders + 1);
-		SendMessage(GetDlgItem(hWnd, IDC_STATIC_Valor), WM_SETTEXT, 0, (LPARAM)aux);
+		//sprintf(aux, "%d", jogo->nDefenders + 1);
+	//	_tcscpy_s(aux, _countof(aux), jogo->nDefenders + 1 );
+
+		TCHAR text[100];
+
+		_itot_s(jogo->nDefenders + 1, text, 100, 10);
+
+		SendMessage(GetDlgItem(hWnd, IDC_STATIC_Valor), WM_SETTEXT, 0, (LPARAM)text);
 	}
 	break;
 
