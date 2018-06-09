@@ -10,7 +10,8 @@
 
 HANDLE hEvento, hMutexJogo;
 
-#define nVidas 5
+//#define nVidas 5
+#define SinalUser (WM_USER + 1)
 
 
 #define MinClientes 1
@@ -113,6 +114,7 @@ void ColocaInvaders(Input inp);
 Input RecebeInput();
 void IniciaDefenders();
 
+void RecebeConfiguracao(HWND hWnd);
 
 void IniciaInvaders(Input inp); //Inicialização dos invaders
  //Função que lança as Threads que vão controlar as funcionalidades dos Invaders

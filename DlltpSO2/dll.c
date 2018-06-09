@@ -68,16 +68,8 @@ void TrataMensagem() {
 	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
 	_tprintf(TEXT(" ID %d \n"), mensagens->buffer[mensagens->out].id);
 
-	if (jogo->CicloDeVida == ASSOCIACAO) {
-		int i;
-		for (i = 0; i < MaxClientes; i++) {
-			if (jogo->Defenders[i].id_defender == -1) {
-				jogo->Defenders[i].id_defender == i;
-				jogo->nDefenders++;
-			}
-			break;
-		}
-	}
+	//Mudar isto para o servidor
+	
 
 	mensagens->buffer[mensagens->out].id = 0;
 	mensagens->contadorMensagens--;

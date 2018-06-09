@@ -134,6 +134,17 @@ typedef struct _Jogo {
 	int nDisparos;
 	//Ver como são os power ups e os disparos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+	int nVidas;
+
+	int velocidadeBomba;
+
+	int velocidadePowerUps;
+
+	int velocidadeInvaders;
+
+	int probabilidadeInvaderDisparar;
+
+	int probabilidadePowerUp;
 	CicloDeVida CicloDeVida;
 
 }Jogo, *PJogo;
