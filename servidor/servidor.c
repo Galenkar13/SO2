@@ -151,6 +151,15 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	{
 	case WM_INITDIALOG:
 	{
+		TCHAR text[100];
+		_itot_s(10, text, 100, 10);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT1_nInvaders), WM_SETTEXT, 0, (LPARAM)text);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT2_velocidadeInvader), WM_SETTEXT, 0, (LPARAM)text);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT3_ProbabilidadeInvader), WM_SETTEXT, 0, (LPARAM)text);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT4_VelocidadePowerUP), WM_SETTEXT, 0, (LPARAM)text);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT5_DuracaoPowerUP), WM_SETTEXT, 0, (LPARAM)text);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT6_VelocidadeTiroInvader), WM_SETTEXT, 0, (LPARAM)text);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT7_NumeroDeVidas), WM_SETTEXT, 0, (LPARAM)text);
 
 	}
 
