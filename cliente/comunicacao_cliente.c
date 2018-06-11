@@ -126,6 +126,9 @@ BOOL RecebeUpdates()
 		case PONTUACAO:
 			break;
 		case ATUALIZACAO:
+		{
+			idJogador = update.mensagensCliente.id;
+		}
 			break;
 		default:
 			break;

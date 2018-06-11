@@ -161,8 +161,14 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		{
 		case IDOK:
 		{
-			if(!JOGANDO_CLI)
-				Login(hWnd);	
+			//if (!JOGANDO_CLI) {
+			//	Login(hWnd);
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
+
+				EnableWindow(GetParent(hWnd), TRUE);
+				EndDialog(hWnd, 0);
+				break;
+			//}
 		}
 
 		break;
@@ -217,6 +223,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case ID_INCIARJOGO:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1_Jogar), hWnd, DialogConfigurar);
+
+			
 			break;
 		case ID_SAIR:
 
