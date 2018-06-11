@@ -96,7 +96,7 @@ int CALLBACK WinMain(
 		szTitle,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		1500, 800,
+		500, 500,
 		NULL,
 		NULL,
 		hInstance,
@@ -173,7 +173,11 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				IniciaDefenders();
 				RecebeConfiguracao(hWnd);
 				jogo->CicloDeVida = ASSOCIACAO;
+				EnableWindow(GetParent(hWnd), TRUE);
+				EndDialog(hWnd, 0);
 			}
+			EnableWindow(GetParent(hWnd), TRUE);
+			EndDialog(hWnd, 0);
 		
 		}
 
@@ -231,7 +235,12 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		case IDOK:
 		{
 			if (jogo->CicloDeVida == ASSOCIACAO) {
-				jogo->CicloDeVida = INICIO_CICLO_JOGO;
+				jogo->CicloDeVida = DECORRER;
+				SetEvent(hEvento);
+				ResetEvent(hEvento);
+				ReleaseMutex(hMutexJogo);
+				EnableWindow(GetParent(hWnd), TRUE);
+				EndDialog(hWnd, 0);
 			}
 			else
 				break;

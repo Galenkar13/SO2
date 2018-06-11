@@ -187,7 +187,32 @@ DWORD WINAPI  EnviaUpdateCliente() {
 		_tprintf(TEXT(" ALTURA %d \n"), jogo->Dados.nDefenders);
 
 
-		if (jogo->CicloDeVida == ASSOCIACAO) {
+		switch (jogo->CicloDeVida)
+		{
+		case ASSOCIACAO:
+			WriteFile(
+				hPipe[update.mensagensCliente.id],     // pipe handle 
+				(void*)&update,     // message 
+				sizeof(update),		// message length 
+				&cbWritten,         // bytes written 
+				&overlWr);
+			break;
+		case DECORRER:
+			for (int j = 0; j < index; j++) {
+				WriteFile(
+					hPipe[j],     // pipe handle 
+					(void*)&update,     // message 
+					sizeof(update),		// message length 
+					&cbWritten,         // bytes written 
+					&overlWr);
+				break;
+		case FINAL:
+			break;
+		default:
+			break;
+		}
+
+	/*	if (jogo->CicloDeVida == ASSOCIACAO) {
 
 			WriteFile(
 				hPipe[update.mensagensCliente.id],     // pipe handle 
@@ -195,9 +220,9 @@ DWORD WINAPI  EnviaUpdateCliente() {
 				sizeof(update),		// message length 
 				&cbWritten,         // bytes written 
 				&overlWr);          // overlapped 
-
+*/
 		}
-		else
+		/*else
 			if (jogo->CicloDeVida == DECORRER) {
 				for (int j = 0; j < index; j++) {
 					WriteFile(
@@ -214,9 +239,9 @@ DWORD WINAPI  EnviaUpdateCliente() {
 					(void*)&update,     // message 
 					sizeof(update),		// message length 
 					&cbWritten,         // bytes written 
-					&overlWr);
+					&overlWr); */
 
-		WaitForSingleObject(eventWriteReady, INFINITE);
+		WaitForSingleObject(eventWriteReady, 50);
 
 		BOOL fSuccess = GetOverlappedResult(hPipe, &overlWr, &cbWritten, FALSE);
 
