@@ -24,3 +24,5 @@ DWORD WINAPI ThreadAtualizacao(LPVOID param); //LADO DO GATEWAY
 
 DWORD WINAPI arrancaComunicacaoGateway();
 DWORD WINAPI  EnviaUpdateCliente();
+
+MsgCliGat EnviaUpdate(int estado);

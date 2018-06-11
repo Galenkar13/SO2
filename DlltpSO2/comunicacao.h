@@ -3,7 +3,7 @@
 #include <tchar.h>
 
 #define MAX 50 //tamanho do buffer 
-#define SIZE 20 //dimensão da mensagem e do nome 
+#define SIZE 254 //dimensão da mensagem e do nome 
 #define TAM 254
 //Estes defines tem de estar na dll porque vão ser utilizados para a memoria partilhada jogo
 #define ComprimentoJanelaMAX 100
@@ -18,6 +18,14 @@
 #define MaxPowerUP 10
 #define MaxDisparos 25
 
+typedef enum _TECLA {
+	DIREITA,
+	BAIXO,
+	CIMA,
+	ESQUERDA,
+	ESPAÇO
+} TECLA;
+
 typedef enum _TipoMensagemCLI {
 	INICIO,
 	JOGANDO
@@ -27,7 +35,7 @@ typedef struct _MsgCLI {
 	TipoMensagemCLI tipo_mensagem;
 	int id;
 	TCHAR nome[SIZE];
-	TCHAR tecla[SIZE];
+	TECLA tecla;
 } MsgCLI, *PMsgCLI;
 
 typedef struct _BufferMensagens {
@@ -103,7 +111,7 @@ typedef struct Defender {
 	int vidas;
 	int velocidade;
 	PowerUP powerUP;
-	TCHAR proximaTecla[SIZE]; //para guardar utilixção por ciclo jogo
+	TECLA proxima_jogada; //para guardar utilixção por ciclo jogo
 							  //estado do jogo é possivel
 } Defender;
 
@@ -117,35 +125,32 @@ typedef struct Disparos {
 	int id_disparos;
 } Disparos;
 
-typedef struct _Jogo {
-
+typedef struct _Dados {
 	int altura, comprimento;
-
-	Invader Invaders[MaxInvaders];
 	int nInvaders;
-
-	Defender Defenders[MaxClientes];
 	int nDefenders;
+	int nPowerUPs;
+	int nDisparos;
+	int nVidas;
+	int velocidadeBomba;
+	int velocidadePowerUps;
+	int velocidadeInvaders;
+	int probabilidadeInvaderDisparar;
+	int probabilidadePowerUp;
+} Dados;
+
+typedef struct _Jogo {
+	Invader Invaders[MaxInvaders];
+	
+	Defender Defenders[MaxClientes];
 
 	PowerUP PowerUP[MaxPowerUP];
-	int nPowerUPs;
 
 	Disparos Disparos[MaxDisparos];
-	int nDisparos;
-	//Ver como são os power ups e os disparos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	int nVidas;
-
-	int velocidadeBomba;
-
-	int velocidadePowerUps;
-
-	int velocidadeInvaders;
-
-	int probabilidadeInvaderDisparar;
-
-	int probabilidadePowerUp;
 	CicloDeVida CicloDeVida;
+
+	Dados Dados;
 
 }Jogo, *PJogo;
 

@@ -25,6 +25,8 @@ HINSTANCE hInst;
 
 HWND janela;
 
+
+
 int CALLBACK WinMain(
 	_In_ HINSTANCE hInstance,
 	_In_ HINSTANCE hPrevInstance,
@@ -64,12 +66,10 @@ int CALLBACK WinMain(
 	jogo->CicloDeVida = CRIACAO; //este vai ser para o botao de configuraçao
 
 
+
 	continua = 1;
 	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
 	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
-
-	IniciaDefenders();
-
 
 	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
 	if (hThreadLeitor != NULL)
@@ -170,6 +170,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		case IDOK:
 		{
 			if (jogo->CicloDeVida == CRIACAO) {
+				IniciaDefenders();
 				RecebeConfiguracao(hWnd);
 				jogo->CicloDeVida = ASSOCIACAO;
 			}
@@ -218,7 +219,7 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 		TCHAR text[100];
 
-		_itot_s(jogo->nDefenders + 1, text, 100, 10);
+		_itot_s( jogo->Dados.nDefenders, text, 100, 10);
 
 		SendMessage(GetDlgItem(hWnd, IDC_STATIC_Valor), WM_SETTEXT, 0, (LPARAM)text);
 	}
@@ -312,103 +313,22 @@ void RecebeConfiguracao(HWND hWnd) {
 	TCHAR aux[254];
 
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_nInvaders), aux, sizeof(aux)); //jogo->nInvaders
-	jogo->nInvaders = atoi(aux);
+	jogo->Dados.nInvaders = atoi(aux);
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT2_velocidadeInvader), aux, sizeof(aux)); // Sleep para o movimento dos Invaders 
-	jogo->velocidadeInvaders = atoi(aux);
+	jogo->Dados.velocidadeInvaders = atoi(aux);
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT3_ProbabilidadeInvader), aux, sizeof(aux)); // Probabilidade para verificar se Invaders Disparam ou nao
-	jogo->probabilidadeInvaderDisparar = atoi(aux);
+	jogo->Dados.probabilidadeInvaderDisparar = atoi(aux);
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT4_VelocidadePowerUP), aux, sizeof(aux)); // Sleep para o movimento dos PowerUps 
-	jogo->velocidadePowerUps = atoi(aux);
+	jogo->Dados.velocidadePowerUps = atoi(aux);
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT5_DuracaoPowerUP), aux, sizeof(aux)); // Probabilidade verificacao dos PowerUps
-	jogo->probabilidadePowerUp = atoi(aux);
+	jogo->Dados.probabilidadePowerUp = atoi(aux);
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT6_VelocidadeTiroInvader), aux, sizeof(aux)); // Sleep de mover bombas
-	jogo->velocidadeBomba = atoi(aux);
+	jogo->Dados.velocidadeBomba = atoi(aux);
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT7_NumeroDeVidas), aux, sizeof(aux));
-	jogo->nVidas = atoi(aux);
+	jogo->Dados.nVidas = atoi(aux);
 
 }
-/*
 
-int _tmain(int argc, LPTSTR argv[]) {
-
-
-	DWORD threadId;
-	Input Input;
-
-	TCHAR command[80];
-
-#ifdef UNICODE
-	_setmode(_fileno(stdin), _O_WTEXT);
-	_setmode(_fileno(stdout), _O_WTEXT);
-
-#endif
-
-	jogo->CicloDeVida = CRIACAO; //este vai ser para o botao de configuraçao
-	jogo->CicloDeVida = ASSOCIACAO;
-
-	continua = 1;
-	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
-	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
-
-	IniciaDefenders();
-
-
-	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
-	if (hThreadLeitor != NULL)
-		_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
-	else {
-		_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
-		return -1;
-	}
-
-	_tprintf(TEXT("Command:"));
-	//_tscanf_s(TEXT(" %s"), command, 80);
-	_fgetts(command, 80, stdin);
-	command[_tcslen(command) - 1] = '\0';
-
-
-
-	//Isto futuramente vai estar dentro de um ciclo de jogo
-	//Ter em anteção os niveis na criação desse mesmo ciclo
-
-	Input = RecebeInput();
-
-
-	_tprintf(TEXT("Numero Esquivos: %d \n"), Input.numInvadersEsquivo);
-
-	_tprintf(TEXT("Numero Extras: %d \n"), Input.numInvadersOutros);
-
-	_tprintf(TEXT("Numero Base: %d \n"), Input.numInvadersBase);
-
-	IniciaInvaders(Input); //Inicializa valores dos invaders
-	ColocaInvaders(Input);		//Coloca invaders nas posições correctas
-/*
-	WaitForSingleObject(hMutexJogo, INFINITE);
-
-	jogo->altura = 2345;
-	_tprintf(TEXT("[Event Generated] \n"));
-
-	SetEvent(hEvento);
-	ResetEvent(hEvento);
-	//Sleep(3*1000);
-	ReleaseMutex(hMutexJogo);
-
-
-	for (int j = 0; j < Input.numInvaders; j++) {
-		_tprintf(TEXT("Invader %d: x - %d    y - %d \n"), j, jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
-	}
-
-	CreateThreadsInvaders(); //Cria Thread por tipo de Invader
-
-
-	WaitForSingleObject(hThreadLeitor, INFINITE);
-	_tprintf(TEXT("[Thread Principal %d]Finalmente vou terminar..."), GetCurrentThreadId());
-
-
-	//AcabaSinc();
-	return 0;
-}
-*/
 int CreateThreadsInvaders() {
 
 	hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, 0, 0, NULL);
@@ -429,7 +349,7 @@ DWORD WINAPI ThreadInvadersBase() {
 
 	while (continua == 1) {
 
-		MoveInvaderBase(jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y, MaxInvaders);
+	//	MoveInvaderBase(jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y, MaxInvaders);
 		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
 
 		Sleep(velocidadeInvaderBase);
@@ -531,21 +451,34 @@ void InicializaJogo() { //acabar isto
 
 DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servidor
 	int x = 0;
+	int i;
+	MsgCLI dados;
+
 	while (continua == 1) { //Isto é para passar para a DLL
 
-		TrataMensagem();
-		//	WaitForSingleObject(hMutexJogo, INFINITE);
+		dados = TrataMensagem();
+		
+		//WaitForSingleObject(hMutexJogo, INFINITE);
 		if (jogo->CicloDeVida == ASSOCIACAO) {
-			int i;
 			for (i = 0; i < MaxClientes; i++) {
 				if (jogo->Defenders[i].id_defender == -1) {
-					jogo->Defenders[i].id_defender == i;
-					jogo->nDefenders++;
+					jogo->Defenders[i].id_defender = i;
+					_tcscpy(jogo->Defenders[i].nome, dados.nome);
+					jogo->Dados.nDefenders++;
 					PostMessage(janela, SinalUser, 0, 0);
+					break;
 				}
-				break;
 			}
 		}
+		else
+			if (jogo->CicloDeVida == DECORRER) {
+				for (i = 0; i < jogo->Dados.nDefenders; i++) {
+					if (jogo->Defenders[i].id_defender == dados.id) {
+						jogo->Defenders[i].proxima_jogada = dados.tecla;
+						break;
+					}
+				}
+			}
 				
 		_tprintf(TEXT("[Event Generated] \n"));
 		SetEvent(hEvento);
@@ -559,7 +492,7 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 
 void IniciaDefenders()
 {
-	jogo->nDefenders = -1;
+	jogo->Dados.nDefenders = 0;
 	int i = 0;
 	for (i = 0; i < MaxClientes; i++)
 	{
@@ -571,7 +504,7 @@ void IniciaDefenders()
 		jogo->Defenders[i].pontos = 0;
 		jogo->Defenders[i].velocidade = 0;
 		jogo->Defenders[i].vidas = 0;
-
+		jogo->Defenders[i].proxima_jogada = 0;
 	}
 
 }

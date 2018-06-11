@@ -240,7 +240,7 @@ int Login(HWND hWnd) {
 	TCHAR buff[254];
 	MsgCLI mensagem_cli;
 	mensagem_cli.id = -1;
-	_tcscpy_s(mensagem_cli.tecla, _countof(mensagem_cli.tecla), _T("ZE FINOS"));
+	mensagem_cli.tecla = DIREITA;
 	mensagem_cli.tipo_mensagem = INICIO;
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT_INPUT), mensagem_cli.nome, sizeof(buff));
 	EnviaMensagemCLI(mensagem_cli);

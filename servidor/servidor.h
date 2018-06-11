@@ -8,7 +8,7 @@
 #include <stdlib.h> 
 #include "../DlltpSO2/dll.h"
 
-HANDLE hEvento, hMutexJogo;
+
 
 //#define nVidas 5
 #define SinalUser (WM_USER + 1)

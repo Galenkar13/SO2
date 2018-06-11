@@ -30,11 +30,9 @@ HANDLE MutexRead;
 HANDLE MutexWrite;
 HANDLE hMemoriaBuffer;
 HANDLE hMemoriaJogo;
-HANDLE hMutexJogo;
-HANDLE hMutexJogo2;
 HANDLE hEventActiva;
 HANDLE hEventLida;
-
+HANDLE hEvento, hMutexJogo;
 
 
 //Apenas uma coisa de cada tipo de obecto do jogo porque vai ser feita a actualização 1 a 1
@@ -62,17 +60,12 @@ extern "C" {
 #endif
 
 	DlltpSO2 PBufferMensagens mensagens;
-
 	DlltpSO2 PJogo jogo;
 	//Funções a serem exportadas/importadas
-
-
 	DlltpSO2 int IniciaSinc();
 	DlltpSO2 void AcabaSinc();
-	DlltpSO2 void TrataMensagem();
+	DlltpSO2 MsgCLI TrataMensagem();
 	DlltpSO2 void EnviaMensagem(MsgCLI dados); 
-	DlltpSO2 void MoveInvaderBase(int id, int x, int y, int num);
-	DlltpSO2  void RecebeAtualizacao(int id);
 	DlltpSO2 void IniciaBuffer();
 	DlltpSO2 MsgCliGat EnviaUpdate(int id);
 
