@@ -205,6 +205,7 @@ DWORD WINAPI  EnviaUpdateCliente() {
 					sizeof(update),		// message length 
 					&cbWritten,         // bytes written 
 					&overlWr);
+			}
 				break;
 		case FINAL:
 			break;
@@ -212,50 +213,18 @@ DWORD WINAPI  EnviaUpdateCliente() {
 			break;
 		}
 
-	/*	if (jogo->CicloDeVida == ASSOCIACAO) {
-
-			WriteFile(
-				hPipe[update.mensagensCliente.id],     // pipe handle 
-				(void*)&update,     // message 
-				sizeof(update),		// message length 
-				&cbWritten,         // bytes written 
-				&overlWr);          // overlapped 
-*/
-		}
-		/*else
-			if (jogo->CicloDeVida == DECORRER) {
-				for (int j = 0; j < index; j++) {
-					WriteFile(
-						hPipe[j],     // pipe handle 
-						(void*)&update,     // message 
-						sizeof(update),		// message length 
-						&cbWritten,         // bytes written 
-						&overlWr);
-				}
-			}
-			else
-				WriteFile(
-					hPipe[update.mensagensCliente.id],     // pipe handle 
-					(void*)&update,     // message 
-					sizeof(update),		// message length 
-					&cbWritten,         // bytes written 
-					&overlWr); */
-
 		WaitForSingleObject(eventWriteReady, 50);
 
 		BOOL fSuccess = GetOverlappedResult(hPipe, &overlWr, &cbWritten, FALSE);
 
 		if (!fSuccess || cbWritten < sizeof(update))
-		{
 			_tprintf(TEXT("WriteFile to pipe failed. GLE=%d\n"), GetLastError());
-		}
 		else
-		{
 			_tprintf(TEXT("Enviado UPDATE %d\n"), cbWritten);
-		}
 
+		}
 		//ReleaseMutex(cliente->hMutex);
-	}
+	
 	return 0;
 }
 

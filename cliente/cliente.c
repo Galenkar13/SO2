@@ -34,7 +34,7 @@ int _tmain() {
 static TCHAR szWindowClass[] = _T("win32app");
 
 // The string that appears in the application's title bar.  
-static TCHAR szTitle[] = _T("Win32 Guided Tour Application");
+static TCHAR szTitle[] = _T("Cliente - Space Invaders");
 
 // Forward declarations of functions included in this code module:  
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -61,7 +61,9 @@ int CALLBACK WinMain(
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	//wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	wcex.hIcon = LoadIcon(NULL, IDI_WARNING);
+
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
@@ -75,7 +77,7 @@ int CALLBACK WinMain(
 	{
 		MessageBox(NULL,
 			_T("Call to RegisterClassEx failed!"),
-			_T("Win32 Guided Tour"),
+			_T("Cliente - Space Invaders"),
 			NULL);
 
 		return 1;
@@ -193,9 +195,13 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+	//AQUI E QUE E PARA TRATAR AS TECLAS
+
 	HDC hDC, MemDCExercising;
 	PAINTSTRUCT Ps;
 	HBITMAP bmpCenas;
+	int res = 0;
 
 	switch (message)
 	{
@@ -232,6 +238,70 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		break;
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_LEFT:
+
+			// Process the LEFT ARROW key. 
+
+			break;
+
+		case VK_RIGHT:
+
+			// Process the RIGHT ARROW key. 
+
+			break;
+
+		case VK_UP:
+
+			// Process the UP ARROW key. 
+
+			break;
+
+		case VK_DOWN:
+
+			// Process the DOWN ARROW key. 
+
+			break;
+
+			// Process other non-character keystrokes. 
+
+		default:
+			break;
+		}
+	case WM_CHAR:
+		switch (wParam)
+		{
+
+		case 0x1B:
+
+			// Process an escape. 
+			res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+			if (res == IDYES)
+			{
+				DestroyWindow(hWnd);
+			}
+
+			break;
+
+
+		default:
+
+			// Process displayable characters. 
+
+			break;
+		}
+	case WM_CLOSE:     //FECHAR JANELA (X) //ex2_ficha6 
+
+		res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+		if (res == IDYES)
+		{
+			DestroyWindow(hWnd);
+		}
+
+		break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;

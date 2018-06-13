@@ -10,7 +10,7 @@
 static TCHAR szWindowClass[] = _T("win32app");
 
 // The string that appears in the application's title bar.  
-static TCHAR szTitle[] = _T("Win32 Guided Tour Application");
+static TCHAR szTitle[] = _T("Space Invaders the Game!!");
 
 // Forward declarations of functions included in this code module:  
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -45,12 +45,14 @@ int CALLBACK WinMain(
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	//wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	wcex.hIcon = LoadIcon(NULL, IDI_SHIELD);
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1_Servidor);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(0, 0, 150));
 
 	if (!RegisterClassEx(&wcex))
 	{
@@ -183,7 +185,6 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 		break;
 		case IDCANCEL:
-
 			EnableWindow(GetParent(hWnd), TRUE);
 			EndDialog(hWnd, 0);
 			break;
@@ -270,6 +271,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	HDC hDC, MemDCExercising;
 	PAINTSTRUCT Ps;
 	HBITMAP bmpCenas;
+	int res = 0;
 
 	switch (message)
 	{
@@ -304,6 +306,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_NOVOJOGO_SAIR:
 
 			break;
+		}
+
+		break;
+	case WM_CHAR:
+		switch (wParam)
+		{
+
+		case 0x1B:
+
+			// Process an escape. 
+			res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+			if (res == IDYES)
+			{
+				DestroyWindow(hWnd);
+			}
+
+			break;
+
+
+		default:
+
+			// Process displayable characters. 
+
+			break;
+		}
+	case WM_CLOSE:     //FECHAR JANELA (X) //ex2_ficha6 
+
+		res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+		if (res == IDYES)
+		{
+			DestroyWindow(hWnd);
 		}
 
 		break;
