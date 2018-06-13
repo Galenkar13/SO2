@@ -86,7 +86,7 @@ DWORD WINAPI arrancaComunicacaoCliente()
 BOOL RecebeUpdates()
 {
 	MsgCliGat update;
-	
+	int x = 0;
 	OVERLAPPED overlRd = { 0 };
 	DWORD cbRead;
 
@@ -127,7 +127,7 @@ BOOL RecebeUpdates()
 			break;
 		case ATUALIZACAO:
 		{
-			idJogador = update.mensagensCliente.id;
+			int x = 1;
 		}
 			break;
 		default:

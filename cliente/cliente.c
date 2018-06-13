@@ -202,6 +202,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT Ps;
 	HBITMAP bmpCenas;
 	int res = 0;
+	TECLA tecla;
 
 	switch (message)
 	{
@@ -239,37 +240,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		break;
 	case WM_KEYDOWN:
-		switch (wParam)
-		{
-		case VK_LEFT:
+		if (JOGANDO_CLI) {
+			switch (wParam)
+			{
+			case VK_LEFT:
+				tecla = ESQUERDA;
+				Jogada(hWnd,tecla);
 
-			// Process the LEFT ARROW key. 
+				break;
 
-			break;
+			case VK_RIGHT:
 
-		case VK_RIGHT:
+				tecla = DIREITA;
+				Jogada(hWnd, tecla);
 
-			// Process the RIGHT ARROW key. 
+				break;
 
-			break;
+			case VK_UP:
 
-		case VK_UP:
+				tecla = CIMA;
+				Jogada(hWnd, tecla);
 
-			// Process the UP ARROW key. 
+				break;
 
-			break;
+			case VK_DOWN:
 
-		case VK_DOWN:
+				tecla = BAIXO;
+				Jogada(hWnd, tecla);
 
-			// Process the DOWN ARROW key. 
+				break;
 
-			break;
+				// Process other non-character keystrokes. 
 
-			// Process other non-character keystrokes. 
-
-		default:
-			break;
+			default:
+				break;
+			}
 		}
+		break;
 	case WM_CHAR:
 		switch (wParam)
 		{
@@ -324,4 +331,16 @@ int Login(HWND hWnd) {
 	EnviaMensagemCLI(mensagem_cli);
 	JOGANDO_CLI = TRUE;
 
+	return 0;
+}
+
+int Jogada(HWND hWnd, TECLA x) {
+	TCHAR buff[254];
+	MsgCLI mensagem_cli;
+	mensagem_cli.id = idJogador;
+	mensagem_cli.tecla = x;
+	_tcscpy(mensagem_cli.nome, "oi");
+	mensagem_cli.tipo_mensagem = JOGANDO;
+	EnviaMensagemCLI(mensagem_cli);
+	return 0;
 }

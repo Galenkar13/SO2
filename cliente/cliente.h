@@ -13,3 +13,4 @@ BOOL EnviaMensagemCLI(MsgCLI cli);
 int Login(HWND hWnd);
 int idJogador;
 BOOL JOGANDO_CLI;
+int Jogada(HWND hWnd, TECLA x);
