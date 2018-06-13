@@ -161,14 +161,14 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		{
 		case IDOK:
 		{
-			//if (!JOGANDO_CLI) {
-			//	Login(hWnd);
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
+			if (!JOGANDO_CLI) {
+				Login(hWnd);
+			//DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
 
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
 				break;
-			//}
+			}
 		}
 
 		break;

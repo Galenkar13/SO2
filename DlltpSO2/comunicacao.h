@@ -16,7 +16,8 @@
 #define MaxClientes 10
 #define MaxInvaders 60
 #define MaxPowerUP 10
-#define MaxDisparos 25
+#define MaxnumBombas 25
+#define MaxnumTiros 25
 
 typedef enum _TECLA {
 	DIREITA,
@@ -112,41 +113,53 @@ typedef struct Defender {
 	int velocidade;
 	PowerUP powerUP;
 	TECLA proxima_jogada; //para guardar utilixção por ciclo jogo
-							  //estado do jogo é possivel
+						  //estado do jogo é possivel
 } Defender;
 
 //As bombas e os tiros têm uma estrutura práticamente igual, portanto ficam na mesma estrutura
-typedef struct Disparos {
-	int x, y; //só ocupam um ponto por isso são não se usa area
-	BOOL direcao; //As bombas sobes e os tiros descem
-				  //bombas ficam com 1 tiros ficam com 0 !!!!!!!!!!!! Não sei se não é TRUE or FALSE
-	TCHAR dono[SIZE]; //para incrementar a pontuação dos clientes
+
+typedef struct Bombas {
+	int x, y;
 	int velocidade;
-	int id_disparos;
-} Disparos;
+	int id_bombas;
+	int id_dono;
+}Bombas;
+
+typedef struct Tiros {
+	int x, y;
+	int velocidade;
+	int id_tiros;
+	int id_dono;
+}Tiros;
+
 
 typedef struct _Dados {
 	int altura, comprimento;
 	int nInvaders;
 	int nDefenders;
 	int nPowerUPs;
-	int nDisparos;
+	int nTiros;
+	int nBombas;
 	int nVidas;
 	int velocidadeBomba;
+	int velocidadeTiro;
 	int velocidadePowerUps;
 	int velocidadeInvaders;
+	int velocidadeDefenders;
 	int probabilidadeInvaderDisparar;
 	int probabilidadePowerUp;
 } Dados;
 
 typedef struct _Jogo {
 	Invader Invaders[MaxInvaders];
-	
+
 	Defender Defenders[MaxClientes];
 
 	PowerUP PowerUP[MaxPowerUP];
 
-	Disparos Disparos[MaxDisparos];
+	Tiros Tiros[MaxnumTiros];
+
+	Bombas Bombas[MaxnumBombas];
 
 	CicloDeVida CicloDeVida;
 

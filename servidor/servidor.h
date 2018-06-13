@@ -87,6 +87,10 @@ HANDLE hThreadLeitor;
 HANDLE hThreadInvadersBase;
 HANDLE hThreadInvadersEsquivos;
 HANDLE hThreadsInvadersExtras;
+HANDLE hThreadBombas;
+HANDLE hThreadPowerups;
+HANDLE hThreadTiros;
+HANDLE hTreadJogadores;
 
 
 typedef struct _Input {
@@ -108,15 +112,33 @@ DWORD WINAPI ThreadConsumidor(LPVOID param); //LADO DO GATEWAY
 DWORD WINAPI ThreadInvadersBase();
 DWORD WINAPI ThreadInvadersEsquivo();
 DWORD WINAPI ThreadInvadersExtra();
+DWORD WINAPI ThreadBombas();
+DWORD WINAPI ThreadPowerups();
+DWORD WINAPI ThreadTiros();
+DWORD WINAPI ThreadJogadores();
+
 
 void InicializaJogo();
 void ColocaInvaders(Input inp);
 Input RecebeInput();
 void IniciaDefenders();
+void GeraPowerup(int x, int y);
+
+void IniciaTiros(Input inp);
+void IniciaBombas(Input inp);
+void IniciaDenfenders(Input inp);
+void IniciaPowerUp(Input inp);
+
+int MoveInvaders(int verifica_sentido);
+void TiroAntigueInvader(int id);
+void BombaAntigueDefender(int x, int y);
+void MoveBomba(int id);
+void MoveTiro(int id);
+void MovePowerUp(int id);
 
 void RecebeConfiguracao(HWND hWnd);
 
 void IniciaInvaders(Input inp); //Inicialização dos invaders
- //Função que lança as Threads que vão controlar as funcionalidades dos Invaders
+								//Função que lança as Threads que vão controlar as funcionalidades dos Invaders
 								//Uma Thread por tipo de Invader
 
