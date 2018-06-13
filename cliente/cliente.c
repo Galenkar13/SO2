@@ -234,7 +234,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			
 			break;
 		case ID_SAIR:
-
+			res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+			if (res == IDYES)
+			{
+				DestroyWindow(hWnd);
+			}
 			break;
 		}
 

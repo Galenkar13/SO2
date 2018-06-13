@@ -303,8 +303,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_NOVOJOGO_INCIAR:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1_Iniciar), hWnd, DialogIniciar);
 			break;
-		case ID_NOVOJOGO_SAIR:
-
+		case Sair:
+			res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+			if (res == IDYES)
+			{
+				DestroyWindow(hWnd);
+			}
 			break;
 		}
 
@@ -616,6 +620,7 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 						break;
 					}
 				}
+				break;
 			}
 
 		_tprintf(TEXT("[Event Generated] \n"));
