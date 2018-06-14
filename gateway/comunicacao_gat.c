@@ -246,8 +246,15 @@ MsgCliGat EnviaUpdate(int estado) {
 		break;
 	case DECORRER:
 	{
-		memcpy(&teste.JogoCopia, jogo, sizeof(&jogo));
 		teste.tipo = ATUALIZACAO;
+		memcpy(teste.JogoCopia.Invaders, &jogo->Invaders, sizeof(Invader)*MaxInvaders );
+		memcpy(teste.JogoCopia.Defenders, &jogo->Defenders, sizeof(Defender)*MaxClientes);
+		memcpy(teste.JogoCopia.Bombas, &jogo->Bombas, sizeof(Bombas)*MaxnumBombas);
+		memcpy(teste.JogoCopia.Tiros, &jogo->Tiros, sizeof(Tiros)*MaxnumTiros);
+		memcpy(teste.JogoCopia.PowerUP, &jogo->PowerUP, sizeof(PowerUP)*MaxPowerUP);
+		memcpy(&teste.JogoCopia.Dados, &jogo->Dados, sizeof(Dados));
+		memcpy(&teste.JogoCopia.CicloDeVida, &jogo->CicloDeVida, sizeof(CicloDeVida));
+		
 	}
 		break;
 	default:

@@ -89,9 +89,10 @@ typedef struct Area {
 typedef struct Invader {
 	TipoInvader tipo;
 	int id_invader; //inicializar isto na funcao
-	Area area;
 	int vidas;
 	int velocidade;
+	Area area;
+	
 } Invader;
 
 

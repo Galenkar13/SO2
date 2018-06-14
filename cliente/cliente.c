@@ -71,6 +71,8 @@ int CALLBACK WinMain(
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 
 	JOGANDO_CLI = FALSE;
+	bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
 	//arrancaComunicacaoCliente();
 
 	if (!RegisterClassEx(&wcex))
@@ -273,6 +275,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				Jogada(hWnd, tecla);
 
 				break;
+			case VK_SPACE:
+
+				tecla = ESPAÇO;
+				Jogada(hWnd, tecla);
+
+				break;
 
 				// Process other non-character keystrokes. 
 
@@ -347,4 +355,47 @@ int Jogada(HWND hWnd, TECLA x) {
 	mensagem_cli.tipo_mensagem = JOGANDO;
 	EnviaMensagemCLI(mensagem_cli);
 	return 0;
+}
+
+void DesenharObjeto(HWND hWnd, HDC memDC, RECT rect, HBITMAP hBitmap)
+{
+	BITMAP bitmap;
+	LONG largura = rect.right - rect.left;
+	LONG altura = rect.bottom - rect.top;
+
+	if (!memDC || !hBitmap)
+		return;
+
+	HDC hdc = GetDC(hWnd);
+
+	if (hdc == NULL)
+	{
+		TCHAR buf[256];
+
+		_stprintf_s(buf, 256, TEXT("[CLIENTE] hdc. GLE=%d\n"), GetLastError());
+		OutputDebugString(buf);
+		return;
+	}
+
+	HDC auxDC = CreateCompatibleDC(hdc);
+
+	ReleaseDC(hWnd, hdc);
+
+	if (auxDC == NULL)
+	{
+		TCHAR buf[256];
+
+		_stprintf_s(buf, 256, TEXT("[CLIENTE] CreateCompatibleDC. GLE=%d\n"), GetLastError());
+		OutputDebugString(buf);
+		return;
+	}
+
+	GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&bitmap);
+	SelectObject(auxDC, hBitmap);
+
+	// Redimensionar + Remover fundo
+//	TransparentBlt(memDC, rect.left, rect.top, largura, altura,
+	//	auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
+
+	DeleteDC(auxDC);
 }

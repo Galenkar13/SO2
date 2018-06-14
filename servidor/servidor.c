@@ -172,8 +172,10 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		case IDOK:
 		{
 			if (jogo->CicloDeVida == CRIACAO) {
-				IniciaDefenders();
 				RecebeConfiguracao(hWnd);
+				IniciaDefenders();
+				IniciaInvaders();
+
 				jogo->CicloDeVida = ASSOCIACAO;
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
@@ -652,12 +654,12 @@ void IniciaDefenders()
 
 }
 
-void IniciaInvaders(Input inp) {
-	_tprintf(TEXT("%d"), inp.numInvaders);
+void IniciaInvaders() {
+
 	int i = 0;
-	for (i = 0; i < inp.numInvaders; i++) {
-		if (i < inp.numInvadersBase) {
-			jogo->Invaders[i].area.x = 0;
+	for (i = 0; i < 3; i++) {
+		if (i < 3) {
+			jogo->Invaders[i].area.x = 0 + i;
 			jogo->Invaders[i].area.y = 0;
 			jogo->Invaders[i].area.altura = AlturaInvader;
 			jogo->Invaders[i].area.comprimento = ComprimentoInvader;
@@ -666,29 +668,8 @@ void IniciaInvaders(Input inp) {
 			jogo->Invaders[i].vidas = 1;
 			jogo->Invaders[i].id_invader = i;
 		}
-		else
-			if (i < inp.numInvadersBase + inp.numInvadersEsquivo) {
-				jogo->Invaders[i].area.x = 0;
-				jogo->Invaders[i].area.y = 0;
-				jogo->Invaders[i].area.altura = AlturaInvader;
-				jogo->Invaders[i].area.comprimento = ComprimentoInvader;
-				jogo->Invaders[i].tipo = ESQUIVO;
-				jogo->Invaders[i].velocidade = (int)(velocidadeInvaderBase * 0.40);
-				jogo->Invaders[i].vidas = 3;
-				jogo->Invaders[i].id_invader = i;
-			}
-			else
-			{
-				jogo->Invaders[i].area.x = 0;
-				jogo->Invaders[i].area.y = 0;
-				jogo->Invaders[i].area.altura = 0;
-				jogo->Invaders[i].area.comprimento = 0;
-				jogo->Invaders[i].tipo = EXTRA;
-				jogo->Invaders[i].velocidade = 0;
-				jogo->Invaders[i].vidas = 0;
-				jogo->Invaders[i].id_invader = i;
-			}
 	}
+	jogo->Dados.nInvaders = 2;
 }
 
 void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque ainda não temos o jogo totalmente incializado

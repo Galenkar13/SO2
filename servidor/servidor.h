@@ -138,7 +138,7 @@ void MovePowerUp(int id);
 
 void RecebeConfiguracao(HWND hWnd);
 
-void IniciaInvaders(Input inp); //Inicialização dos invaders
+void IniciaInvaders(); //Inicialização dos invaders
 								//Função que lança as Threads que vão controlar as funcionalidades dos Invaders
 								//Uma Thread por tipo de Invader
 

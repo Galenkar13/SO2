@@ -127,7 +127,9 @@ BOOL RecebeUpdates()
 			break;
 		case ATUALIZACAO:
 		{
-			int x = 1;
+			x = update.JogoCopia.Dados.nInvaders;
+			x = 0;
+			ReproduzirMusica(MUSICA1);
 		}
 			break;
 		default:

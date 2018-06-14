@@ -21,6 +21,9 @@
     <ClCompile Include="comunicacao_cliente.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="som.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cliente.h">
@@ -37,5 +40,10 @@
     <ResourceCompile Include="cliente2.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="space invaders 1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
