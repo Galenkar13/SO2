@@ -26,4 +26,5 @@ int Jogada(HWND hWnd, TECLA x);
 
 MCIERROR ReproduzirSom(LPCTSTR som);
 void ReproduzirMusica(LPCTSTR musica);
-HBITMAP bmpCenas;
+//HBITMAP bmpCenas;
+HWND hWnd;

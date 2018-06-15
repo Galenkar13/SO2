@@ -71,7 +71,7 @@ int CALLBACK WinMain(
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 
 	JOGANDO_CLI = FALSE;
-	bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	//bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
 	//arrancaComunicacaoCliente();
 
@@ -97,7 +97,7 @@ int CALLBACK WinMain(
 					   // NULL: this application does not have a menu bar  
 					   // hInstance: the first parameter from WinMain  
 					   // NULL: not used in this application  
-	HWND hWnd = CreateWindow(
+	hWnd = CreateWindow(
 		szWindowClass,
 		szTitle,
 		WS_OVERLAPPEDWINDOW,
@@ -214,7 +214,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hDC = BeginPaint(hWnd, &Ps);
 
 		// Load the bitmap from the resource
-		bmpCenas = LoadImage(hInst, TEXT("maxresdefault.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 		// Create a memory device compatible with the above DC variable
 		MemDCExercising = CreateCompatibleDC(hDC);
 		// Select the new bitmap
@@ -356,6 +356,23 @@ int Jogada(HWND hWnd, TECLA x) {
 	EnviaMensagemCLI(mensagem_cli);
 	return 0;
 }
+/*
+void Desenha() {
+	RECT rect;
+	HDC hdc = GetDC(hWnd);
+	LONG largura = rect.right - rect.left;
+	LONG altura = rect.bottom - rect.top;
+	HDC auxDC = CreateCompatibleDC(hdc);
+
+	ReleaseDC(hWnd, hdc);
+
+	GetObject(bmpCenas, sizeof(BITMAP), (LPSTR)&bmpCenas);
+	SelectObject(auxDC, bmpCenas);
+
+	DeleteDC(auxDC);
+
+
+}*/
 
 void DesenharObjeto(HWND hWnd, HDC memDC, RECT rect, HBITMAP hBitmap)
 {
