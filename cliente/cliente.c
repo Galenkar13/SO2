@@ -12,7 +12,7 @@
 #include "cliente.h"
 #include "resource2.h"
 
-HBITMAP Bitmaps[7];
+HBITMAP Bitmaps[14];
 HWND hWnd;
 HDC hDC;
 RECT rect;
@@ -79,7 +79,7 @@ int CALLBACK WinMain(
 
 	JOGANDO_CLI = FALSE;
 	
-
+	CarregaBitmaps();
 	//arrancaComunicacaoCliente();
 
 	if (!RegisterClassEx(&wcex))
@@ -358,14 +358,17 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 }
 
 void CarregaBitmaps() {
-	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	/*
-	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	*/
+	Bitmaps[0] = LoadImage(hInst, TEXT("SPBichob.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[1] = LoadImage(hInst, TEXT("SPBichocLaranja.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[2] = LoadImage(hInst, TEXT("SINaveAzul.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[3] = LoadImage(hInst, TEXT("SINaveVermelho.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[4] = LoadImage(hInst, TEXT("SITiroAzul.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[5] = LoadImage(hInst, TEXT("SITiroVermelho.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[6] = LoadImage(hInst, TEXT("SIVida.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[7] = LoadImage(hInst, TEXT("SIGelo.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[8] = LoadImage(hInst, TEXT("SIMais.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[9] = LoadImage(hInst, TEXT("SPBattery.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[10] = LoadImage(hInst, TEXT("SPBeer.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 }
 
 
@@ -435,7 +438,7 @@ void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 	SelectObject(auxDC, hBitmap);
 
 	//Redimensionar + Remover fundo
-	TransparentBlt(hdc, area.x, area.y, 20, 20,
+	TransparentBlt(hdc, area.x, area.y, largura, altura,
 		auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
 
 	//StretchBlt(hdc, 0, 0, 500, 500,
@@ -450,14 +453,21 @@ void VaisDesenharCRL(MsgCliGat update) {
 	int i;
 	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
-			//Chamar desenha aqui
-
+			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {
+				DesenharObjeto(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[3]);
+			}
+			else
+				DesenharObjeto(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[2]);
 		}
 	}
 
 	for (i = 0; i < update.JogoCopia.Dados.nInvaders; i++) {
 		if (update.JogoCopia.Invaders[i].id_invader != -1) {
-			DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[0]);
+			if (i % 2 == 0) {
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[0]);
+			}
+			else
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[1]);
 		}
 	}
 
@@ -469,12 +479,39 @@ void VaisDesenharCRL(MsgCliGat update) {
 
 	for (i = 0; i < update.JogoCopia.Dados.nTiros; i++) {
 		if (update.JogoCopia.Tiros[i].id_tiros != -1) {
-
+			if (update.JogoCopia.Tiros[i].id_dono == idJogador) {
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[5]);
+			}
+			else
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
 		}
 	}
 
 	for (i = 0; i < update.JogoCopia.Dados.nPowerUPs; i++) {
 		if (update.JogoCopia.PowerUP[i].id_powerUP != -1) {
+			switch (update.JogoCopia.PowerUP[i].tipo)
+			{
+			case GELO:
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[7]);
+				break;
+			case BATERIA:
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[9]);
+				break;
+			case ESCUDO:
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[]);
+				break;
+			case MAIS:
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				break;
+			case VIDA:
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				break;
+			case ALCOOL:
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				break;
+			default:
+				break;
+			}
 
 		}
 	}

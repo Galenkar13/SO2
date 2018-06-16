@@ -22,11 +22,11 @@
 #define vidasPlayerMin 1
 
 #define ComprimentoInvaderMax 10
-#define ComprimentoInvader 5
+#define ComprimentoInvader 25
 #define ComprimentoInvaderMin 1
 
 #define AlturaInvaderMax 10
-#define AlturaInvader 5
+#define AlturaInvader 25
 #define AlturaInvaderMin 1
 
 #define velocidadeDisparoMax 10
@@ -59,7 +59,6 @@
 
 #define velocidadeDisparoMax 10
 #define velocidadeDisparo  5
-#define velocidadeDisparoMin 1
 
 
 #define MAXVIDASJOGADOR 10
@@ -90,7 +89,7 @@ HANDLE hThreadsInvadersExtras;
 HANDLE hThreadBombas;
 HANDLE hThreadPowerups;
 HANDLE hThreadTiros;
-HANDLE hTreadJogadores;
+HANDLE hThreadJogadores;
 
 
 typedef struct _Input {
@@ -120,14 +119,15 @@ DWORD WINAPI ThreadJogadores();
 
 void InicializaJogo();
 void ColocaInvaders();
+void ColocaDefenders();
 Input RecebeInput();
 void IniciaDefenders();
 void GeraPowerup(int x, int y);
 
-void IniciaTiros(Input inp);
-void IniciaBombas(Input inp);
-void IniciaDenfenders(Input inp);
-void IniciaPowerUp(Input inp);
+void IniciaTiros();
+void IniciaBombas();
+void IniciaDenfenders();
+void IniciaPowerUp();
 
 int MoveInvaders(int verifica_sentido);
 void TiroAntigueInvader(int id);
@@ -135,6 +135,7 @@ void BombaAntigueDefender(int x, int y);
 void MoveBomba(int id);
 void MoveTiro(int id);
 void MovePowerUp(int id);
+void MoveDefender(int id);
 
 void RecebeConfiguracao(HWND hWnd);
 

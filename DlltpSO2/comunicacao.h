@@ -6,10 +6,10 @@
 #define SIZE 254 //dimensão da mensagem e do nome 
 #define TAM 254
 //Estes defines tem de estar na dll porque vão ser utilizados para a memoria partilhada jogo
-#define ComprimentoJanelaMAX 100
-#define AlturaJanelaMAX 80
-#define ComprimentoJanelaMIN 80
-#define AlturaJanelaMIN 40
+#define ComprimentoJanelaMAX 400
+#define AlturaJanelaMAX 600
+#define ComprimentoJanelaMIN 350
+#define AlturaJanelaMIN 550
 
 
 
@@ -24,7 +24,8 @@ typedef enum _TECLA {
 	BAIXO,
 	CIMA,
 	ESQUERDA,
-	ESPAÇO
+	ESPAÇO,
+	NULA
 } TECLA;
 
 typedef enum _TipoMensagemCLI {
@@ -89,10 +90,9 @@ typedef struct Area {
 typedef struct Invader {
 	TipoInvader tipo;
 	int id_invader; //inicializar isto na funcao
+	Area area;
 	int vidas;
 	int velocidade;
-	Area area;
-	
 } Invader;
 
 
@@ -142,6 +142,7 @@ typedef struct _Dados {
 	int nTiros;
 	int nBombas;
 	int nVidas;
+	int duracaoPowerUp;
 	int velocidadeBomba;
 	int velocidadeTiro;
 	int velocidadePowerUps;

@@ -31,3 +31,4 @@ void ReproduzirMusica(LPCTSTR musica);
 
 
 void VaisDesenharCRL(MsgCliGat update);
+void CarregaBitmaps();

@@ -141,10 +141,7 @@ int CALLBACK WinMain(
 //  WM_PAINT    - Paint the main window  
 //  WM_DESTROY  - post a quit message and return  
 //  
-//  
-
-
-
+//		
 LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
@@ -176,7 +173,6 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				IniciaDefenders();
 				IniciaInvaders();
 				ColocaInvaders();
-
 				jogo->CicloDeVida = ASSOCIACAO;
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
@@ -220,11 +216,6 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case SinalUser:
 	{
 
-		//aux = jogo->nDefenders + 1;
-		//tcscpy_s(aux, _countof(aux),jogo->nDefenders);
-		//sprintf(aux, "%d", jogo->nDefenders + 1);
-		//	_tcscpy_s(aux, _countof(aux), jogo->nDefenders + 1 );
-
 		TCHAR text[100];
 
 		_itot_s(jogo->Dados.nDefenders, text, 100, 10);
@@ -240,6 +231,9 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		{
 			if (jogo->CicloDeVida == ASSOCIACAO) {
 				jogo->CicloDeVida = DECORRER;
+				WaitForSingleObject(hMutexJogo,INFINITE);
+				ColocaDefenders();
+				//CreateThreadsElementosJogo();
 				SetEvent(hEvento);
 				ResetEvent(hEvento);
 				ReleaseMutex(hMutexJogo);
@@ -400,11 +394,11 @@ int CreateThreadsElementosJogo()
 	hThreadBombas = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadBombas, 0, 0, NULL);
 	hThreadPowerups = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadPowerups, 0, 0, NULL);
 	hThreadTiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadTiros, 0, 0, NULL);
-	hTreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
+	hThreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
 
 
 
-	if (hThreadBombas == NULL || hThreadPowerups == NULL || hThreadTiros == NULL || hTreadJogadores == NULL) {
+	if (hThreadBombas == NULL || hThreadPowerups == NULL || hThreadTiros == NULL || hThreadJogadores == NULL) {
 		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
 		return -1;
 	}
@@ -658,8 +652,7 @@ void IniciaDefenders()
 void IniciaInvaders() {
 
 	int i = 0;
-	for (i = 0; i < 3; i++) {
-		if (i < 3) {
+	for (i = 0; i < MaxInvaders; i++) {
 			jogo->Invaders[i].area.x = 0;
 			jogo->Invaders[i].area.y = 0;
 			jogo->Invaders[i].area.altura = AlturaInvader;
@@ -668,9 +661,8 @@ void IniciaInvaders() {
 			jogo->Invaders[i].velocidade = velocidadeInvaderBase;
 			jogo->Invaders[i].vidas = 1;
 			jogo->Invaders[i].id_invader = i;
-		}
 	}
-	jogo->Dados.nInvaders = 2;
+	jogo->Dados.nInvaders = 18;
 }
 
 void ColocaInvaders() { //Esta funcao nao esta automatizada porque ainda não temos o jogo totalmente incializado
@@ -691,7 +683,8 @@ void ColocaInvaders() { //Esta funcao nao esta automatizada porque ainda não tem
 		}
 		else
 		{
-			jogo->Invaders[i].area.x = jogo->Invaders[i - 1].area.x + jogo->Invaders[i].area.comprimento + espaco;
+			//jogo->Invaders[i].area.x = jogo->Invaders[i - 1].area.x + jogo->Invaders[i].area.comprimento + espaco;
+			jogo->Invaders[i].area.x = jogo->Invaders[i - 1].area.x + espaco;
 			if (fila == 1)
 				jogo->Invaders[i].area.y = (fila * espaco);
 			else
@@ -706,9 +699,14 @@ void ColocaInvaders() { //Esta funcao nao esta automatizada porque ainda não tem
 	}
 }
 
-void IniciaTiros(Input inp)
+void IniciaTiros()
 {
+
+
 	int i = 0;
+
+	jogo->Dados.nTiros = 0;
+
 	for (i = 0; i < MaxnumTiros; i++)
 
 	{
@@ -721,9 +719,13 @@ void IniciaTiros(Input inp)
 
 }
 
-void IniciaBombas(Input inp)
+
+void IniciaBombas()
 {
 	int i = 0;
+
+	jogo->Dados.nBombas = 0;
+
 	for (i = 0; i < MaxnumBombas; i++)
 	{
 		jogo->Bombas[i].x = 0;
@@ -735,10 +737,13 @@ void IniciaBombas(Input inp)
 
 }
 
-void IniciaDenfenders(Input inp)
+void IniciaDenfenders()
 {
 
 	int i = 0;
+
+	jogo->Dados.nDefenders = 0;
+
 	for (i = 0; i < MaxClientes; i++)
 	{
 
@@ -754,10 +759,11 @@ void IniciaDenfenders(Input inp)
 
 }
 
-void IniciaPowerUp(Input inp)
+void IniciaPowerUp()
 {
+	jogo->Dados.nPowerUPs = 0;
 
-	for (int i = 0; i < MaxPowerUP; i++)
+	for (int i = 0; i < jogo->Dados.nPowerUPs; i++)
 	{
 		jogo->PowerUP[i].area.altura = 0;
 		jogo->PowerUP[i].area.comprimento = 0;
@@ -766,33 +772,31 @@ void IniciaPowerUp(Input inp)
 		jogo->PowerUP[i].duracao = 0;
 		jogo->PowerUP[i].id_powerUP = -1;
 		jogo->PowerUP[i].velocidade = 0;
-		jogo->PowerUP[i].tipo = 0;
-		//jogo->PowerUP[i].tipo == NULL;
+		jogo->PowerUP[i].tipo = ESCUDO;
 	}
 
 }
 
-void IniciaJogo(Input inp)
+void IniciaJogo()
 {
-	jogo->Dados.altura = 100;
-	jogo->Dados.comprimento = 200;
+	jogo->Dados.altura = 600;
+	jogo->Dados.comprimento = 400;
 	jogo->CicloDeVida = CRIACAO;
-	IniciaInvaders(inp);
-	IniciaTiros(inp);
-	IniciaBombas(inp);
-	IniciaDenfenders(inp);
-	IniciaPowerUp(inp);
+	IniciaInvaders();
+	IniciaTiros();
+	IniciaBombas();
+	IniciaDenfenders();
+	IniciaPowerUp();
 
 }
 
-
-void ColocaDefenders(int numDefenders)
+void ColocaDefenders()
 {
 	int xmin, xmax, ymax;
 	int difx = ComprimentoJanelaMAX / MaxClientes;  //tem de ser o numero de clientes
 	int ymin = (int)(AlturaJanelaMAX * 0.8);
 	int px, py;
-
+	
 
 	for (int i = 0; i < jogo->Dados.nDefenders; i++)     //MaxCliente --> nClientes
 	{
@@ -804,8 +808,18 @@ void ColocaDefenders(int numDefenders)
 		px = rand() % (xmax - xmin) + xmin;
 		py = rand() % (ymax - ymin) + ymin;
 
-		jogo->Defenders[i].area.x = px;
-		jogo->Defenders[i].area.y = py;
+		if (i == 0) {
+			jogo->Defenders[i].area.x = 50;
+			jogo->Defenders[i].area.y = 350;
+			jogo->Defenders[i].area.altura = 40;
+			jogo->Defenders[i].area.comprimento = 40;
+		}
+		if (i == 1) {
+			jogo->Defenders[i].area.x = 250;
+			jogo->Defenders[i].area.y = 350;
+			jogo->Defenders[i].area.altura = 40;
+			jogo->Defenders[i].area.comprimento = 40;
+		}
 
 	}
 
@@ -1046,8 +1060,8 @@ void MoveBomba(int id)
 
 			if (jogo->Defenders[j].vidas == 0)
 			{
-				//chamar funcao para destroir nave
-				//destroiDefender(&jogo->Defenders[j], jogo->Dados.nBombas);
+
+				jogo->Defenders[j].id_defender = -1;
 			}
 
 			if (jogo->Bombas[id].y > AlturaJanelaMAX)  //verifica se chegou ao fim do mapa
@@ -1077,13 +1091,14 @@ void MoveTiro(int id) {
 			jogo->Tiros[id].y <= jogo->Invaders[j].area.y && jogo->Bombas[id].y >= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
 		{
 
-			jogo->Defenders[j].vidas = jogo->Defenders[j].vidas - 1; //retira vidas 
+			jogo->Invaders[j].vidas = jogo->Invaders[j].vidas - 1; //retira vidas 
 
 
-			if (jogo->Defenders[j].vidas == 0)
+			if (jogo->Invaders[j].vidas == 0)
 			{
 				//chamar funcao para destroir nave
 				//destroiInvaders(&jogo->Invaders[j], jogo->Dados.nBombas);
+				jogo->Invaders[j].id_invader = -1;
 			}
 
 			if (jogo->Tiros[id].y > AlturaJanelaMIN)
@@ -1125,6 +1140,99 @@ void MovePowerUp(int id)
 			jogo->PowerUP[id].area.y++;
 		}
 	}
+
+}
+
+void MoveDefender(int id)
+{
+
+	int limY = (int)(AlturaJanelaMAX *0.8);
+
+	for (int i = 0; i < jogo->Dados.nDefenders; i++)
+	{
+		switch (jogo->Defenders[i].proxima_jogada)
+		{
+		case ESQUERDA:
+
+			if (jogo->Defenders[i].area.x < ComprimentoJanelaMIN)
+			{
+				jogo->Defenders[i].area.x = jogo->Defenders[i].area.x;
+			}
+			else
+			{
+				jogo->Defenders->area.x--;
+
+			}
+
+			break;
+		case DIREITA:
+
+			if (jogo->Defenders[i].area.x > ComprimentoJanelaMAX)
+			{
+				jogo->Defenders[i].area.x = jogo->Defenders[i].area.x;
+			}
+			else
+			{
+				jogo->Defenders->area.x++;
+
+			}
+			break;
+		case CIMA:
+
+			if (jogo->Defenders[i].area.y > limY)
+			{
+				jogo->Defenders[i].area.y = jogo->Defenders[i].area.y;
+			}
+			else
+			{
+				jogo->Defenders->area.y--;
+			}
+			break;
+		case BAIXO:
+
+			if (jogo->Defenders[i].area.y < AlturaJanelaMAX)
+			{
+				jogo->Defenders[i].area.y = jogo->Defenders[i].area.y;
+			}
+			else
+			{
+				jogo->Defenders->area.y++;
+			}
+			break;
+
+		case ESPAÇO:
+
+			for (int j = 0; j < jogo->Dados.nTiros; j++)
+			{
+
+				if (jogo->Tiros->id_tiros == -1)
+				{
+					jogo->Tiros->x = jogo->Defenders[j].area.x;
+					jogo->Defenders->area.y = jogo->Defenders->area.y + 2;
+					jogo->Tiros->id_tiros = i;
+					jogo->Tiros->id_dono = jogo->Defenders->id_defender;
+					jogo->Dados.nTiros++;
+				}
+
+			}
+
+			break;
+		default:
+			jogo->Defenders[i].proxima_jogada = NULA;
+			break;
+
+		}
+
+	}
+}
+
+void esperaThreads()
+{
+
+	WaitForSingleObject(hThreadBombas, INFINITE);
+	WaitForSingleObject(hThreadPowerups, INFINITE);
+	WaitForSingleObject(hThreadTiros, INFINITE);
+	WaitForSingleObject(hThreadJogadores, INFINITE);
 
 }
 
