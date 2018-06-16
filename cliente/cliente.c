@@ -12,7 +12,7 @@
 #include "cliente.h"
 #include "resource2.h"
 
-HBITMAP bmpCenas;
+HBITMAP Bitmaps[7];
 HWND hWnd;
 HDC hDC;
 RECT rect;
@@ -78,7 +78,7 @@ int CALLBACK WinMain(
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 
 	JOGANDO_CLI = FALSE;
-	bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	
 
 	//arrancaComunicacaoCliente();
 
@@ -357,6 +357,17 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 	return 0;
 }
 
+void CarregaBitmaps() {
+	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	/*
+	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[0] = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	*/
+}
+
 
 int Login(HWND hWnd) {
 	TCHAR buff[254];
@@ -446,7 +457,7 @@ void VaisDesenharCRL(MsgCliGat update) {
 
 	for (i = 0; i < update.JogoCopia.Dados.nInvaders; i++) {
 		if (update.JogoCopia.Invaders[i].id_invader != -1) {
-			DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, bmpCenas);
+			DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[0]);
 		}
 	}
 
