@@ -67,7 +67,7 @@ MsgCLI TrataMensagem() {
 	aux.id = mensagens->buffer[mensagens->out].id;
 	_tcscpy_s(aux.nome, _countof(aux.nome) , mensagens->buffer[mensagens->out].nome);
 	aux.tipo_mensagem = mensagens->buffer[mensagens->out].tipo_mensagem;
-	
+	aux.tecla = mensagens->buffer[mensagens->out].tecla;
 	//aux.tecla = mensagens->buffer[mensagens->out].tecla;
 	mensagens->buffer[mensagens->out].id = 0;
 	mensagens->contadorMensagens--;

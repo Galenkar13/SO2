@@ -227,15 +227,6 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 
 		SelectObject(hDC, bitmapComp);
 
-		//BITMAP bitmap;
-
-		//GetObject(bmpCenas, sizeof(BITMAP), (LPSTR)&bitmap);
-		//SelectObject(hDC, bmpCenas);
-
-		// Redimensionar + Remover fundo
-		//StretchBlt(hdc2, 0, 0, 500, 500,
-		//	hDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
-
 		ReleaseDC(hWnd, hdc2);
 		break;
 	case WM_PAINT:
@@ -249,6 +240,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 
 		hdc2 = BeginPaint(hWnd, &Ps);
 	//	DesenharObjeto(hDC, area, bmpCenas);
+
 		BitBlt(hdc2, 0, 0, 500, 500, hDC, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &Ps);
 	}
@@ -376,7 +368,7 @@ int Login(HWND hWnd) {
 	TCHAR buff[254];
 	MsgCLI mensagem_cli;
 	mensagem_cli.id = -1;
-	mensagem_cli.tecla = DIREITA;
+	mensagem_cli.tecla = OUTRA_TECLA;
 	mensagem_cli.tipo_mensagem = INICIO;
 	GetWindowText(GetDlgItem(hWnd, IDC_EDIT_INPUT), mensagem_cli.nome, sizeof(buff));
 	EnviaMensagemCLI(mensagem_cli);
@@ -395,23 +387,7 @@ int Jogada(HWND hWnd, TECLA x) {
 	EnviaMensagemCLI(mensagem_cli);
 	return 0;
 }
-/*
-void Desenha() {
-	RECT rect;
-	HDC hdc = GetDC(hWnd);
-	LONG largura = rect.right - rect.left;
-	LONG altura = rect.bottom - rect.top;
-	HDC auxDC = CreateCompatibleDC(hdc);
 
-	ReleaseDC(hWnd, hdc);
-
-	GetObject(bmpCenas, sizeof(BITMAP), (LPSTR)&bmpCenas);
-	SelectObject(auxDC, bmpCenas);
-
-	DeleteDC(auxDC);
-
-
-}*/
 
 void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 {
@@ -451,6 +427,11 @@ void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 
 void VaisDesenharCRL(MsgCliGat update) {
 	int i;
+	rect.bottom = 500;
+	rect.top = 0;
+	rect.left = 0;
+	rect.right = 500;
+	FillRect(hDC,&rect, GetStockObject(BLACK_BRUSH));
 	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
 			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {
@@ -498,7 +479,7 @@ void VaisDesenharCRL(MsgCliGat update) {
 				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[9]);
 				break;
 			case ESCUDO:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[]);
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[9]);
 				break;
 			case MAIS:
 				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);

@@ -234,6 +234,7 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				WaitForSingleObject(hMutexJogo,INFINITE);
 				ColocaDefenders();
 				//CreateThreadsElementosJogo();
+				hThreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
 				SetEvent(hEvento);
 				ResetEvent(hEvento);
 				ReleaseMutex(hMutexJogo);
@@ -537,9 +538,27 @@ DWORD WINAPI ThreadJogadores()
 	while (jogo->CicloDeVida == DECORRER) {
 
 		//funcao para colocarinvaders
+		//WaitForSingleObject(hMutexJogo, INFINITE);
+
+		for (int i = 0; i <jogo->Dados.nDefenders; i++)
+		{
+			if (jogo->Defenders[i].id_defender != -1)
+			{
+			
+				MoveDefender(i);
+				
+
+			}
 
 
-		Sleep(jogo->Dados.velocidadeDefenders);
+
+		}
+	
+		SetEvent(hEvento);
+		ResetEvent(hEvento);
+		ReleaseMutex(hMutexJogo);
+		Sleep(5000);
+		//Sleep(jogo->Dados.velocidadeDefenders);
 	}
 	return 0;
 }
@@ -593,7 +612,7 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 	int i;
 	MsgCLI dados;
 
-	while (continua == 1) { //Isto é para passar para a DLL
+	while (jogo->CicloDeVida != FINAL) { //Isto é para passar para a DLL
 
 		dados = TrataMensagem();
 
@@ -617,7 +636,6 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 						break;
 					}
 				}
-				break;
 			}
 
 		_tprintf(TEXT("[Event Generated] \n"));
@@ -644,7 +662,7 @@ void IniciaDefenders()
 		jogo->Defenders[i].pontos = 0;
 		jogo->Defenders[i].velocidade = 0;
 		jogo->Defenders[i].vidas = 0;
-		jogo->Defenders[i].proxima_jogada = 0;
+		jogo->Defenders[i].proxima_jogada = OUTRA_TECLA;
 	}
 
 }
@@ -1145,85 +1163,87 @@ void MovePowerUp(int id)
 
 void MoveDefender(int id)
 {
+	int z = jogo->Defenders[id].proxima_jogada;
 
 	int limY = (int)(AlturaJanelaMAX *0.8);
 
-	for (int i = 0; i < jogo->Dados.nDefenders; i++)
+	switch (jogo->Defenders[id].proxima_jogada)
 	{
-		switch (jogo->Defenders[i].proxima_jogada)
+	case ESQUERDA:
+	{
+		if (jogo->Defenders[id].area.x < ComprimentoJanelaMIN)
 		{
-		case ESQUERDA:
-
-			if (jogo->Defenders[i].area.x < ComprimentoJanelaMIN)
-			{
-				jogo->Defenders[i].area.x = jogo->Defenders[i].area.x;
-			}
-			else
-			{
-				jogo->Defenders->area.x--;
-
-			}
-
-			break;
-		case DIREITA:
-
-			if (jogo->Defenders[i].area.x > ComprimentoJanelaMAX)
-			{
-				jogo->Defenders[i].area.x = jogo->Defenders[i].area.x;
-			}
-			else
-			{
-				jogo->Defenders->area.x++;
-
-			}
-			break;
-		case CIMA:
-
-			if (jogo->Defenders[i].area.y > limY)
-			{
-				jogo->Defenders[i].area.y = jogo->Defenders[i].area.y;
-			}
-			else
-			{
-				jogo->Defenders->area.y--;
-			}
-			break;
-		case BAIXO:
-
-			if (jogo->Defenders[i].area.y < AlturaJanelaMAX)
-			{
-				jogo->Defenders[i].area.y = jogo->Defenders[i].area.y;
-			}
-			else
-			{
-				jogo->Defenders->area.y++;
-			}
-			break;
-
-		case ESPAÇO:
-
-			for (int j = 0; j < jogo->Dados.nTiros; j++)
-			{
-
-				if (jogo->Tiros->id_tiros == -1)
-				{
-					jogo->Tiros->x = jogo->Defenders[j].area.x;
-					jogo->Defenders->area.y = jogo->Defenders->area.y + 2;
-					jogo->Tiros->id_tiros = i;
-					jogo->Tiros->id_dono = jogo->Defenders->id_defender;
-					jogo->Dados.nTiros++;
-				}
-
-			}
-
-			break;
-		default:
-			jogo->Defenders[i].proxima_jogada = NULA;
-			break;
+			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x;
+		}
+		else
+		{
+			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - 20;
 
 		}
-
 	}
+		break;
+	case DIREITA:
+	{
+		if (jogo->Defenders[id].area.x > ComprimentoJanelaMAX)
+		{
+			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x;
+		}
+		else
+		{
+			
+			jogo->Defenders[id].area.x  = jogo->Defenders[id].area.x + 20;
+
+		}
+	}
+		break;
+	case CIMA:
+	{
+		if (jogo->Defenders[id].area.y > limY)
+		{
+			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y;
+		}
+		else
+		{
+			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - 20;
+		}
+	}
+		break;
+	case BAIXO:
+	{
+		if (jogo->Defenders[id].area.y < AlturaJanelaMAX)
+		{
+			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y;
+		}
+		else
+		{
+			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + 20;
+		}
+	}
+		break;
+
+	case ESPAÇO:
+	{
+		for (int j = 0; j < jogo->Dados.nTiros; j++)
+		{
+
+			if (jogo->Tiros[j].id_tiros == -1)
+			{
+				jogo->Tiros[j].x = jogo->Defenders[id].area.x;
+				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + 2;
+				jogo->Tiros[j].id_tiros = j;
+				jogo->Tiros[j].id_dono = jogo->Defenders->id_defender;
+				jogo->Dados.nTiros++;
+			}
+
+		}
+	}
+		break;
+	default:
+		jogo->Defenders[id].proxima_jogada = NULA;
+		break;
+	}
+
+	jogo->Defenders[id].proxima_jogada = NULA;
 }
 
 void esperaThreads()

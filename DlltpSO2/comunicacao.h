@@ -13,7 +13,7 @@
 
 
 
-#define MaxClientes 10
+#define MaxClientes 20
 #define MaxInvaders 60
 #define MaxPowerUP 10
 #define MaxnumBombas 25
@@ -25,7 +25,8 @@ typedef enum _TECLA {
 	CIMA,
 	ESQUERDA,
 	ESPAÇO,
-	NULA
+	NULA,
+	OUTRA_TECLA
 } TECLA;
 
 typedef enum _TipoMensagemCLI {
