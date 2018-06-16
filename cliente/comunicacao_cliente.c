@@ -129,6 +129,7 @@ BOOL RecebeUpdates()
 		{
 			x = update.JogoCopia.Dados.nInvaders;
 			x = 0;
+			VaisDesenharCRL(update);
 			ReproduzirMusica(MUSICA1);
 		}
 			break;

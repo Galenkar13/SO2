@@ -5,10 +5,17 @@
 #include <stdlib.h>  
 #include <string.h>  
 #include <WinUser.h>
+#include <Windows.h>
 #include <conio.h>
 #include <CommCtrl.h>
+
 #include "cliente.h"
 #include "resource2.h"
+
+HBITMAP bmpCenas;
+HWND hWnd;
+HDC hDC;
+RECT rect;
 
 /*
 int _tmain() {
@@ -52,7 +59,7 @@ int CALLBACK WinMain(
 	_In_ int       nCmdShow
 )
 {
-	 hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
+	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
 	WNDCLASSEX wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -63,15 +70,15 @@ int CALLBACK WinMain(
 	wcex.hInstance = hInstance;
 	//wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 	wcex.hIcon = LoadIcon(NULL, IDI_WARNING);
+	wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(150, 0, 0));
 
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 
 	JOGANDO_CLI = FALSE;
-	//bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
 	//arrancaComunicacaoCliente();
 
@@ -167,7 +174,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		{
 			if (!JOGANDO_CLI) {
 				Login(hWnd);
-			//DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
+				//DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
 
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
@@ -195,51 +202,69 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	return 0;
 }
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap);
+
+LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
 	//AQUI E QUE E PARA TRATAR AS TECLAS
 
-	HDC hDC, MemDCExercising;
+	//HDC hDC, MemDCExercising;
+	//HDC hDC1, MemDCExercising;
+	HDC hdc2 = NULL;
 	PAINTSTRUCT Ps;
-	HBITMAP bmpCenas;
+	//HBITMAP bmpCenas;
 	int res = 0;
 	TECLA tecla;
+	RECT rect;
 
 	switch (message)
 	{
 	case WM_CREATE:
+		hdc2 = GetDC(hWnd);
+		hDC = CreateCompatibleDC(hdc2);
+		HBITMAP bitmapComp = CreateCompatibleBitmap(hdc2, 500, 500);
+
+		SelectObject(hDC, bitmapComp);
+
+		//BITMAP bitmap;
+
+		//GetObject(bmpCenas, sizeof(BITMAP), (LPSTR)&bitmap);
+		//SelectObject(hDC, bmpCenas);
+
+		// Redimensionar + Remover fundo
+		//StretchBlt(hdc2, 0, 0, 500, 500,
+		//	hDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
+
+		ReleaseDC(hWnd, hdc2);
 		break;
 	case WM_PAINT:
-		hDC = BeginPaint(hWnd, &Ps);
+	{
 
-		// Load the bitmap from the resource
-		bmpCenas = LoadImage(hInst, TEXT("space invaders 1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		// Create a memory device compatible with the above DC variable
-		MemDCExercising = CreateCompatibleDC(hDC);
-		// Select the new bitmap
-		SelectObject(MemDCExercising, bmpCenas);
+		Area area;
+		area.x = 0;
+		area.y = 0;
+		area.altura = 250;
+		area.comprimento = 150;
 
-		// Copy the bits from the memory DC into the current dc
-		BitBlt(hDC, 10, 10, 2000, 2000, MemDCExercising, 0, 0, SRCCOPY);
-
-		// Restore the old bitmap
-		DeleteDC(MemDCExercising);
-		DeleteObject(bmpCenas);
+		hdc2 = BeginPaint(hWnd, &Ps);
+		DesenharObjeto(hDC, area, bmpCenas);
+		BitBlt(hdc2, 0, 0, 500, 500, hDC, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &Ps);
+	}
 		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case ID_INCIARJOGO:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1_Jogar), hWnd, DialogConfigurar);
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1_Jogar), hWndJanela, DialogConfigurar);
 
-			
+
 			break;
 		case ID_SAIR:
-			res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+			res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
 			if (res == IDYES)
 			{
-				DestroyWindow(hWnd);
+				DestroyWindow(hWndJanela);
 			}
 			break;
 		}
@@ -251,34 +276,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 			case VK_LEFT:
 				tecla = ESQUERDA;
-				Jogada(hWnd,tecla);
+				Jogada(hWndJanela, tecla);
 
 				break;
 
 			case VK_RIGHT:
 
 				tecla = DIREITA;
-				Jogada(hWnd, tecla);
+				Jogada(hWndJanela, tecla);
 
 				break;
 
 			case VK_UP:
 
 				tecla = CIMA;
-				Jogada(hWnd, tecla);
+				Jogada(hWndJanela, tecla);
 
 				break;
 
 			case VK_DOWN:
 
 				tecla = BAIXO;
-				Jogada(hWnd, tecla);
+				Jogada(hWndJanela, tecla);
 
 				break;
 			case VK_SPACE:
 
 				tecla = ESPAÇO;
-				Jogada(hWnd, tecla);
+				Jogada(hWndJanela, tecla);
 
 				break;
 
@@ -296,10 +321,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 0x1B:
 
 			// Process an escape. 
-			res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+			res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
 			if (res == IDYES)
 			{
-				DestroyWindow(hWnd);
+				DestroyWindow(hWndJanela);
 			}
 
 			break;
@@ -313,10 +338,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_CLOSE:     //FECHAR JANELA (X) //ex2_ficha6 
 
-		res = MessageBox(hWnd, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
+		res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
 		if (res == IDYES)
 		{
-			DestroyWindow(hWnd);
+			DestroyWindow(hWndJanela);
 		}
 
 		break;
@@ -325,7 +350,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return DefWindowProc(hWndJanela, message, wParam, lParam);
 		break;
 	}
 
@@ -374,29 +399,17 @@ void Desenha() {
 
 }*/
 
-void DesenharObjeto(HWND hWnd, HDC memDC, RECT rect, HBITMAP hBitmap)
+void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 {
+	RECT rect;
 	BITMAP bitmap;
-	LONG largura = rect.right - rect.left;
-	LONG altura = rect.bottom - rect.top;
+	LONG largura = area.comprimento;
+	LONG altura = area.altura;
 
-	if (!memDC || !hBitmap)
+	if (!hdc || !hBitmap)
 		return;
-
-	HDC hdc = GetDC(hWnd);
-
-	if (hdc == NULL)
-	{
-		TCHAR buf[256];
-
-		_stprintf_s(buf, 256, TEXT("[CLIENTE] hdc. GLE=%d\n"), GetLastError());
-		OutputDebugString(buf);
-		return;
-	}
 
 	HDC auxDC = CreateCompatibleDC(hdc);
-
-	ReleaseDC(hWnd, hdc);
 
 	if (auxDC == NULL)
 	{
@@ -411,8 +424,49 @@ void DesenharObjeto(HWND hWnd, HDC memDC, RECT rect, HBITMAP hBitmap)
 	SelectObject(auxDC, hBitmap);
 
 	// Redimensionar + Remover fundo
-//	TransparentBlt(memDC, rect.left, rect.top, largura, altura,
-	//	auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
+	//TransparentBlt(hdc, area.x, area.y, 250, 150,
+		//auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
+
+	StretchBlt(hdc, 0, 0, 500, 500,
+		auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
+
+	int err = GetLastError();
 
 	DeleteDC(auxDC);
+}
+
+void VaisDesenharCRL(MsgCliGat update) {
+	int i;
+	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
+		if (update.JogoCopia.Defenders[i].id_defender != -1) {
+			//Chamar desenha aqui
+
+		}
+	}
+
+	for (i = 0; i < update.JogoCopia.Dados.nInvaders; i++) {
+		if (update.JogoCopia.Invaders[i].id_invader != -1) {
+			DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, bmpCenas);
+		}
+	}
+
+	for (i = 0; i < update.JogoCopia.Dados.nBombas; i++) {
+		if (update.JogoCopia.Bombas[i].id_bombas != -1) {
+
+		}
+	}
+
+	for (i = 0; i < update.JogoCopia.Dados.nTiros; i++) {
+		if (update.JogoCopia.Tiros[i].id_tiros != -1) {
+
+		}
+	}
+
+	for (i = 0; i < update.JogoCopia.Dados.nPowerUPs; i++) {
+		if (update.JogoCopia.PowerUP[i].id_powerUP != -1) {
+
+		}
+	}
+
+	InvalidateRect(hWnd, NULL, TRUE);
 }

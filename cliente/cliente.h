@@ -7,6 +7,8 @@ typedef struct _DadosCli {
 	int idCliente;
 } DadosCli;
 
+#define CORTRANSPARENTE RGB(255,255,255)
+
 DWORD WINAPI arrancaComunicacaoCliente();
 HANDLE hThread;
 
@@ -26,5 +28,6 @@ int Jogada(HWND hWnd, TECLA x);
 
 MCIERROR ReproduzirSom(LPCTSTR som);
 void ReproduzirMusica(LPCTSTR musica);
-//HBITMAP bmpCenas;
-HWND hWnd;
+
+
+void VaisDesenharCRL(MsgCliGat update);
