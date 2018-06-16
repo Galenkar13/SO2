@@ -306,7 +306,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 			}
 		}
 		break;
-	case WM_CHAR:
+	/*case WM_CHAR:
 		switch (wParam)
 		{
 
@@ -327,7 +327,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 			// Process displayable characters. 
 
 			break;
-		}
+		}*/
 	case WM_CLOSE:     //FECHAR JANELA (X) //ex2_ficha6 
 
 		res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
@@ -361,6 +361,9 @@ void CarregaBitmaps() {
 	Bitmaps[8] = LoadImage(hInst, TEXT("SIMais.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	Bitmaps[9] = LoadImage(hInst, TEXT("SPBattery.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	Bitmaps[10] = LoadImage(hInst, TEXT("SPBeer.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[11] = LoadImage(hInst, TEXT("SIBomba.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[12] = LoadImage(hInst, TEXT("SIEscudo.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
 }
 
 
@@ -454,7 +457,7 @@ void VaisDesenharCRL(MsgCliGat update) {
 
 	for (i = 0; i < update.JogoCopia.Dados.nBombas; i++) {
 		if (update.JogoCopia.Bombas[i].id_bombas != -1) {
-
+			DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[11]);
 		}
 	}
 
@@ -479,7 +482,7 @@ void VaisDesenharCRL(MsgCliGat update) {
 				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[9]);
 				break;
 			case ESCUDO:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[9]);
+				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[12]);
 				break;
 			case MAIS:
 				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);

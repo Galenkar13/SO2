@@ -52,7 +52,7 @@ int CALLBACK WinMain(
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1_Servidor);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
-	wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(0, 0, 150));
+	wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(0, 0, 0));
 
 	if (!RegisterClassEx(&wcex))
 	{
@@ -279,14 +279,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hDC = BeginPaint(hWnd, &Ps);
 
 		// Load the bitmap from the resource
-		bmpCenas = LoadImage(hInst, TEXT("maxresdefault.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		bmpCenas = LoadImage(hInst, TEXT("SIServer.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 		// Create a memory device compatible with the above DC variable
 		MemDCExercising = CreateCompatibleDC(hDC);
 		// Select the new bitmap
 		SelectObject(MemDCExercising, bmpCenas);
 
 		// Copy the bits from the memory DC into the current dc
-		BitBlt(hDC, 10, 10, 2000, 2000, MemDCExercising, 0, 0, SRCCOPY);
+		BitBlt(hDC,85, 75, 300, 300, MemDCExercising, 0, 0, SRCCOPY);
 
 		// Restore the old bitmap
 		DeleteDC(MemDCExercising);

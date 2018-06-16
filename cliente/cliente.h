@@ -14,7 +14,7 @@ HANDLE hThread;
 
 //#define SOM_PERDEU_JOGO TEXT("play sound/explosion.wav")
 
-#define MUSICA1 TEXT("ufo_lowpitch.wav")
+#define MUSICA1 TEXT("251461__joshuaempyre__arcade-music-loop.wav")
 
 LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
