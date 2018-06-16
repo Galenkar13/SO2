@@ -248,7 +248,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 		area.comprimento = 150;
 
 		hdc2 = BeginPaint(hWnd, &Ps);
-		DesenharObjeto(hDC, area, bmpCenas);
+	//	DesenharObjeto(hDC, area, bmpCenas);
 		BitBlt(hdc2, 0, 0, 500, 500, hDC, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &Ps);
 	}
@@ -423,12 +423,12 @@ void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 	GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&bitmap);
 	SelectObject(auxDC, hBitmap);
 
-	// Redimensionar + Remover fundo
-	//TransparentBlt(hdc, area.x, area.y, 250, 150,
-		//auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
+	//Redimensionar + Remover fundo
+	TransparentBlt(hdc, area.x, area.y, 20, 20,
+		auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
 
-	StretchBlt(hdc, 0, 0, 500, 500,
-		auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
+	//StretchBlt(hdc, 0, 0, 500, 500,
+	//	auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
 
 	int err = GetLastError();
 

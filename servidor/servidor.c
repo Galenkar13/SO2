@@ -175,6 +175,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				RecebeConfiguracao(hWnd);
 				IniciaDefenders();
 				IniciaInvaders();
+				ColocaInvaders();
 
 				jogo->CicloDeVida = ASSOCIACAO;
 				EnableWindow(GetParent(hWnd), TRUE);
@@ -659,7 +660,7 @@ void IniciaInvaders() {
 	int i = 0;
 	for (i = 0; i < 3; i++) {
 		if (i < 3) {
-			jogo->Invaders[i].area.x = 0 + i;
+			jogo->Invaders[i].area.x = 0;
 			jogo->Invaders[i].area.y = 0;
 			jogo->Invaders[i].area.altura = AlturaInvader;
 			jogo->Invaders[i].area.comprimento = ComprimentoInvader;
@@ -672,13 +673,13 @@ void IniciaInvaders() {
 	jogo->Dados.nInvaders = 2;
 }
 
-void ColocaInvaders(Input inp) { //Esta funcao nao esta automatizada porque ainda não temos o jogo totalmente incializado
+void ColocaInvaders() { //Esta funcao nao esta automatizada porque ainda não temos o jogo totalmente incializado
 	int i;
-	int espaco = 2;
+	int espaco = 50;
 	int flag = 1;
 	int fila = 1;
 	int comp = ComprimentoJanelaMAX;
-	for (i = 0; i < inp.numInvaders; i++) {
+	for (i = 0; i < jogo->Dados.nInvaders; i++) {
 
 		if (flag == 1) {
 			jogo->Invaders[i].area.x = espaco;

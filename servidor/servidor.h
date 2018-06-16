@@ -119,7 +119,7 @@ DWORD WINAPI ThreadJogadores();
 
 
 void InicializaJogo();
-void ColocaInvaders(Input inp);
+void ColocaInvaders();
 Input RecebeInput();
 void IniciaDefenders();
 void GeraPowerup(int x, int y);
