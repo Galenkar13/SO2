@@ -25,7 +25,7 @@ HINSTANCE hInst;
 
 HWND janela;
 
-
+int sentido = 0;
 
 int CALLBACK WinMain(
 	_In_ HINSTANCE hInstance,
@@ -237,6 +237,8 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				//CreateThreadsElementosJogo();
 				hThreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
 				hThreadTiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadTiros, 0, 0, NULL);
+				hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, 0, 0, NULL);
+
 				SetEvent(hEvento);
 				ResetEvent(hEvento);
 				ReleaseMutex(hMutexJogo);
@@ -378,15 +380,15 @@ void RecebeConfiguracao(HWND hWnd) {
 int CreateThreadsInvaders() {
 
 	hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, 0, 0, NULL);
-	hThreadInvadersEsquivos = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, 0, 0, NULL);
-	hThreadsInvadersExtras = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersExtra, 0, 0, NULL);
+	//hThreadInvadersEsquivos = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, 0, 0, NULL);
+	//hThreadsInvadersExtras = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersExtra, 0, 0, NULL);
 
-	if (hThreadInvadersBase == NULL || hThreadInvadersEsquivos == NULL || hThreadsInvadersExtras == NULL) {
+/*	if (hThreadInvadersBase == NULL || hThreadInvadersEsquivos == NULL || hThreadsInvadersExtras == NULL) {
 		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
 		return -1;
 	}
 
-	return 0;
+	return 0;*/
 
 }
 
@@ -411,64 +413,28 @@ int CreateThreadsElementosJogo()
 }
 
 
-DWORD WINAPI ThreadInvadersBase() {
-	_tprintf(TEXT("Iniciei Thread Tipo Invaders Base \n"));
+DWORD WINAPI ThreadInvadersBase()
+{
+	_tprintf(TEXT("Iniciei Thread Invaders \n"));
 
-	while (continua == 1) {
+	while (jogo->CicloDeVida == DECORRER) {
 
-		//	MoveInvaderBase(jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y, MaxInvaders);
-		_tprintf(TEXT("%d %d %d \n"), jogo->Invaders[10].id_invader, jogo->Invaders[10].area.x, jogo->Invaders[10].area.y);
+		for (int i = 0; i < jogo->Dados.nInvaders; i++)
+		{
+			if (jogo->Invaders[i].id_invader != -1)
+			{
+			//	jogo->Invaders[i].area.x =	jogo->Invaders[i].area.x + 5;
+				sentido = MoveInvaders(sentido);
+			}
 
-		Sleep(velocidadeInvaderBase);
+		}
+
+		SetEvent(hEvento);
+		ResetEvent(hEvento);
+		ReleaseMutex(hMutexJogo);
+	//	Sleep(jogo->Dados.velocidadeInvaders);
+		Sleep(4000);
 	}
-	return 0;
-}
-
-DWORD WINAPI ThreadInvadersEsquivo() {
-	_tprintf(TEXT("Iniciei Thread Tipo Invaders Esquivo \n"));
-	/*
-	int i;
-	do
-	int contador=0
-	for (i = 0; i < inp.numInvaders; i++) {
-	if (jogo->Invaders[i].tipo == ESQUIVO) {
-	//se tiver espaço
-	//movimentoInvadersEsquivo();
-
-	//calcular probabilidade para disparar
-	//se sim CreatheThreadDisparo();
-
-
-	}
-	Sleep(jogo->Invaders[i]);
-	}
-	while (contador != inp.numInvadersEsquivos)
-
-	*/
-	return 0;
-}
-
-DWORD WINAPI ThreadInvadersExtra() {
-	_tprintf(TEXT("Iniciei Thread Tipo Invaders Extra \n"));
-	/*
-	int i;
-	do
-	int contador=0
-	for (i = 0; i < inp.numInvaders; i++) {
-	if (jogo->Invaders[i].tipo == Extra) {
-	//se tiver espaço
-	//movimentoInvadersEsquivo();
-
-	//calcular probabilidade para disparar
-	//se sim CreatheThreadDisparo();
-
-
-	}
-	Sleep(jogo->Invaders[i]);
-	}
-	while (contador != inp.numInvadersExtra)
-
-	*/
 	return 0;
 }
 
@@ -529,9 +495,11 @@ DWORD WINAPI ThreadTiros()
 
 		}
 
-
+		SetEvent(hEvento);
+		ResetEvent(hEvento);
+		ReleaseMutex(hMutexJogo);
 		//Sleep(jogo->Dados.velocidadeTiro);
-		Sleep(3000);
+		Sleep(500);
 	}
 	return 0;
 }
@@ -560,7 +528,7 @@ DWORD WINAPI ThreadJogadores()
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
-		Sleep(5000);
+		Sleep(2000);
 		//Sleep(jogo->Dados.velocidadeDefenders);
 	}
 	return 0;
@@ -924,11 +892,11 @@ int MoveInvaders(int verifica_sentido)
 	guardaMax.id = -1;
 
 	//DIREITA
-	if (verifica_sentido = 0)
+	if (verifica_sentido == 0)
 	{
 		for (i = 0; i < jogo->Dados.nInvaders; i++)
 		{
-			if (jogo->Invaders->id_invader != -1)
+			if (jogo->Invaders[i].id_invader != -1)
 			{
 
 				if ((jogo->Invaders[i].area.x + jogo->Invaders[i].area.comprimento) > guardaMax.max)  //verifica se a posicao do invader esta mais a direita
@@ -943,7 +911,7 @@ int MoveInvaders(int verifica_sentido)
 	{
 		for (i = 0; i < jogo->Dados.nInvaders; i++)
 		{
-			if (jogo->Invaders->id_invader != -1)
+			if (jogo->Invaders[i].id_invader != -1)
 			{
 
 				if ((jogo->Invaders[i].area.x - jogo->Invaders[i].area.comprimento) > guardaMax.min)  //verifica se a posicao do invader esta mais a esquerda
@@ -956,53 +924,57 @@ int MoveInvaders(int verifica_sentido)
 
 
 	}
-
-	if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento < ComprimentoJanelaMAX)
-	{
-		if (jogo->Invaders->id_invader != -1)
+	if (verifica_sentido == 0) {
+		if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento < ComprimentoJanelaMAX)
 		{
-			for (i = 0; i < jogo->Dados.nInvaders; i++)
-			{
-				jogo->Invaders[i].area.x++;
+			
+				for (i = 0; i < jogo->Dados.nInvaders; i++)
+				{
+					if (jogo->Invaders[i].id_invader != -1)
+					{
+					jogo->Invaders[i].area.x++;
+				}
 			}
+		}
+		else
+		{
+				for (i = 0; i < jogo->Dados.nInvaders; i++)
+				{
+					if (jogo->Invaders[i].id_invader != -1)
+					{
+					jogo->Invaders[i].area.y = jogo->Invaders[i].area.y + 5;
+
+				}
+			}
+			verifica_sentido = 1;
 		}
 	}
 	else
 	{
-		if (jogo->Invaders->id_invader != -1)
+		//if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento < ComprimentoJanelaMIN)
+		if (jogo->Invaders[guardaMax.id].area.x - jogo->Invaders[10].area.comprimento < ComprimentoJanelaMIN)
 		{
-			for (i = 0; i < jogo->Dados.nInvaders; i++)
-			{
-				jogo->Invaders[i].area.y++;
+			
+				for (i = 0; i < jogo->Dados.nInvaders; i++)
+				{
+					if (jogo->Invaders[i].id_invader != -1)
+					{
+					jogo->Invaders[i].area.x--;
+				}
 			}
 		}
-		verifica_sentido = 1;
-	}
-	return verifica_sentido;
-
-
-
-
-	if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento < ComprimentoJanelaMIN)
-	{
-		if (jogo->Invaders->id_invader != -1)
+		else
 		{
-			for (i = 0; i < jogo->Dados.nInvaders; i++)
-			{
-				jogo->Invaders[i].area.x--;
+			
+				for (i = 0; i < jogo->Dados.nInvaders; i++)
+				{
+					if (jogo->Invaders[i].id_invader != -1)
+					{
+					jogo->Invaders[i].area.y++;
+				}
 			}
+			verifica_sentido = 1;
 		}
-	}
-	else
-	{
-		if (jogo->Invaders->id_invader != -1)
-		{
-			for (i = 0; i < jogo->Dados.nInvaders; i++)
-			{
-				jogo->Invaders[i].area.y--;
-			}
-		}
-		verifica_sentido = 1;
 	}
 	return verifica_sentido;
 }
@@ -1238,9 +1210,9 @@ void MoveDefender(int id)
 				jogo->Tiros[j].id_tiros = j;
 				jogo->Tiros[j].id_dono = jogo->Defenders->id_defender;
 				jogo->Dados.nTiros++;
-
+				break;
 			}
-			break;
+
 		}
 	}
 		break;
