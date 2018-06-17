@@ -4,6 +4,7 @@
 #include <strsafe.h>
 #include <fcntl.h>
 #include <Windows.h>
+#include <sddl.h>
 #include <tchar.h>
 #include <fcntl.h>
 #include <io.h>
@@ -120,6 +121,16 @@ DWORD WINAPI arrancaComunicacaoGateway()
 	TCHAR* lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipetestes");
 	HANDLE hPipeAux = INVALID_HANDLE_VALUE, hThreadAux = NULL;
 
+	SECURITY_ATTRIBUTES sa;
+	TCHAR *szSD = TEXT("D:")
+		TEXT("(A;OICI;GA;;;BG)")
+		TEXT("(A;OICI;GA;;;AN)")
+		TEXT("(A;OICI;GA;;;AU)")
+		TEXT("(A;OICI;GA;;;BA)")
+		TEXT("(A;OICI;GA;;;WD)");
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.bInheritHandle = FALSE;
+
 	while (1)
 	{
 		hPipeAux = CreateNamedPipe(
@@ -130,7 +141,7 @@ DWORD WINAPI arrancaComunicacaoGateway()
 			PIPE_BUFFER,
 			PIPE_BUFFER,
 			PIPE_TIMEOUT,
-			NULL); 
+			NULL);  //trocar por &sa
 
 		if (hPipeAux == INVALID_HANDLE_VALUE)
 		{

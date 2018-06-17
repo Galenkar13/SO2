@@ -70,7 +70,7 @@ int CALLBACK WinMain(
 	wcex.hInstance = hInstance;
 	//wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 	wcex.hIcon = LoadIcon(NULL, IDI_WARNING);
-	wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(150, 0, 0));
+	wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(0, 0, 0));
 
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
@@ -439,6 +439,7 @@ void VaisDesenharCRL(MsgCliGat update) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
 			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {
 				DesenharObjeto(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[3]);
+			//	ReproduzirSom(MUSICA2);
 			}
 			else
 				DesenharObjeto(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[2]);

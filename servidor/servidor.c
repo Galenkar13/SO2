@@ -424,14 +424,14 @@ DWORD WINAPI ThreadInvadersBase()
 			if (jogo->Invaders[i].id_invader != -1)
 			{
 			//	jogo->Invaders[i].area.x =	jogo->Invaders[i].area.x + 5;
-				sentido = MoveInvaders(sentido);
+				//sentido = MoveInvaders(sentido);
 			}
 
 		}
 
-		SetEvent(hEvento);
-		ResetEvent(hEvento);
-		ReleaseMutex(hMutexJogo);
+	//	SetEvent(hEvento);
+	//	ResetEvent(hEvento);
+	//	ReleaseMutex(hMutexJogo);
 	//	Sleep(jogo->Dados.velocidadeInvaders);
 		Sleep(4000);
 	}
@@ -515,9 +515,7 @@ DWORD WINAPI ThreadJogadores()
 		{
 			if (jogo->Defenders[i].id_defender != -1)
 			{
-			
-				MoveDefender(i);
-				
+				MoveDefender(i);			
 
 			}
 
@@ -528,7 +526,7 @@ DWORD WINAPI ThreadJogadores()
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
-		Sleep(2000);
+		Sleep(1000);
 		//Sleep(jogo->Dados.velocidadeDefenders);
 	}
 	return 0;
@@ -1081,34 +1079,51 @@ void MoveTiro(int id) {
 
 	for (int j = 0; j < jogo->Dados.nInvaders; j++)
 	{
+		int z = jogo->Tiros[id].area.x;
+		int y = jogo->Invaders[j].area.x;
+		int a = jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento;
+		int b = jogo->Tiros[id].area.y;
+		int c = jogo->Invaders[j].area.y;
+		int d = jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura;
 
-		if (jogo->Tiros[id].area.x >= jogo->Invaders[j].area.x &&jogo->Tiros[id].area.x <= (jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento) &&
-			jogo->Tiros[id].area.y <= jogo->Invaders[j].area.y && jogo->Tiros[id].area.y >= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
+		if (jogo->Tiros[id].area.x >= jogo->Invaders[j].area.x && jogo->Tiros[id].area.x <= (jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento) &&
+			jogo->Tiros[id].area.y >= jogo->Invaders[j].area.y && jogo->Tiros[id].area.y <= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
 		{
+			if (jogo->Invaders[j].id_invader != -1) {
+				jogo->Invaders[j].vidas = jogo->Invaders[j].vidas - 1; //retira vidas 
+				jogo->Tiros[id].id_tiros = -1;
 
-			jogo->Invaders[j].vidas = jogo->Invaders[j].vidas - 1; //retira vidas 
-
-
-			if (jogo->Invaders[j].vidas == 0)
-			{
-				//chamar funcao para destroir nave
-				//destroiInvaders(&jogo->Invaders[j], jogo->Dados.nBombas);
-				jogo->Invaders[j].id_invader = -1;
+				if (jogo->Invaders[j].vidas == 0)
+				{
+					//chamar funcao para destroir nave
+					//destroiInvaders(&jogo->Invaders[j], jogo->Dados.nBombas);
+					jogo->Invaders[j].id_invader = -1;
+					jogo->Defenders[jogo->Tiros[id].id_dono].pontos ++;
+				}
 			}
-
+			break;
+		}/*
+		else
+		{
 			if (jogo->Tiros[id].area.y > AlturaJanelaMIN)
 			{
 				//desaparece do mapa
 				jogo->Tiros[id].id_tiros = -1;
 			}
-		}
-		else
-		{
-			jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
-			break;
+			else {
+				jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
+			}
 
-		}
+		}*/
 	}
+
+	if (jogo->Tiros[id].area.y > AlturaJanelaMIN)
+	{
+		//desaparece do mapa
+		jogo->Tiros[id].id_tiros = -1;
+	}
+	else 
+		jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
 }
 
 void MovePowerUp(int id)
@@ -1149,15 +1164,9 @@ void MoveDefender(int id)
 	{
 	case ESQUERDA:
 	{
-		if (jogo->Defenders[id].area.x < ComprimentoJanelaMIN)
-		{
-			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x;
-		}
-		else
-		{
+	
 			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - 20;
 
-		}
 	}
 		break;
 	case DIREITA:
@@ -1188,14 +1197,8 @@ void MoveDefender(int id)
 		break;
 	case BAIXO:
 	{
-		if (jogo->Defenders[id].area.y < AlturaJanelaMAX)
-		{
-			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y;
-		}
-		else
-		{
 			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + 20;
-		}
+
 	}
 		break;
 
