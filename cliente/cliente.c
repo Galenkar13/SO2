@@ -457,17 +457,17 @@ void VaisDesenharCRL(MsgCliGat update) {
 
 	for (i = 0; i < update.JogoCopia.Dados.nBombas; i++) {
 		if (update.JogoCopia.Bombas[i].id_bombas != -1) {
-			DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[11]);
+//			DesenharObjeto(hDC, update.JogoCopia.Bombas[i].area, Bitmaps[11]);
 		}
 	}
 
 	for (i = 0; i < update.JogoCopia.Dados.nTiros; i++) {
 		if (update.JogoCopia.Tiros[i].id_tiros != -1) {
 			if (update.JogoCopia.Tiros[i].id_dono == idJogador) {
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[5]);
+				DesenharObjeto(hDC, update.JogoCopia.Tiros[i].area, Bitmaps[5]);
 			}
 			else
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.Tiros[i].area, Bitmaps[4]);
 		}
 	}
 
@@ -476,22 +476,22 @@ void VaisDesenharCRL(MsgCliGat update) {
 			switch (update.JogoCopia.PowerUP[i].tipo)
 			{
 			case GELO:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[7]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[7]);
 				break;
 			case BATERIA:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[9]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[9]);
 				break;
 			case ESCUDO:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[12]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[12]);
 				break;
 			case MAIS:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[4]);
 				break;
 			case VIDA:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[4]);
 				break;
 			case ALCOOL:
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[4]);
 				break;
 			default:
 				break;

@@ -172,6 +172,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				RecebeConfiguracao(hWnd);
 				IniciaDefenders();
 				IniciaInvaders();
+				IniciaTiros();
 				ColocaInvaders();
 				jogo->CicloDeVida = ASSOCIACAO;
 				EnableWindow(GetParent(hWnd), TRUE);
@@ -235,6 +236,7 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				ColocaDefenders();
 				//CreateThreadsElementosJogo();
 				hThreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
+				hThreadTiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadTiros, 0, 0, NULL);
 				SetEvent(hEvento);
 				ResetEvent(hEvento);
 				ReleaseMutex(hMutexJogo);
@@ -518,7 +520,7 @@ DWORD WINAPI ThreadTiros()
 	while (jogo->CicloDeVida == DECORRER) {
 
 
-		for (int i = 0; i < MaxnumTiros; i++)
+		for (int i = 0; i < jogo->Dados.nTiros; i++)
 		{
 			if (jogo->Tiros[i].id_tiros != -1)
 			{
@@ -528,7 +530,8 @@ DWORD WINAPI ThreadTiros()
 		}
 
 
-		Sleep(jogo->Dados.velocidadeTiro);
+		//Sleep(jogo->Dados.velocidadeTiro);
+		Sleep(3000);
 	}
 	return 0;
 }
@@ -728,11 +731,13 @@ void IniciaTiros()
 	for (i = 0; i < MaxnumTiros; i++)
 
 	{
-		jogo->Tiros[i].x = 0;
-		jogo->Tiros[i].y = 0;
+		jogo->Tiros[i].area.x = 0;
+		jogo->Tiros[i].area.y = 0;
 		jogo->Tiros[i].velocidade = 0;
 		jogo->Tiros[i].id_tiros = -1;
 		jogo->Tiros[i].id_dono = 0;
+		jogo->Tiros[i].area.comprimento = 5;
+		jogo->Tiros[i].area.altura = 10;
 	}
 
 }
@@ -1008,8 +1013,8 @@ void TiroAntigueInvader(int id)
 	for (int i = 0; i < jogo->Dados.nTiros; i++)
 	{
 
-		if (jogo->Tiros[id].x >= jogo->Invaders[i].area.x && jogo->Tiros[id].x <= (jogo->Invaders[i].area.x + jogo->Invaders[i].area.comprimento) &&
-			jogo->Tiros[id].y <= jogo->Invaders[i].area.y && jogo->Tiros[id].y >= (jogo->Invaders[i].area.y + jogo->Invaders[i].area.altura))
+		if (jogo->Tiros[id].area.x >= jogo->Invaders[i].area.x && jogo->Tiros[id].area.x <= (jogo->Invaders[i].area.x + jogo->Invaders[i].area.comprimento) &&
+			jogo->Tiros[id].area.y <= jogo->Invaders[i].area.y && jogo->Tiros[id].area.y >= (jogo->Invaders[i].area.y + jogo->Invaders[i].area.altura))
 		{
 			jogo->Invaders[i].vidas = jogo->Invaders[i].vidas - 1;
 			//ou morre logo
@@ -1105,8 +1110,8 @@ void MoveTiro(int id) {
 	for (int j = 0; j < jogo->Dados.nInvaders; j++)
 	{
 
-		if (jogo->Tiros[id].x >= jogo->Invaders[j].area.x && jogo->Bombas[id].x <= (jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento) &&
-			jogo->Tiros[id].y <= jogo->Invaders[j].area.y && jogo->Bombas[id].y >= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
+		if (jogo->Tiros[id].area.x >= jogo->Invaders[j].area.x &&jogo->Tiros[id].area.x <= (jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento) &&
+			jogo->Tiros[id].area.y <= jogo->Invaders[j].area.y && jogo->Tiros[id].area.y >= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
 		{
 
 			jogo->Invaders[j].vidas = jogo->Invaders[j].vidas - 1; //retira vidas 
@@ -1119,7 +1124,7 @@ void MoveTiro(int id) {
 				jogo->Invaders[j].id_invader = -1;
 			}
 
-			if (jogo->Tiros[id].y > AlturaJanelaMIN)
+			if (jogo->Tiros[id].area.y > AlturaJanelaMIN)
 			{
 				//desaparece do mapa
 				jogo->Tiros[id].id_tiros = -1;
@@ -1127,7 +1132,8 @@ void MoveTiro(int id) {
 		}
 		else
 		{
-			jogo->Tiros[id].y--;
+			jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
+			break;
 
 		}
 	}
@@ -1223,18 +1229,18 @@ void MoveDefender(int id)
 
 	case ESPAÇO:
 	{
-		for (int j = 0; j < jogo->Dados.nTiros; j++)
+		for (int j = 0; j < MaxnumTiros; j++)
 		{
-
 			if (jogo->Tiros[j].id_tiros == -1)
 			{
-				jogo->Tiros[j].x = jogo->Defenders[id].area.x;
-				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + 2;
+				jogo->Tiros[j].area.x = jogo->Defenders[id].area.x + 17;
+				jogo->Tiros[j].area.y = jogo->Defenders[id].area.y - 20;
 				jogo->Tiros[j].id_tiros = j;
 				jogo->Tiros[j].id_dono = jogo->Defenders->id_defender;
 				jogo->Dados.nTiros++;
-			}
 
+			}
+			break;
 		}
 	}
 		break;

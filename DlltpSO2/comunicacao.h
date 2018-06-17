@@ -128,7 +128,7 @@ typedef struct Bombas {
 }Bombas;
 
 typedef struct Tiros {
-	int x, y;
+	Area area;
 	int velocidade;
 	int id_tiros;
 	int id_dono;
