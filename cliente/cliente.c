@@ -449,14 +449,15 @@ void VaisDesenharCRL(MsgCliGat update) {
 	rect.left = 0;
 	rect.right = 500;
 	FillRect(hDC,&rect, GetStockObject(BLACK_BRUSH));
-	
+	SetTextColor(hDC, RGB(255, 155, 130));
+	SetBkColor(hDC, RGB(0, 0, 0));
 
 	TextOut(hDC, 5, 5, text3, 11);
 	TextOut(hDC, 80, 5, text, 2);
 	TextOut(hDC, 120, 5, text5, 10);
 	TextOut(hDC, 200, 5, text1, 2);
 	TextOut(hDC, 240, 5, text4, 6);
-	TextOut(hDC, 280, 5, text2, 2);
+	TextOut(hDC, 290, 5, text2, 2);
 	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
 			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {
