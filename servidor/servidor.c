@@ -239,7 +239,7 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				hThreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
 				hThreadTiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadTiros, 0, 0, NULL);
 				hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, 0, 0, NULL);
-
+				hThreadPowerups = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadPowerups, 0, 0, NULL);
 				SetEvent(hEvento);
 				ResetEvent(hEvento);
 				ReleaseMutex(hMutexJogo);
@@ -454,7 +454,8 @@ DWORD WINAPI ThreadPowerups()
 
 		}
 
-		Sleep(jogo->Dados.velocidadePowerUps);
+		//Sleep(jogo->Dados.velocidadePowerUps);
+		Sleep(1000);
 	}
 	return 0;
 }
@@ -1083,7 +1084,7 @@ void MoveBomba(int id)
 			jogo->PowerUP[i].id_powerUP = i;
 			jogo->PowerUP[i].area.x = x ;
 			jogo->PowerUP[i].area.y = y + 5;
-			res = rand() % (5 - 0) + 0;
+			res = rand() % (6 - 0) + 0;
 			switch (res) {
 			case 0:
 			{
@@ -1109,13 +1110,13 @@ void MoveBomba(int id)
 
 			case 4:
 			{
-				jogo->PowerUP[i].tipo = VIDA;
+				jogo->PowerUP[i].tipo = ALCOOL;
 			}
 			break;
 
 			case 5:
 			{
-				jogo->PowerUP[i].tipo = ALCOOL;
+				jogo->PowerUP[i].tipo = VIDA;
 			}
 			break;
 			}
@@ -1190,6 +1191,31 @@ void MovePowerUp(int id)
 			jogo->PowerUP[id].area.y++;
 		}
 	}
+
+
+	for (int j = 0; j < jogo->Dados.nDefenders; j++)
+	{
+		if (jogo->PowerUP[id].area.x >= jogo->Defenders[j].area.x && jogo->PowerUP[id].area.x <= (jogo->Defenders[j].area.x + jogo->Defenders[j].area.comprimento) &&
+			jogo->PowerUP[id].area.y >= jogo->Defenders[j].area.y && jogo->PowerUP[id].area.y <= (jogo->Defenders[j].area.y + jogo->Defenders[j].area.altura))
+		{
+			if (jogo->Defenders[j].id_defender != -1) {
+				
+				jogo->PowerUP[id].id_powerUP= -1;
+				jogo->Defenders[j].powerUP.tipo = jogo->PowerUP[id].tipo;
+				jogo->Defenders[j].powerUP.duracao = 30;
+				
+			}
+			break;
+		}
+	}
+
+	if (jogo->PowerUP[id].area.y > AlturaJanelaMAX)
+	{
+		//desaparece do mapa
+		jogo->PowerUP[id].id_powerUP = -1;
+	}
+	else
+		jogo->PowerUP[id].area.y = jogo->PowerUP[id].area.y + 5;
 
 }
 
