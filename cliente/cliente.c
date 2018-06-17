@@ -486,13 +486,13 @@ void VaisDesenharCRL(MsgCliGat update) {
 				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[12]);
 				break;
 			case MAIS:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[8]);
 				break;
 			case VIDA:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[6]);
 				break;
 			case ALCOOL:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[4]);
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[10]);
 				break;
 			default:
 				break;

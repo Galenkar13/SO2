@@ -173,6 +173,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				IniciaDefenders();
 				IniciaInvaders();
 				IniciaTiros();
+				IniciaPowerUp();
 				ColocaInvaders();
 				jogo->CicloDeVida = ASSOCIACAO;
 				EnableWindow(GetParent(hWnd), TRUE);
@@ -499,7 +500,7 @@ DWORD WINAPI ThreadTiros()
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
 		//Sleep(jogo->Dados.velocidadeTiro);
-		Sleep(500);
+		Sleep(100);
 	}
 	return 0;
 }
@@ -752,16 +753,16 @@ void IniciaPowerUp()
 {
 	jogo->Dados.nPowerUPs = 0;
 
-	for (int i = 0; i < jogo->Dados.nPowerUPs; i++)
+	for (int i = 0; i < MaxPowerUP; i++)
 	{
-		jogo->PowerUP[i].area.altura = 0;
-		jogo->PowerUP[i].area.comprimento = 0;
+		jogo->PowerUP[i].area.altura = 30;
+		jogo->PowerUP[i].area.comprimento = 30;
 		jogo->PowerUP[i].area.x = 0;
 		jogo->PowerUP[i].area.y = 0;
 		jogo->PowerUP[i].duracao = 0;
 		jogo->PowerUP[i].id_powerUP = -1;
 		jogo->PowerUP[i].velocidade = 0;
-		jogo->PowerUP[i].tipo = ESCUDO;
+		jogo->PowerUP[i].tipo = OUTRO;
 	}
 
 }
@@ -1075,6 +1076,54 @@ void MoveBomba(int id)
 
 }
 
+ void CriaPowerUp(int x, int y) {
+	int res;
+	for (int i = 0; i < jogo->Dados.nPowerUPs; i++) {
+		if (jogo->PowerUP[i].id_powerUP == -1) {
+			jogo->PowerUP[i].id_powerUP = i;
+			jogo->PowerUP[i].area.x = x ;
+			jogo->PowerUP[i].area.y = y + 5;
+			res = rand() % (5 - 0) + 0;
+			switch (res) {
+			case 0:
+			{
+				jogo->PowerUP[i].tipo = ESCUDO;
+
+			}
+			break;
+			case 1:
+			{
+				jogo->PowerUP[i].tipo = GELO;
+			}
+			break;
+			case 2:
+			{
+				jogo->PowerUP[i].tipo = BATERIA;
+			}
+			break;
+			case 3:
+			{
+				jogo->PowerUP[i].tipo = MAIS;
+			}
+			break;
+
+			case 4:
+			{
+				jogo->PowerUP[i].tipo = VIDA;
+			}
+			break;
+
+			case 5:
+			{
+				jogo->PowerUP[i].tipo = ALCOOL;
+			}
+			break;
+			}
+		}
+	}
+
+}
+
 void MoveTiro(int id) {
 
 	for (int j = 0; j < jogo->Dados.nInvaders; j++)
@@ -1099,22 +1148,12 @@ void MoveTiro(int id) {
 					//destroiInvaders(&jogo->Invaders[j], jogo->Dados.nBombas);
 					jogo->Invaders[j].id_invader = -1;
 					jogo->Defenders[jogo->Tiros[id].id_dono].pontos ++;
+					jogo->Dados.nPowerUPs++;
+					CriaPowerUp(jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
 				}
 			}
 			break;
-		}/*
-		else
-		{
-			if (jogo->Tiros[id].area.y > AlturaJanelaMIN)
-			{
-				//desaparece do mapa
-				jogo->Tiros[id].id_tiros = -1;
-			}
-			else {
-				jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
-			}
-
-		}*/
+		}
 	}
 
 	if (jogo->Tiros[id].area.y > AlturaJanelaMIN)

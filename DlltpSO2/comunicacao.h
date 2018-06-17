@@ -15,9 +15,9 @@
 
 #define MaxClientes 20
 #define MaxInvaders 60
-#define MaxPowerUP 10
+#define MaxPowerUP 30
 #define MaxnumBombas 25
-#define MaxnumTiros 25
+#define MaxnumTiros 50
 
 typedef enum _TECLA {
 	DIREITA,
