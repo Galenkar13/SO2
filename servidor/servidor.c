@@ -801,13 +801,13 @@ void ColocaDefenders()
 
 		if (i == 0) {
 			jogo->Defenders[i].area.x = 50;
-			jogo->Defenders[i].area.y = 350;
+			jogo->Defenders[i].area.y = 400;
 			jogo->Defenders[i].area.altura = 40;
 			jogo->Defenders[i].area.comprimento = 40;
 		}
 		if (i == 1) {
 			jogo->Defenders[i].area.x = 250;
-			jogo->Defenders[i].area.y = 350;
+			jogo->Defenders[i].area.y = 400;
 			jogo->Defenders[i].area.altura = 40;
 			jogo->Defenders[i].area.comprimento = 40;
 		}
@@ -824,7 +824,7 @@ void GeraPowerup(int x, int y)
 	{
 		jogo->PowerUP[i].area.x = x;
 		jogo->PowerUP[i].area.y = y;
-
+		srand(time(NULL));
 		res = rand() % (6 - 0) + 0;
 
 		switch (res) {
@@ -1157,7 +1157,7 @@ void MoveTiro(int id) {
 		}
 	}
 
-	if (jogo->Tiros[id].area.y > AlturaJanelaMIN)
+	if (jogo->Tiros[id].area.y < AlturaJanelaMIN)
 	{
 		//desaparece do mapa
 		jogo->Tiros[id].id_tiros = -1;
@@ -1223,49 +1223,47 @@ void MoveDefender(int id)
 {
 	int z = jogo->Defenders[id].proxima_jogada;
 
-	int limY = (int)(AlturaJanelaMAX *0.8);
+	int limY = (int)(500 * 0.8);
 
 	switch (jogo->Defenders[id].proxima_jogada)
 	{
 	case ESQUERDA:
 	{
-	
-			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - 20;
+		if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
+		{
+			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
+		}
 
 	}
-		break;
+	break;
 	case DIREITA:
 	{
-		if (jogo->Defenders[id].area.x > ComprimentoJanelaMAX)
+		if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
 		{
-			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x;
+			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
 		}
-		else
-		{
-			
-			jogo->Defenders[id].area.x  = jogo->Defenders[id].area.x + 20;
 
-		}
 	}
-		break;
+	break;
 	case CIMA:
 	{
-		if (jogo->Defenders[id].area.y > limY)
+		if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
 		{
-			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y;
-		}
-		else
-		{
-			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - 20;
+			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
 		}
 	}
-		break;
+
+	break;
 	case BAIXO:
 	{
-			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + 20;
+
+		if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
+		{
+			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
+		}
 
 	}
-		break;
+	break;
 
 	case ESPAÇO:
 	{
@@ -1283,7 +1281,7 @@ void MoveDefender(int id)
 
 		}
 	}
-		break;
+	break;
 	default:
 		jogo->Defenders[id].proxima_jogada = NULA;
 		break;

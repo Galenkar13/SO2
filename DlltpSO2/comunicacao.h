@@ -6,10 +6,12 @@
 #define SIZE 254 //dimensão da mensagem e do nome 
 #define TAM 254
 //Estes defines tem de estar na dll porque vão ser utilizados para a memoria partilhada jogo
-#define ComprimentoJanelaMAX 400
-#define AlturaJanelaMAX 600
-#define ComprimentoJanelaMIN 350
-#define AlturaJanelaMIN 550
+#define ComprimentoJanelaMAX 500
+#define AlturaJanelaMAX 500
+#define ComprimentoJanelaMIN 0
+#define AlturaJanelaMIN 0
+
+#define movimento 20
 
 
 
