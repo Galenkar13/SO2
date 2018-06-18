@@ -1,7 +1,11 @@
 #define DlltpSO2_EXPORTS 
 #include <windows.h>
-#include <fcntl.h>
+
 #include "dll.h"
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <io.h>
 #include "comunicacao.h"
 
 
@@ -40,10 +44,12 @@ void AcabaSinc() {
 void EnviaMensagem(MsgCLI dados){
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
 	WaitForSingleObject(MutexRead, INFINITE);
-	_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados.nome);
-	mensagens->buffer[mensagens->out].id = dados.id;
-	mensagens->buffer[mensagens->out].tipo_mensagem = dados.tipo_mensagem;
-	mensagens->buffer[mensagens->out].tecla = dados.tecla;
+	//_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados.nome);
+	//mensagens->buffer[mensagens->out].id = dados.id;
+	//mensagens->buffer[mensagens->out].tipo_mensagem = dados.tipo_mensagem;
+	//mensagens->buffer[mensagens->out].tecla = dados.tecla;
+	int x = mensagens->out;
+	memcpy(&mensagens->buffer[mensagens->out], &dados,sizeof(MsgCLI));
 	//_tcscpy_s(mensagens->buffer[mensagens->out].tecla, (sizeof(TCHAR)* TAM), dados.tecla);
 	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
 
@@ -85,13 +91,13 @@ void IniciaBuffer() {
 	mensagens->in = 0;
 	mensagens->out = 0;
 	mensagens->contadorMensagens = 0;
-
+/*
 	for (i = 0; i < MAX; i++) {
 		mensagens->buffer[i].id = 0;
 		mensagens->buffer[i].tipo_mensagem = '0';
 		_tcscpy(mensagens->buffer[i].nome, TEXT("nada"));
 		mensagens->buffer[i].tecla = ESPAÇO;
-	}
+	}*/
 }
 
 

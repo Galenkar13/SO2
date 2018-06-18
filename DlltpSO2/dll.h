@@ -17,8 +17,8 @@
 #define DlltpSO2 __declspec(dllimport)
 #endif
 
-#define MAX 50 //tamanho do buffer 
-#define SIZE 20 //dimensão da mensagem e do nome 
+//#define MAX 500 //tamanho do buffer 
+//#define SIZE 20 //dimensão da mensagem e do nome 
 #define mPartilhadaMensagens TEXT("memPartilhadaMensagens")
 #define TAMANHOBUFFER sizeof(BufferMensagens)
 

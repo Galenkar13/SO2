@@ -385,7 +385,7 @@ int Jogada(HWND hWnd, TECLA x) {
 	MsgCLI mensagem_cli;
 	mensagem_cli.id = idJogador;
 	mensagem_cli.tecla = x;
-	_tcscpy(mensagem_cli.nome, "oi");
+	_tcscpy(mensagem_cli.nome, TEXT("oi"));
 	mensagem_cli.tipo_mensagem = JOGANDO;
 	EnviaMensagemCLI(mensagem_cli);
 	return 0;
