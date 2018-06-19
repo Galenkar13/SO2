@@ -481,7 +481,7 @@ void VaisDesenharCRL(MsgCliGat update) {
 
 	for (i = 0; i < update.JogoCopia.Dados.nBombas; i++) {
 		if (update.JogoCopia.Bombas[i].id_bombas != -1) {
-//			DesenharObjeto(hDC, update.JogoCopia.Bombas[i].area, Bitmaps[11]);
+			DesenharObjeto(hDC, update.JogoCopia.Bombas[i].area, Bitmaps[11]);
 		}
 	}
 

@@ -124,6 +124,7 @@ Input RecebeInput();
 void IniciaDefenders();
 void GeraPowerup(int x, int y);
 
+void AtiraBomba();
 void IniciaTiros();
 void IniciaBombas();
 void IniciaDenfenders();

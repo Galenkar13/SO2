@@ -123,10 +123,9 @@ typedef struct Defender {
 //As bombas e os tiros têm uma estrutura práticamente igual, portanto ficam na mesma estrutura
 
 typedef struct Bombas {
-	int x, y;
+	Area area;
 	int velocidade;
 	int id_bombas;
-	int id_dono;
 }Bombas;
 
 typedef struct Tiros {
