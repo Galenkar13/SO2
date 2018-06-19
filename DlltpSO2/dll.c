@@ -19,8 +19,6 @@ int IniciaSinc() {
 	SemaforoLer = CreateSemaphore(NULL, 0, MAX, TEXT("Semáforo Pode Escrever")); //is
 	hEventActiva = CreateEvent(NULL,TRUE, FALSE, TEXT("EventoManda"));
 	hEventLida = CreateEvent(NULL,TRUE, FALSE, TEXT("EventoRecebe"));
-	//hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
-    //hMutexJogo = CreateMutex(NULL, FALSE, TEXT("GoMutex"));
 
 	if (SemaforoEscrever == NULL || SemaforoLer == NULL || MutexRead == NULL || MutexWrite == NULL || hEventActiva == NULL || hEventLida == NULL) {
 		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
@@ -44,14 +42,10 @@ void AcabaSinc() {
 void EnviaMensagem(MsgCLI dados){
 	WaitForSingleObject(SemaforoEscrever, INFINITE);
 	WaitForSingleObject(MutexRead, INFINITE);
-	//_tcscpy_s(mensagens->buffer[mensagens->out].nome, (sizeof(TCHAR)* TAM), dados.nome);
-	//mensagens->buffer[mensagens->out].id = dados.id;
-	//mensagens->buffer[mensagens->out].tipo_mensagem = dados.tipo_mensagem;
-	//mensagens->buffer[mensagens->out].tecla = dados.tecla;
+
 	int x = mensagens->out;
 	memcpy(&mensagens->buffer[mensagens->out], &dados,sizeof(MsgCLI));
-	//_tcscpy_s(mensagens->buffer[mensagens->out].tecla, (sizeof(TCHAR)* TAM), dados.tecla);
-	//_tprintf(TEXT(" NOME  %s\n"), mensagens->buffer[mensagens->out].nome);
+
 
 	_tprintf(_TEXT("Mensagem: %s \n"), mensagens->buffer[mensagens->out].nome);
 
@@ -91,13 +85,6 @@ void IniciaBuffer() {
 	mensagens->in = 0;
 	mensagens->out = 0;
 	mensagens->contadorMensagens = 0;
-/*
-	for (i = 0; i < MAX; i++) {
-		mensagens->buffer[i].id = 0;
-		mensagens->buffer[i].tipo_mensagem = '0';
-		_tcscpy(mensagens->buffer[i].nome, TEXT("nada"));
-		mensagens->buffer[i].tecla = ESPAÇO;
-	}*/
 }
 
 
@@ -109,15 +96,11 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif
 	BOOL primeiroProcesso;
-	// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
+
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		// MENSAGENS
-		//PBufferMensagens mensagens = NULL;
-		//PJogo jogo = NULL;
 		
-		//mensagens = NULL;
 
 		primeiroProcesso = GetLastError() != ERROR_ALREADY_EXISTS;
 
@@ -171,7 +154,7 @@ BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved)
 		break;
 	case DLL_THREAD_DETACH:
 		break;
-	case DLL_PROCESS_DETACH: // apenas limpa memória quando todos os processos fecharem
+	case DLL_PROCESS_DETACH: 
 		AcabaSinc();
 		break;
 	}

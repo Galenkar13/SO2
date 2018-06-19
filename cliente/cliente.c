@@ -333,6 +333,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 		res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
 		if (res == IDYES)
 		{
+
 			DestroyWindow(hWndJanela);
 		}
 
@@ -390,6 +391,7 @@ int Jogada(HWND hWnd, TECLA x) {
 	EnviaMensagemCLI(mensagem_cli);
 	return 0;
 }
+
 
 
 void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)

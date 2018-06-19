@@ -72,11 +72,7 @@
 int CreateThreadsInvaders();
 
 
-//PBufferMensagens mensagens = NULL;
-//PJogo jogo = NULL;
 
-
-//Estrutura "servidor" que leva o ponteiro do Jogo , Input Handlers e o tal continua
 
 
 int continua = 0; //variavel temporaria enquanto não está defenido ciclo jogo

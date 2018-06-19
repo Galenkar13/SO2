@@ -18,21 +18,8 @@
 #define PIPE_TIMEOUT 5000
 #define BUFSIZE 4096
 
-
-
-DWORD WINAPI ThreadAtualizacao(LPVOID param) { //LADO DO GATEWAY
-
-
-	while (1) { //Isto é para passar para a DLL
-	//	RecebeAtualizacao(10);
-	}
-	return 0;
-}
-
 #define PIPE_BUFFER 4096
 #define PIPE_TIMEOUT 5000
-
-//Passar isto para estrutura
 
 int index = 0;
 
@@ -210,12 +197,12 @@ DWORD WINAPI  EnviaUpdateCliente() {
 			break;
 		case DECORRER:
 			for (int j = 0; j < index; j++) {
-				WriteFile(
-					hPipe[j],     // pipe handle 
-					(void*)&update,     // message 
-					sizeof(update),		// message length 
-					&cbWritten,         // bytes written 
-					&overlWr);
+					WriteFile(
+						hPipe[j],     // pipe handle 
+						(void*)&update,     // message 
+						sizeof(update),		// message length 
+						&cbWritten,         // bytes written 
+						&overlWr);
 			}
 				break;
 		case FINAL:
@@ -274,51 +261,3 @@ MsgCliGat EnviaUpdate(int estado) {
 
 	return teste;
 }
-
-/*
-BOOL BroadcastUpdatesCliente(PGATEWAY gateway, UPDATE update)
-{
-	_tprintf(TEXT("[GATEWAY] A enviar update aos clientes\n"));
-
-	for (int i = 0; i < gateway->clientesLigados; i++) {
-		if (gateway->clientes[i] != NULL && gateway->clientes[i]->hPipe != INVALID_HANDLE_VALUE) {
-			if (update.tipo != _IDJOGADOR || update.idJogador == gateway->clientes[i]->idJogador)
-			{
-				EnviaUpdateCliente(gateway->clientes[i], update);
-			}
-		}
-	}
-
-	return FALSE;
-}
-
-
-DWORD WINAPI LeUpdateServidor(LPVOID param)
-{
-	PGATEWAY gateway = (PGATEWAY)param;
-
-	while (gateway->continuar) {
-		UPDATE update = LeProximoUpdate();
-
-		BroadcastUpdatesCliente(gateway, update);
-	}
-
-	return 0;
-}
-
-BOOL InicializaThreadsUpdates()
-{
-	_tprintf(TEXT("[GATEWAY] A criar thread para receber updates do servidor \n"));
-
-	hThreadLeUpdates = CreateThread(NULL, 0, LeUpdateServidor, gateway, 0, NULL);
-
-	if (gateway->hThreadLeUpdates == NULL)
-	{
-		_tprintf(TEXT("[GATEWAY] Ocorreu um erro ( %d ) \n"), GetLastError());
-		return FALSE;
-	}
-
-	_tprintf(TEXT("[GATEWAY] Thread criada: receber updates do servidor \n"));
-
-	return TRUE;
-}*/

@@ -3,12 +3,6 @@
 #include <tchar.h>
 #include "comunicacao.h"
 
-//Definir uma constante para facilitar a leitura do protótipo da função
-
-//Esta macro é definida pelo sistema caso estejamos na DLL (<DLL_IMP>_EXPORTS definida)
-//ou na app (<DLL_IMP>_EXPORTS não definida) onde DLL_IMP é o nome deste projeto
-
-//
 
 
 #ifdef DlltpSO2_EXPORTS 
@@ -17,8 +11,7 @@
 #define DlltpSO2 __declspec(dllimport)
 #endif
 
-//#define MAX 500 //tamanho do buffer 
-//#define SIZE 20 //dimensão da mensagem e do nome 
+
 #define mPartilhadaMensagens TEXT("memPartilhadaMensagens")
 #define TAMANHOBUFFER sizeof(BufferMensagens)
 
@@ -33,15 +26,6 @@ HANDLE hMemoriaJogo;
 HANDLE hEventActiva;
 HANDLE hEventLida;
 HANDLE hEvento, hMutexJogo;
-
-
-//Apenas uma coisa de cada tipo de obecto do jogo porque vai ser feita a actualização 1 a 1
-
-
-
-//Gateway manda para o cliente uma estrutura com uma cena de cada
-//e actualiza a cada alteraçaao 
-
 
 
 typedef enum _Direcao {
