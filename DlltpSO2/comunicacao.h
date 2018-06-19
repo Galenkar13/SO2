@@ -152,7 +152,6 @@ typedef struct _Dados {
 	int velocidadeDefenders;
 	int probabilidadeInvaderDisparar;
 	int probabilidadePowerUp;
-	int tempoPowerUPS;
 	int nivel;
 } Dados;
 

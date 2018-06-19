@@ -760,7 +760,7 @@ void IniciaInvaders() {
 			jogo->Invaders[i].vidas = 1;
 			jogo->Invaders[i].id_invader = i;
 	}
-	jogo->Dados.nInvaders = 1;
+	//jogo->Dados.nInvaders = 1;
 	jogo->Dados.nivel = 1;
 }
 
