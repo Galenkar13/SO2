@@ -13,6 +13,10 @@
 #define IDC_EDIT6_VelocidadeTiroInvader 1007
 #define IDC_EDIT7_NumeroDeVidas         1008
 #define IDC_STATIC_Valor                1010
+#define IDC_EDIT1_ProbDropPowerUP       1011
+#define IDC_EDIT2_VelocidadeDefender    1012
+#define IDC_EDIT1                       1013
+#define IDC_EDIT1_velocidadeTiroDefender 1013
 #define ID_NOVOJOGO_CONFIGURAR          40001
 #define ID_NOVOJOGO_INCIAR              40002
 #define ID_NOVOJOGO_SAIR                40003
@@ -24,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        106
 #define _APS_NEXT_COMMAND_VALUE         40005
-#define _APS_NEXT_CONTROL_VALUE         1011
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

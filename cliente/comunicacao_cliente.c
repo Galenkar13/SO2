@@ -124,6 +124,7 @@ BOOL RecebeUpdates()
 		}
 			break;
 		case PONTUACAO:
+			vaisDesenharTop10(update);
 			break;
 		case ATUALIZACAO:
 		{

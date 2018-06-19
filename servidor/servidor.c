@@ -142,6 +142,60 @@ int CALLBACK WinMain(
 //  WM_DESTROY  - post a quit message and return  
 //  
 //		
+
+BOOL RecebeConfiguracao(HWND hWnd) {
+	TCHAR aux[254];
+
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_nInvaders), aux, sizeof(aux)); //jogo->nInvaders
+	jogo->Dados.nInvaders = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT2_velocidadeInvader), aux, sizeof(aux)); // Sleep para o movimento dos Invaders 
+	jogo->Dados.velocidadeInvaders = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT3_ProbabilidadeInvader), aux, sizeof(aux)); // Probabilidade para verificar se Invaders Disparam ou nao
+	jogo->Dados.probabilidadeInvaderDisparar = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT4_VelocidadePowerUP), aux, sizeof(aux)); // Sleep para o movimento dos PowerUps 
+	jogo->Dados.velocidadePowerUps = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT5_DuracaoPowerUP), aux, sizeof(aux)); // Probabilidade verificacao dos PowerUps
+	jogo->Dados.duracaoPowerUp = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT6_VelocidadeTiroInvader), aux, sizeof(aux)); // Sleep de mover bombas
+	jogo->Dados.velocidadeBomba = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT7_NumeroDeVidas), aux, sizeof(aux));
+	jogo->Dados.nVidas = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_ProbDropPowerUP), aux, sizeof(aux));
+	jogo->Dados.probabilidadePowerUp = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT2_VelocidadeDefender), aux, sizeof(aux));
+	jogo->Dados.velocidadeDefenders = _wtoi(aux);
+	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_velocidadeTiroDefender), aux, sizeof(aux));
+	jogo->Dados.velocidadeTiro = _wtoi(aux);
+
+	if (jogo->Dados.nInvaders <= MAXNUMEROINVADERS &&
+		jogo->Dados.velocidadeInvaders <= velocidadeInvaderBaseMax &&
+		jogo->Dados.probabilidadeInvaderDisparar <= ProbabilidadeTiroInvaderMax &&
+		jogo->Dados.velocidadePowerUps <= velocidadePowerUPMax &&
+		jogo->Dados.duracaoPowerUp <= DuracaoPowerUPMax &&
+		jogo->Dados.velocidadeTiro <= MAXVELOCIDADETIRODEFENDER &&
+		jogo->Dados.nVidas <= MAXVIDASJOGADOR &&
+		jogo->Dados.velocidadeBomba <= velocidadeDisparoInvaderMax &&
+		jogo->Dados.probabilidadePowerUp <= MAXPROBABILIDADEPOWERUP &&
+		jogo->Dados.velocidadeDefenders <= MAXVELOCIDADEDEFENDER &&
+		jogo->Dados.nInvaders >= MINNUMEROINVADERS &&
+		jogo->Dados.velocidadeInvaders >= velocidadeInvaderBaseMin &&
+		jogo->Dados.probabilidadeInvaderDisparar >= ProbabilidadeTiroInvaderMin &&
+		jogo->Dados.velocidadePowerUps >= velocidadePowerUPMin &&
+		jogo->Dados.duracaoPowerUp >= DuracaoPowerUPMin &&
+		jogo->Dados.velocidadeTiro >= MINVELOCIDADETIRODEFENDER &&
+		jogo->Dados.nVidas >= MINVIDASJOGADOR &&
+		jogo->Dados.velocidadeBomba >= velocidadeDisparoInvaderMin && 
+		jogo->Dados.probabilidadePowerUp >= MINPROBABILIDADEPOWERUP &&
+		jogo->Dados.velocidadeDefenders >= MINVELOCIDADEDEFENDER
+		) {
+		return TRUE;
+	}
+
+
+
+	return FALSE;
+}
+
 LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
@@ -151,46 +205,63 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	case WM_INITDIALOG:
 	{
 		TCHAR text[100];
-		_itot_s(10, text, 100, 10);
+		_itot_s(NUMEROINVADERS, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT1_nInvaders), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(velocidadeInvaderBase, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT2_velocidadeInvader), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(ProbabilidadeTiroInvader, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT3_ProbabilidadeInvader), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(velocidadePowerUP, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT4_VelocidadePowerUP), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(DuracaoPowerUP, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT5_DuracaoPowerUP), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(velocidadeDisparoInvader, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT6_VelocidadeTiroInvader), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(VIDASJOGADOR, text, 100, 10);
 		SendMessage(GetDlgItem(hWnd, IDC_EDIT7_NumeroDeVidas), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(PROBABILIDADEPOWERUP, text, 100, 10);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT1_ProbDropPowerUP), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(VELOCIDADEDEFENDER, text, 100, 10);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT2_VelocidadeDefender), WM_SETTEXT, 0, (LPARAM)text);
+		_itot_s(VELOCIDADETIRODEFENDER, text, 100, 10);
+		SendMessage(GetDlgItem(hWnd, IDC_EDIT1_velocidadeTiroDefender), WM_SETTEXT, 0, (LPARAM)text);
 
+		
 	}
 
 	break;
 	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-		case IDOK:
-		{
-			if (jogo->CicloDeVida == CRIACAO) {
-				RecebeConfiguracao(hWnd);
-				IniciaDefenders();
-				IniciaInvaders();
-				IniciaTiros();
-				IniciaPowerUp();
-				IniciaBombas();
-				ColocaInvaders();
-				jogo->CicloDeVida = ASSOCIACAO;
+		if (HIWORD(wParam) == EN_CHANGE) {
+			EnableWindow(GetDlgItem(hWnd, IDOK), RecebeConfiguracao(hWnd));
+		}
+		else
+			switch (LOWORD(wParam))
+			{
+			case IDOK:
+			{
+				if (jogo->CicloDeVida == CRIACAO) {
+					RecebeConfiguracao(hWnd);
+					IniciaDefenders();
+					IniciaInvaders();
+					IniciaTiros();
+					IniciaPowerUp();
+					IniciaBombas();
+					ColocaInvaders();
+					jogo->CicloDeVida = ASSOCIACAO;
+					EnableWindow(GetParent(hWnd), TRUE);
+					EndDialog(hWnd, 0);
+				}
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
+
 			}
-			EnableWindow(GetParent(hWnd), TRUE);
-			EndDialog(hWnd, 0);
 
-		}
-
-		break;
-		case IDCANCEL:
-			EnableWindow(GetParent(hWnd), TRUE);
-			EndDialog(hWnd, 0);
 			break;
-		}
+			case IDCANCEL:
+				EnableWindow(GetParent(hWnd), TRUE);
+				EndDialog(hWnd, 0);
+				break;
+			}
 		break;
 
 	case WM_DESTROY:
@@ -204,6 +275,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 }
 
 
+
 LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	janela = hWnd;
@@ -212,7 +284,11 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	{
 	case WM_INITDIALOG:
 	{
+		TCHAR text[100];
 
+		_itot_s(jogo->Dados.nDefenders, text, 100, 10);
+
+		SendMessage(GetDlgItem(hWnd, IDC_STATIC_Valor), WM_SETTEXT, 0, (LPARAM)text);
 	}
 
 	break;
@@ -361,26 +437,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return 0;
-}
-
-void RecebeConfiguracao(HWND hWnd) {
-	TCHAR aux[254];
-
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_nInvaders), aux, sizeof(aux)); //jogo->nInvaders
-	jogo->Dados.nInvaders = atoi(aux);
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT2_velocidadeInvader), aux, sizeof(aux)); // Sleep para o movimento dos Invaders 
-	jogo->Dados.velocidadeInvaders = atoi(aux);
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT3_ProbabilidadeInvader), aux, sizeof(aux)); // Probabilidade para verificar se Invaders Disparam ou nao
-	jogo->Dados.probabilidadeInvaderDisparar = atoi(aux);
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT4_VelocidadePowerUP), aux, sizeof(aux)); // Sleep para o movimento dos PowerUps 
-	jogo->Dados.velocidadePowerUps = atoi(aux);
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT5_DuracaoPowerUP), aux, sizeof(aux)); // Probabilidade verificacao dos PowerUps
-	jogo->Dados.probabilidadePowerUp = atoi(aux);
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT6_VelocidadeTiroInvader), aux, sizeof(aux)); // Sleep de mover bombas
-	jogo->Dados.velocidadeBomba = atoi(aux);
-	GetWindowText(GetDlgItem(hWnd, IDC_EDIT7_NumeroDeVidas), aux, sizeof(aux));
-	jogo->Dados.nVidas = atoi(aux);
-
 }
 
 int CreateThreadsInvaders() {
@@ -685,7 +741,7 @@ void IniciaDefenders()
 		_tcscpy_s(jogo->Defenders[i].nome, sizeof(jogo->Defenders[i].nome), TEXT("nada"));
 		jogo->Defenders[i].pontos = 0;
 		jogo->Defenders[i].velocidade = 0;
-		jogo->Defenders[i].vidas = 0;
+		jogo->Defenders[i].vidas = 2;
 		jogo->Defenders[i].proxima_jogada = OUTRA_TECLA;
 	}
 
@@ -1224,7 +1280,7 @@ void MoveTiro(int id) {
 		}
 	}
 
-	if (jogo->Tiros[id].area.y < AlturaJanelaMIN)
+	if (jogo->Tiros[id].area.y < AlturaJanelaMIN + 30)
 	{
 		//desaparece do mapa
 		jogo->Tiros[id].id_tiros = -1;

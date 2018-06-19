@@ -14,12 +14,10 @@
 #define SinalUser (WM_USER + 1)
 
 
-#define MinClientes 1
-#define MinInvaders 10
+#define MAXNUMEROINVADERS 40
+#define NUMEROINVADERS 16
+#define MINNUMEROINVADERS 8
 
-#define vidasPlayerMax10
-#define vidasPlayer 5
-#define vidasPlayerMin 1
 
 #define ComprimentoInvaderMax 10
 #define ComprimentoInvader 25
@@ -29,36 +27,25 @@
 #define AlturaInvader 25
 #define AlturaInvaderMin 1
 
-#define velocidadeDisparoMax 10
-#define velocidadeDisparo  5
-#define velocidadeDisparoMin 1
+#define velocidadeDisparoInvaderMax 3000
+#define velocidadeDisparoInvader  1000
+#define velocidadeDisparoInvaderMin 500
 
-#define velocidadeInvaderBaseMax 10
-#define velocidadeInvaderBase 5000 //A esquiva tem velocidadeInvaderBase + (velocidadeInvaderBase*0.10)
-#define velocidadeInvaderBaseMin 1
+#define velocidadeInvaderBaseMax 3000
+#define velocidadeInvaderBase 1000 //A esquiva tem velocidadeInvaderBase + (velocidadeInvaderBase*0.10)
+#define velocidadeInvaderBaseMin 500
 
-#define velocidadePowerUPMax 10
-#define velocidadePowerUP 5
-#define velocidadePowerUPMin 1
+#define velocidadePowerUPMax 3000
+#define velocidadePowerUP 2000
+#define velocidadePowerUPMin 500
 
-#define ProbabilidadeTiroInvaderMax 10
-#define ProbabilidadeTiroInvader 5 //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
-#define ProbabilidadeTiroInvaderMin 1
+#define ProbabilidadeTiroInvaderMax 70
+#define ProbabilidadeTiroInvader 50 //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
+#define ProbabilidadeTiroInvaderMin 40
 
-#define DuracaoPowerUPMax 10
-#define DuracaoPowerUP 5//igual para todos 
-#define DuracaoPowerUPMin 1
-
-#define ProbDisparo 10
-
-#define ProbPowerUP 10
-
-#define velocidadeMax 10
-#define velocidadeDisparo  5
-#define velocidadeDisparoMin 1
-
-#define velocidadeDisparoMax 10
-#define velocidadeDisparo  5
+#define DuracaoPowerUPMax 60000
+#define DuracaoPowerUP 30000//igual para todos 
+#define DuracaoPowerUPMin 20000
 
 
 #define MAXVIDASJOGADOR 10
@@ -66,7 +53,17 @@
 #define MINVIDASJOGADOR 1
 
 
+#define MAXVELOCIDADEDEFENDER 3000
+#define VELOCIDADEDEFENDER 500
+#define MINVELOCIDADEDEFENDER 500
 
+#define MAXPROBABILIDADEPOWERUP 70
+#define PROBABILIDADEPOWERUP 50
+#define MINPROBABILIDADEPOWERUP 40
+
+#define MAXVELOCIDADETIRODEFENDER 3000
+#define VELOCIDADETIRODEFENDER 500
+#define MINVELOCIDADETIRODEFENDER 500
 
 
 int CreateThreadsInvaders();
@@ -134,7 +131,7 @@ void MoveTiro(int id);
 void MovePowerUp(int id);
 void MoveDefender(int id);
 
-void RecebeConfiguracao(HWND hWnd);
+BOOL RecebeConfiguracao(HWND hWnd);
 
 void IniciaInvaders(); //Inicialização dos invaders
 								//Função que lança as Threads que vão controlar as funcionalidades dos Invaders

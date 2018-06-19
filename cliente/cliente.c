@@ -458,13 +458,18 @@ void VaisDesenharCRL(MsgCliGat update) {
 	SetBkColor(hDC, RGB(0, 0, 0));
 
 	TextOut(hDC, 5, 5, text3, 11);
-	TextOut(hDC, 80, 5, text, 2);
+	TextOut(hDC, 80, 5, text2, 2);
 	TextOut(hDC, 120, 5, text5, 10);
 	TextOut(hDC, 200, 5, text1, 2);
 	TextOut(hDC, 240, 5, text4, 6);
-	TextOut(hDC, 290, 5, text2, 2);
+	TextOut(hDC, 290, 5, text, 2);
 	TextOut(hDC, 320, 5, text7, 6);
 	TextOut(hDC, 370, 5, text6, 2);
+
+	if (update.JogoCopia.Defenders[idJogador].vidas == 0) {
+		JOGANDO_CLI = FALSE;
+	}
+
 	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
 			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {
@@ -532,4 +537,39 @@ void VaisDesenharCRL(MsgCliGat update) {
 	}
 
 	InvalidateRect(hWnd, NULL, TRUE);
+}
+
+void vaisDesenharTop10(MsgCliGat update) {
+	int i, vidas, pontos;
+	TCHAR text[10];
+	TCHAR text1[10];
+	TCHAR text2[10];
+	TCHAR text3[] = TEXT("Id Jogador:");
+	TCHAR text4[] = TEXT("vidas:");
+	TCHAR text5[] = TEXT("Pontuacao:");
+
+
+	vidas = update.JogoCopia.Defenders[idJogador].vidas;
+	pontos = update.JogoCopia.Defenders[idJogador].pontos;
+	_itot_s(vidas, text, 10, 10);
+	_itot_s(pontos, text1, 10, 10);
+	_itot_s(idJogador, text2, 10, 10);
+
+	rect.bottom = 500;
+	rect.top = 0;
+	rect.left = 0;
+	rect.right = 500;
+	FillRect(hDC, &rect, GetStockObject(BLACK_BRUSH));
+	SetTextColor(hDC, RGB(255, 155, 130));
+	SetBkColor(hDC, RGB(0, 0, 0));
+
+	TextOut(hDC, 5, 5, text3, 11);
+	TextOut(hDC, 80, 5, text, 2);
+	TextOut(hDC, 120, 5, text5, 10);
+	TextOut(hDC, 200, 5, text1, 2);
+	TextOut(hDC, 240, 5, text4, 6);
+	TextOut(hDC, 290, 5, text2, 2);
+
+	InvalidateRect(hWnd, NULL, TRUE);
+
 }
