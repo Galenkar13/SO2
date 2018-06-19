@@ -320,6 +320,10 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				hThreadPowerups = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadPowerups, 0, 0, NULL);
 				hThreadBombas = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadBombas, 0, 0, NULL);
 
+				if (hThreadBombas == NULL || hThreadPowerups == NULL || hThreadTiros == NULL || hThreadJogadores == NULL || hThreadInvadersBase == NULL) {
+					_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
+					return -1;
+				}
 
 				SetEvent(hEvento);
 				ResetEvent(hEvento);
@@ -479,7 +483,7 @@ DWORD WINAPI ThreadInvadersBase()
 {
 	int flag = 1;
 	_tprintf(TEXT("Iniciei Thread Invaders \n"));
-
+	WaitForSingleObject(hMutexJogo, INFINITE);
 	while (jogo->CicloDeVida == DECORRER) {
 
 
@@ -521,8 +525,8 @@ DWORD WINAPI ThreadInvadersBase()
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
-	//	Sleep(jogo->Dados.velocidadeInvaders);
-		Sleep(2000);
+		Sleep(jogo->Dados.velocidadeInvaders);
+		//Sleep(2000);
 	}
 	return 0;
 }
@@ -548,10 +552,10 @@ DWORD WINAPI ThreadPowerups()
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
 
-		Sleep(2000);
+		//Sleep(2000);
 		//Sleep(jogo->Dados.velocidadeBomba);
 
-		//Sleep(jogo->Dados.velocidadePowerUps);
+		Sleep(jogo->Dados.velocidadePowerUps);
 		//Sleep(1000);
 	}
 	return 0;
@@ -579,8 +583,8 @@ DWORD WINAPI ThreadBombas() {  //adaptar com a estrutura bomba...
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
 
-		Sleep(2000);
-		//Sleep(jogo->Dados.velocidadeBomba);
+	//	Sleep(2000);
+		Sleep(jogo->Dados.velocidadeBomba);
 	}
 	return 0;
 }
@@ -605,8 +609,8 @@ DWORD WINAPI ThreadTiros()
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
-		//Sleep(jogo->Dados.velocidadeTiro);
-		Sleep(100);
+		Sleep(jogo->Dados.velocidadeTiro);
+	//	Sleep(100);
 	}
 	return 0;
 }
@@ -635,38 +639,10 @@ DWORD WINAPI ThreadJogadores()
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
 		ReleaseMutex(hMutexJogo);
-		Sleep(1000);
-		//Sleep(jogo->Dados.velocidadeDefenders);
+		//Sleep(1000);
+		Sleep(jogo->Dados.velocidadeDefenders);
 	}
 	return 0;
-}
-
-Input RecebeInput() {
-	Input aux;
-	//Input dos valores para o Jogo
-	_tprintf(TEXT("Introduza o número de Invaders: \n"));
-	//scanf("%d", &numInvaders);
-	_tscanf_s(TEXT("%d"), &aux.numInvaders);
-
-	if (aux.numInvaders <= 20) {
-		aux.numInvadersEsquivo = 2;
-		aux.numInvadersOutros = 0;
-		aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
-	}
-	else
-		if (aux.numInvaders <= 40) {
-			aux.numInvadersEsquivo = 10;
-			aux.numInvadersOutros = 0;
-			aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
-		}
-		else
-		{
-			aux.numInvadersEsquivo = 20;
-			aux.numInvadersOutros = 0;
-			aux.numInvadersBase = aux.numInvaders - (aux.numInvadersEsquivo + aux.numInvadersOutros);
-		}
-
-	return aux;
 }
 
 void InicializaJogo() { //acabar isto
@@ -741,7 +717,7 @@ void IniciaDefenders()
 		_tcscpy_s(jogo->Defenders[i].nome, sizeof(jogo->Defenders[i].nome), TEXT("nada"));
 		jogo->Defenders[i].pontos = 0;
 		jogo->Defenders[i].velocidade = 0;
-		jogo->Defenders[i].vidas = 2;
+		jogo->Defenders[i].vidas = jogo->Dados.nVidas;
 		jogo->Defenders[i].proxima_jogada = OUTRA_TECLA;
 	}
 
@@ -871,7 +847,7 @@ void IniciaPowerUp()
 		jogo->PowerUP[i].area.comprimento = 30;
 		jogo->PowerUP[i].area.x = 0;
 		jogo->PowerUP[i].area.y = 0;
-		jogo->PowerUP[i].duracao = 0;
+		jogo->PowerUP[i].duracao = jogo->Dados.duracaoPowerUp;
 		jogo->PowerUP[i].id_powerUP = -1;
 		jogo->PowerUP[i].velocidade = 0;
 		jogo->PowerUP[i].tipo = OUTRO;
@@ -1255,8 +1231,19 @@ void MoveBomba(int id)
 
 void MoveTiro(int id) {
 	srand(time(NULL));
+	int x, y, z, k, l, m, i;
+	x = jogo->Tiros[id].area.x;
+	l = jogo->Tiros[id].area.y;
+	i = jogo->Dados.nTiros;
 	for (int j = 0; j < jogo->Dados.nTiros; j++)
 	{
+		
+	
+		y = jogo->Tiros[id].area.x;
+		k = jogo->Invaders[j].area.comprimento;
+	
+		m = jogo->Invaders[j].area.y;
+	
 		if (jogo->Tiros[id].area.x >= jogo->Invaders[j].area.x && jogo->Tiros[id].area.x <= (jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento) &&
 			jogo->Tiros[id].area.y >= jogo->Invaders[j].area.y && jogo->Tiros[id].area.y <= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
 		{
@@ -1266,8 +1253,6 @@ void MoveTiro(int id) {
 
 				if (jogo->Invaders[j].vidas == 0)
 				{
-					//chamar funcao para destroir nave
-					//destroiInvaders(&jogo->Invaders[j], jogo->Dados.nBombas);
 					jogo->Invaders[j].id_invader = -1;
 					jogo->Defenders[jogo->Tiros[id].id_dono].pontos ++;
 					if (rand() % 100 > jogo->Dados.probabilidadePowerUp) {
