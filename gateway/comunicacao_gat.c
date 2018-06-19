@@ -142,7 +142,7 @@ DWORD WINAPI arrancaComunicacaoGateway()
 		if (fConnected)
 		{
 			hPipe[index] = hPipeAux;
-			eventWriteReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+			eventWriteReady = CreateEvent(NULL, TRUE, TRUE, NULL);
      		eventReadReady = CreateEvent(NULL, TRUE, FALSE, NULL);
 			hThreadCliente[index] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeMensagensClientes, (LPVOID)index, 0, NULL);
 			index++;
@@ -160,7 +160,7 @@ DWORD WINAPI arrancaComunicacaoGateway()
 DWORD WINAPI  EnviaUpdateCliente() {
 	DWORD cbWritten = 0;
 	OVERLAPPED overlWr = { 0 };
-	hMutexJogo = OpenMutex(SYNCHRONIZE, FALSE, TEXT("GoMtex"));
+	hMutexJogo = OpenMutex(SYNCHRONIZE, FALSE, TEXT("GoMutex"));
 	hEvento = OpenEvent(SYNCHRONIZE, FALSE, TEXT("GoEvent"));
 	
 	while (1) {
@@ -211,7 +211,7 @@ DWORD WINAPI  EnviaUpdateCliente() {
 			break;
 		}
 
-		WaitForSingleObject(eventWriteReady, 50);
+		WaitForSingleObject(eventWriteReady, INFINITE);
 
 		BOOL fSuccess = GetOverlappedResult(hPipe, &overlWr, &cbWritten, FALSE);
 

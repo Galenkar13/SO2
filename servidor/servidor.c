@@ -70,7 +70,7 @@ int CALLBACK WinMain(
 
 
 	continua = 1;
-	hMutexJogo = CreateMutex(NULL, TRUE, TEXT("GoMutex"));
+	hMutexJogo = CreateMutex(NULL, FALSE, TEXT("GoMutex"));
 	hEvento = CreateEvent(NULL, TRUE, FALSE, TEXT("GoEvent"));
 
 	hThreadLeitor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadConsumidor, NULL, 0, &threadId);
@@ -234,6 +234,7 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		{
 			if (jogo->CicloDeVida == ASSOCIACAO) {
 				jogo->CicloDeVida = DECORRER;
+				ReleaseMutex(hMutexJogo);
 				WaitForSingleObject(hMutexJogo,INFINITE);
 				ColocaDefenders();
 				//CreateThreadsElementosJogo();
@@ -425,6 +426,8 @@ DWORD WINAPI ThreadInvadersBase()
 
 	while (jogo->CicloDeVida == DECORRER) {
 
+
+
 		for (int i = 0; i < jogo->Dados.nInvaders; i++)
 		{
 			
@@ -438,8 +441,6 @@ DWORD WINAPI ThreadInvadersBase()
 
 		}
 	//	WaitForSingleObject(hMutexJogo,INFINITE);
-
-
 		int x = 0;
 		for (int i = 0; i < jogo->Dados.nInvaders; i++) {
 			if (jogo->Invaders[i].id_invader == -1)
@@ -447,11 +448,18 @@ DWORD WINAPI ThreadInvadersBase()
 		}
 
 		if (x == jogo->Dados.nInvaders) {
-			jogo->Dados.nInvaders + 5;
-				//InicializarCenaToda
+			jogo->Dados.nInvaders = jogo->Dados.nInvaders + 5;
+			IniciaInvaders();
+			IniciaTiros();
+			IniciaPowerUp();
+			IniciaBombas();
+			ColocaDefenders();
+			ColocaInvaders();
 
-				jogo->Dados.nivel++;
+			jogo->Dados.nivel++;
 		}
+
+		
 		AtiraBomba();
 
 		SetEvent(hEvento);
@@ -466,6 +474,8 @@ DWORD WINAPI ThreadInvadersBase()
 DWORD WINAPI ThreadPowerups()
 {
 	_tprintf(TEXT("Iniciei Thread PowerUp \n"));
+	WaitForSingleObject(hMutexJogo, INFINITE);
+
 
 	while (jogo->CicloDeVida == DECORRER) {
 
@@ -478,14 +488,23 @@ DWORD WINAPI ThreadPowerups()
 
 		}
 
+		SetEvent(hEvento);
+		ResetEvent(hEvento);
+		ReleaseMutex(hMutexJogo);
+
+		Sleep(2000);
+		//Sleep(jogo->Dados.velocidadeBomba);
+
 		//Sleep(jogo->Dados.velocidadePowerUps);
-		Sleep(1000);
+		//Sleep(1000);
 	}
 	return 0;
 }
 
 DWORD WINAPI ThreadBombas() {  //adaptar com a estrutura bomba...
 	_tprintf(TEXT("Iniciei Thread bomba \n"));
+
+	WaitForSingleObject(hMutexJogo, INFINITE);
 
 	while (jogo->CicloDeVida == DECORRER) {
 
@@ -516,6 +535,7 @@ DWORD WINAPI ThreadTiros()
 
 	while (jogo->CicloDeVida == DECORRER) {
 
+		WaitForSingleObject(hMutexJogo, INFINITE);
 
 		for (int i = 0; i < jogo->Dados.nTiros; i++)
 		{
@@ -541,6 +561,8 @@ DWORD WINAPI ThreadJogadores()
 
 		//funcao para colocarinvaders
 		//WaitForSingleObject(hMutexJogo, INFINITE);
+
+		WaitForSingleObject(hMutexJogo, INFINITE);
 
 		for (int i = 0; i <jogo->Dados.nDefenders; i++)
 		{
@@ -616,6 +638,7 @@ DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servi
 
 		dados = TrataMensagem();
 
+		WaitForSingleObject(hMutexJogo, INFINITE);
 
 		//WaitForSingleObject(hMutexJogo, INFINITE);
 		if (jogo->CicloDeVida == ASSOCIACAO) {
@@ -681,7 +704,7 @@ void IniciaInvaders() {
 			jogo->Invaders[i].vidas = 1;
 			jogo->Invaders[i].id_invader = i;
 	}
-	jogo->Dados.nInvaders = 18;
+	jogo->Dados.nInvaders = 1;
 	jogo->Dados.nivel = 1;
 }
 
@@ -889,7 +912,6 @@ void GeraPowerup(int x, int y)
 void AtiraBomba() {
 	int y_aux = 0;
 	int res;
-	int rand =0;
 	srand(time(NULL));
 	for (int i = 0; i < jogo->Dados.nInvaders; i++) {
 		if (jogo->Invaders[i].id_invader != -1) {
@@ -901,7 +923,7 @@ void AtiraBomba() {
 	//	if (jogo->Invaders[i].id_invader != -1 && jogo->Invaders[i].area.y == y_aux) {
 		if ( jogo->Invaders[i].area.y == y_aux) {
 			//res = rand() % (6 - 0) + 0;
-			if (rand % 100 > jogo->Dados.probabilidadeInvaderDisparar) {
+			if (rand() % 100 > jogo->Dados.probabilidadeInvaderDisparar) {
 
 				for (int j = 0; j < MaxnumBombas; j++) {
 					if (jogo->Bombas[j].id_bombas == -1) {
@@ -1176,7 +1198,6 @@ void MoveBomba(int id)
 }
 
 void MoveTiro(int id) {
-	int rand = 0;
 	srand(time(NULL));
 	for (int j = 0; j < jogo->Dados.nTiros; j++)
 	{
@@ -1193,7 +1214,7 @@ void MoveTiro(int id) {
 					//destroiInvaders(&jogo->Invaders[j], jogo->Dados.nBombas);
 					jogo->Invaders[j].id_invader = -1;
 					jogo->Defenders[jogo->Tiros[id].id_dono].pontos ++;
-					if (rand % 100 > jogo->Dados.probabilidadePowerUp) {
+					if (rand() % 100 > jogo->Dados.probabilidadePowerUp) {
 						jogo->Dados.nPowerUPs++;
 						CriaPowerUp(jogo->Invaders[j].area.x, jogo->Invaders[j].area.y);
 					}
