@@ -431,20 +431,23 @@ void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 }
 
 void VaisDesenharCRL(MsgCliGat update) {
-	int i, vidas, pontos;
+	int i, vidas, pontos,nivel;
 	TCHAR text[10];
 	TCHAR text1[10];
 	TCHAR text2[10];
+	TCHAR text6[10];
 	TCHAR text3[] = TEXT("Id Jogador:");
 	TCHAR text4[] = TEXT("vidas:");
 	TCHAR text5[] = TEXT("Pontuacao:");
-
+	TCHAR text7[] = TEXT("Nivel:");
 
 	vidas = update.JogoCopia.Defenders[idJogador].vidas;
 	pontos = update.JogoCopia.Defenders[idJogador].pontos;
+	nivel = update.JogoCopia.Dados.nivel;
 	_itot_s(vidas, text, 10, 10);
 	_itot_s(pontos, text1, 10, 10);
 	_itot_s(idJogador, text2, 10, 10);
+	_itot_s(nivel, text6, 10, 10);
 
 	rect.bottom = 500;
 	rect.top = 0;
@@ -460,6 +463,8 @@ void VaisDesenharCRL(MsgCliGat update) {
 	TextOut(hDC, 200, 5, text1, 2);
 	TextOut(hDC, 240, 5, text4, 6);
 	TextOut(hDC, 290, 5, text2, 2);
+	TextOut(hDC, 320, 5, text7, 6);
+	TextOut(hDC, 370, 5, text6, 2);
 	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
 			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {

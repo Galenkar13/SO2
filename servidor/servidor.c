@@ -234,7 +234,7 @@ LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		{
 			if (jogo->CicloDeVida == ASSOCIACAO) {
 				jogo->CicloDeVida = DECORRER;
-				ReleaseMutex(hMutexJogo);
+			//	ReleaseMutex(hMutexJogo);
 				WaitForSingleObject(hMutexJogo,INFINITE);
 				ColocaDefenders();
 				//CreateThreadsElementosJogo();
