@@ -425,16 +425,16 @@ DWORD WINAPI ThreadInvadersBase()
 			if (jogo->Invaders[i].id_invader != -1)
 			{
 			//	jogo->Invaders[i].area.x =	jogo->Invaders[i].area.x + 5;
-				//sentido = MoveInvaders(sentido);
+				sentido = MoveInvaders(sentido);
 			}
 
 		}
 
-	//	SetEvent(hEvento);
-	//	ResetEvent(hEvento);
-	//	ReleaseMutex(hMutexJogo);
-	//	Sleep(jogo->Dados.velocidadeInvaders);
-		Sleep(4000);
+		SetEvent(hEvento);
+		ResetEvent(hEvento);
+		ReleaseMutex(hMutexJogo);
+		Sleep(jogo->Dados.velocidadeInvaders);
+		Sleep(2000);
 	}
 	return 0;
 }
@@ -783,35 +783,12 @@ void IniciaJogo()
 
 void ColocaDefenders()
 {
-	int xmin, xmax, ymax;
-	int difx = ComprimentoJanelaMAX / MaxClientes;  //tem de ser o numero de clientes
-	int ymin = (int)(AlturaJanelaMAX * 0.8);
-	int px, py;
 	
-
-	for (int i = 0; i < jogo->Dados.nDefenders; i++)     //MaxCliente --> nClientes
-	{
-		xmin = difx * i;
-		xmax = (difx *i) + (difx - jogo->Defenders[i].area.comprimento);
-
-		ymax = AlturaJanelaMAX - jogo->Defenders[i].area.altura;
-
-		px = rand() % (xmax - xmin) + xmin;
-		py = rand() % (ymax - ymin) + ymin;
-
-		if (i == 0) {
-			jogo->Defenders[i].area.x = 50;
-			jogo->Defenders[i].area.y = 400;
-			jogo->Defenders[i].area.altura = 40;
-			jogo->Defenders[i].area.comprimento = 40;
-		}
-		if (i == 1) {
-			jogo->Defenders[i].area.x = 250;
-			jogo->Defenders[i].area.y = 400;
-			jogo->Defenders[i].area.altura = 40;
-			jogo->Defenders[i].area.comprimento = 40;
-		}
-
+	for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+		jogo->Defenders[i].area.x = (i +1 )* 100;
+		jogo->Defenders[i].area.y = 400;
+		jogo->Defenders[i].area.altura = 40;
+		jogo->Defenders[i].area.comprimento = 40;
 	}
 
 }
@@ -879,17 +856,25 @@ void GeraPowerup(int x, int y)
 
 int MoveInvaders(int verifica_sentido)
 {
-	struct guardaMax
+	typedef struct _guardaMax
 	{
 		int id;
 		int max;
 		int min;
-	}guardaMax;
+	} guarda;
 
 	int i;
+
+	guarda guardaMax;
+	guarda guardaMin;
+
 	guardaMax.max = 0;
 	guardaMax.min = 0;
 	guardaMax.id = -1;
+
+	guardaMin.max = 500;
+	guardaMin.min = 500;
+	guardaMin.id = -1;
 
 	//DIREITA
 	if (verifica_sentido == 0)
@@ -907,25 +892,26 @@ int MoveInvaders(int verifica_sentido)
 			}
 		}
 	}
-	else
-	{
-		for (i = 0; i < jogo->Dados.nInvaders; i++)
-		{
-			if (jogo->Invaders[i].id_invader != -1)
-			{
-
-				if ((jogo->Invaders[i].area.x - jogo->Invaders[i].area.comprimento) > guardaMax.min)  //verifica se a posicao do invader esta mais a esquerda
+	else{
+		if(verifica_sentido == 1){
+			
+				for (i = 0; i < jogo->Dados.nInvaders; i++)
 				{
-					guardaMax.min = (jogo->Invaders[i].area.x - jogo->Invaders[i].area.comprimento);  //guarda posicao mais a esquerda
-					guardaMax.id = i;
+					if (jogo->Invaders[i].id_invader != -1)
+					{
+
+						if ((jogo->Invaders[i].area.x - jogo->Invaders[i].area.comprimento) < guardaMin.min)  //verifica se a posicao do invader esta mais a esquerda
+						{
+							guardaMin.min = (jogo->Invaders[i].area.x - jogo->Invaders[i].area.comprimento);  //guarda posicao mais a esquerda
+							guardaMin.id = i;
+						}
+					}
 				}
+
 			}
-		}
-
-
 	}
 	if (verifica_sentido == 0) {
-		if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento < ComprimentoJanelaMAX)
+		if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento <= ComprimentoJanelaMAX - 30)
 		{
 			
 				for (i = 0; i < jogo->Dados.nInvaders; i++)
@@ -938,45 +924,47 @@ int MoveInvaders(int verifica_sentido)
 		}
 		else
 		{
-				for (i = 0; i < jogo->Dados.nInvaders; i++)
+			for (i = 0; i < jogo->Dados.nInvaders; i++)
 				{
 					if (jogo->Invaders[i].id_invader != -1)
 					{
-					jogo->Invaders[i].area.y = jogo->Invaders[i].area.y + 5;
+					jogo->Invaders[i].area.y = jogo->Invaders[i].area.y + 10;
 
 				}
 			}
-			verifica_sentido = 1;
+			sentido = 1;
 		}
+		
 	}
-	else
-	{
-		//if (jogo->Invaders[guardaMax.id].area.x + jogo->Invaders[guardaMax.id].area.comprimento < ComprimentoJanelaMIN)
-		if (jogo->Invaders[guardaMax.id].area.x - jogo->Invaders[10].area.comprimento < ComprimentoJanelaMIN)
-		{
-			
+	else {
+		if (verifica_sentido == 1) {
+			if (jogo->Invaders[guardaMin.id].area.x - jogo->Invaders[10].area.comprimento >= ComprimentoJanelaMIN)
+			{
+
 				for (i = 0; i < jogo->Dados.nInvaders; i++)
 				{
 					if (jogo->Invaders[i].id_invader != -1)
 					{
-					jogo->Invaders[i].area.x--;
+						jogo->Invaders[i].area.x--;
+					}
 				}
 			}
-		}
-		else
-		{
-			
+			else
+			{
+
 				for (i = 0; i < jogo->Dados.nInvaders; i++)
 				{
 					if (jogo->Invaders[i].id_invader != -1)
 					{
-					jogo->Invaders[i].area.y++;
+						jogo->Invaders[i].area.y + 10;
+					}
 				}
+				sentido = 0;
 			}
-			verifica_sentido = 1;
 		}
 	}
-	return verifica_sentido;
+
+	return sentido;
 }
 
 void TiroAntigueInvader(int id)
