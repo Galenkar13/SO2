@@ -617,6 +617,7 @@ DWORD WINAPI ThreadTiros()
 
 DWORD WINAPI ThreadJogadores()
 {
+	int x = 0;
 	while (jogo->CicloDeVida == DECORRER) {
 
 		//funcao para colocarinvaders
@@ -635,10 +636,22 @@ DWORD WINAPI ThreadJogadores()
 					MoveDefender(i);			
 
 			}
-
-
-
 		}
+		for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+			if (jogo->Defenders[i].id_defender == -1) {
+				x++;
+			}
+			if (x == jogo->Dados.nDefenders) {
+				jogo->CicloDeVida = FINAL;
+				SetEvent(hEvento);
+				ResetEvent(hEvento);
+				ReleaseMutex(hMutexJogo);
+				//Sleep(1000);
+				Sleep(jogo->Dados.velocidadeDefenders);
+				break;
+			}
+		}
+
 	
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
@@ -960,14 +973,14 @@ void AtiraBomba() {
 		if ( jogo->Invaders[i].area.y == y_aux) {
 			//res = rand() % (6 - 0) + 0;
 			if (rand() % 100 < jogo->Dados.probabilidadeInvaderDisparar) {
-
-				for (int j = 0; j < MaxnumBombas; j++) {
+				jogo->Dados.nBombas++;
+				for (int j = 0; j < jogo->Dados.nBombas; j++) {
 					if (jogo->Bombas[j].id_bombas == -1) {
 
 						jogo->Bombas[j].id_bombas = j;
 						jogo->Bombas[j].area.x = jogo->Invaders[i].area.x;
 						jogo->Bombas[j].area.y = jogo->Invaders[i].area.y + 30;
-						jogo->Dados.nBombas++;
+						
 						//jogo->Bombas[j].velocidade ...
 						break;
 					}
@@ -1205,7 +1218,7 @@ void MoveBomba(int id)
 				break;
 			}
 		}
-		jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 5;
+		jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 10;
 	}
 	else
 		jogo->Bombas[id].id_bombas = -1;

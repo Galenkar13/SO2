@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "gateway.h"
 
+
 #define CONNECTING_STATE 0 
 #define READING_STATE 1 
 #define WRITING_STATE 2 
@@ -165,7 +166,6 @@ DWORD WINAPI  EnviaUpdateCliente() {
 	
 	while (1) {
 		MsgCliGat update;
-		int i;
 		//WaitForSingleObject(cliente->hMutex, INFINITE);
 
 		//_tprintf(TEXT("[GATEWAY] a enviar ao cliente %d\n"), cliente->idJogador);
@@ -206,6 +206,14 @@ DWORD WINAPI  EnviaUpdateCliente() {
 			}
 				break;
 		case FINAL:
+			for (int j = 0; j < index; j++) {
+				WriteFile(
+					hPipe[j],     // pipe handle 
+					(void*)&update,     // message 
+					sizeof(update),		// message length 
+					&cbWritten,         // bytes written 
+					&overlWr);
+			}
 			break;
 		default:
 			break;
@@ -228,7 +236,7 @@ DWORD WINAPI  EnviaUpdateCliente() {
 
 MsgCliGat EnviaUpdate(int estado) {
 	MsgCliGat teste;
-
+	int i;
 	switch (estado)
 	{
 	case ASSOCIACAO:
@@ -240,6 +248,11 @@ MsgCliGat EnviaUpdate(int estado) {
 	case FINAL:
 	{
 		teste.tipo = PONTUACAO;
+		teste.pontuacaoFinal.index = jogo->Dados.nDefenders;
+		for (i = 0; i < jogo->Dados.nDefenders; i++) {
+			teste.pontuacaoFinal.TOP[i].pontos = jogo->Defenders[i].pontos;
+			wcscpy_s(teste.pontuacaoFinal.TOP[i].quem, sizeof(SIZE),jogo->Defenders[i].nome);
+		}
 	}
 		break;
 	case DECORRER:

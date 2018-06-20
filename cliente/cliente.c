@@ -540,36 +540,21 @@ void VaisDesenharCRL(MsgCliGat update) {
 }
 
 void vaisDesenharTop10(MsgCliGat update) {
-	int i, vidas, pontos;
+	int i, vidas, pontos, nivel;
 	TCHAR text[10];
-	TCHAR text1[10];
-	TCHAR text2[10];
-	TCHAR text3[] = TEXT("Id Jogador:");
-	TCHAR text4[] = TEXT("vidas:");
-	TCHAR text5[] = TEXT("Pontuacao:");
 
+	TCHAR text3[] = TEXT("Nome Jogador:");
+	TCHAR text4[] = TEXT("Pontuacao Final:");
 
-	vidas = update.JogoCopia.Defenders[idJogador].vidas;
-	pontos = update.JogoCopia.Defenders[idJogador].pontos;
-	_itot_s(vidas, text, 10, 10);
-	_itot_s(pontos, text1, 10, 10);
-	_itot_s(idJogador, text2, 10, 10);
-
-	rect.bottom = 500;
-	rect.top = 0;
-	rect.left = 0;
-	rect.right = 500;
 	FillRect(hDC, &rect, GetStockObject(BLACK_BRUSH));
-	SetTextColor(hDC, RGB(255, 155, 130));
-	SetBkColor(hDC, RGB(0, 0, 0));
-
-	TextOut(hDC, 5, 5, text3, 11);
-	TextOut(hDC, 80, 5, text, 2);
-	TextOut(hDC, 120, 5, text5, 10);
-	TextOut(hDC, 200, 5, text1, 2);
-	TextOut(hDC, 240, 5, text4, 6);
-	TextOut(hDC, 290, 5, text2, 2);
-
+	for (i = 0; i < update.pontuacaoFinal.index; i++) {
+		TextOut(hDC, 5, i*5, text3, _countof(text3));
+		TextOut(hDC, 100, i*5, update.pontuacaoFinal.TOP[i].quem, _countof(update.pontuacaoFinal.TOP[i].quem));
+		TextOut(hDC, 200, i * 5, text4, _countof(text4));
+		_itot_s(update.pontuacaoFinal.TOP[i].pontos, text, 10, 10);
+		TextOut(hDC, 300, i * 5, text, _countof(text));
+	}
+	
 	InvalidateRect(hWnd, NULL, TRUE);
 
 }

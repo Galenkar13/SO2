@@ -18,7 +18,7 @@
 #define MaxClientes 20
 #define MaxInvaders 60
 #define MaxPowerUP 30
-#define MaxnumBombas 25
+#define MaxnumBombas 50
 #define MaxnumTiros 50
 
 typedef enum _TECLA {
@@ -192,6 +192,7 @@ typedef struct Pontuacao {
 
 typedef struct _MsgSER {
 	Pontuacao TOP[10];
+	int index;
 } MsgSER, *PMsgSER;
 
 typedef struct _MsgCliGat {
