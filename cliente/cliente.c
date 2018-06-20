@@ -59,7 +59,7 @@ int CALLBACK WinMain(
 	_In_ int       nCmdShow
 )
 {
-	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
+	
 	WNDCLASSEX wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -154,6 +154,54 @@ int CALLBACK WinMain(
 //  
 //  
 
+	
+		LRESULT CALLBACK DialogPipe(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	{
+
+
+		// DIALOGO DE CONFIGURAÇÃO DE PARAMETROS DE JOGO
+		switch (message)
+		{
+		case WM_INITDIALOG:
+		{
+
+		}
+
+		break;
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+			case IDOK:
+			{
+				
+					GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_IP), IP_PIPE, 20);
+					hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
+					EnableWindow(GetParent(hWnd), TRUE);
+					EndDialog(hWnd, 0);
+					break;
+				
+			}
+
+			break;
+			case IDCANCEL:
+
+				EnableWindow(GetParent(hWnd), TRUE);
+				EndDialog(hWnd, 0);
+				break;
+			}
+			break;
+
+		case WM_DESTROY:
+			EndDialog(hWnd, 0);
+			//PostQuitMessage(0);
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+
+		return 0;
+	}
+
 LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
@@ -175,7 +223,8 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			if (!JOGANDO_CLI) {
 				Login(hWnd);
 				//DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
-
+			//	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_IP), IP_PIPE, 20);
+				//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
 				break;
@@ -252,6 +301,9 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 
 
 			break;
+		case LigaRemota:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWndJanela, DialogPipe);
+			break;
 		case ID_SAIR:
 			res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
 			if (res == IDYES)
@@ -296,7 +348,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 
 				tecla = ESPAÇO;
 				Jogada(hWndJanela, tecla);
-
+				ReproduzirSom(MUSICA2);
 				break;
 
 				// Process other non-character keystrokes. 

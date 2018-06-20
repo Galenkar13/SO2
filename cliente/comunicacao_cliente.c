@@ -20,9 +20,16 @@ DWORD WINAPI arrancaComunicacaoCliente()
 {	
 	BOOL   fSuccess = FALSE;
 	DWORD  dwMode;
-	TCHAR* lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipetestes");
-
+	//TCHAR* lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipetestes"); //alterar o pipe ponto passa para %s 
+	TCHAR lpszPipename[255];
+	HANDLE hUserToken = NULL;
 	// Try to open a named pipe; wait for it, if necessary. 
+
+	_stprintf_s(lpszPipename, 255, TEXT("\\\\%s\\pipe\\mynamedpipetestes"), IP_PIPE);
+
+	BOOL log = LogonUser(TEXT("so2"), IP_PIPE, TEXT("so2"), LOGON32_LOGON_NEW_CREDENTIALS, LOGON32_PROVIDER_DEFAULT, &hUserToken);
+
+	log = ImpersonateLoggedOnUser(hUserToken);
 
 	while (1)
 	{

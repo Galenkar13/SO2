@@ -33,3 +33,5 @@ void ReproduzirMusica(LPCTSTR musica);
 
 void VaisDesenharCRL(MsgCliGat update);
 void CarregaBitmaps();
+
+TCHAR IP_PIPE[20];

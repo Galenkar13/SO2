@@ -2,9 +2,6 @@
 #include "cliente.h"
 
 
-MCIERROR ReproduzirSom(LPCTSTR som);
-void ReproduzirMusica(LPCTSTR musica);
-
 MCIERROR ReproduzirSom(LPCTSTR som)
 {
 	return mciSendString(som, NULL, 0, NULL);

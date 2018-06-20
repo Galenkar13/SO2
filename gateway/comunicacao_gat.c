@@ -30,6 +30,13 @@ HANDLE eventWriteReady;
 HANDLE eventReadReady;
 HANDLE hThreadCriaNamedPipes;
 
+SECURITY_ATTRIBUTES sa;
+TCHAR * szSD = TEXT("D:")
+TEXT("(A;OICI;GA;;;BG)")
+TEXT("(A;OICI;GA;;;AN)")
+TEXT("(A;OICI;GA;;;AU)")
+TEXT("(A;OICI;GA;;;BA)");
+
 
 DWORD WINAPI RecebeMensagensClientes(LPVOID param)
 {   
@@ -109,18 +116,14 @@ DWORD WINAPI arrancaComunicacaoGateway()
 	TCHAR* lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipetestes");
 	HANDLE hPipeAux = INVALID_HANDLE_VALUE, hThreadAux = NULL;
 
-	SECURITY_ATTRIBUTES sa;
-	TCHAR *szSD = TEXT("D:")
-		TEXT("(A;OICI;GA;;;BG)")
-		TEXT("(A;OICI;GA;;;AN)")
-		TEXT("(A;OICI;GA;;;AU)")
-		TEXT("(A;OICI;GA;;;BA)")
-		TEXT("(A;OICI;GA;;;WD)");
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.bInheritHandle = FALSE;
 
+	ConvertStringSecurityDescriptorToSecurityDescriptor(szSD, SDDL_REVISION_1, &(sa.lpSecurityDescriptor), NULL);
+
 	while (1)
 	{
+
 		hPipeAux = CreateNamedPipe(
 			lpszPipename,
 			PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
@@ -129,7 +132,7 @@ DWORD WINAPI arrancaComunicacaoGateway()
 			PIPE_BUFFER,
 			PIPE_BUFFER,
 			PIPE_TIMEOUT,
-			NULL);  //trocar por &sa
+			&sa);  //trocar por &sa
 
 		if (hPipeAux == INVALID_HANDLE_VALUE)
 		{
