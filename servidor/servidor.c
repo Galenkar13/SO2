@@ -508,15 +508,30 @@ DWORD WINAPI ThreadInvadersBase()
 		}
 
 		if (x == jogo->Dados.nInvaders) {
-			jogo->Dados.nInvaders = jogo->Dados.nInvaders + 5;
-			IniciaInvaders();
-			IniciaTiros();
-			IniciaPowerUp();
-			IniciaBombas();
-			ColocaDefenders();
-			ColocaInvaders();
+			if (jogo->Dados.nivel == 1) {
+				jogo->Dados.nInvaders = jogo->Dados.nInvaders + 3;
+				IniciaInvadersNivel2();
+				IniciaTiros();
+				IniciaPowerUp();
+				IniciaBombas();
+				ColocaDefenders();
+				ColocaInvaders();
 
-			jogo->Dados.nivel++;
+				jogo->Dados.nivel++;
+			}
+			else {
+				if (jogo->Dados.nivel == 2) {
+					jogo->Dados.nInvaders = jogo->Dados.nInvaders + 3;
+					IniciaInvadersNivel3();
+					IniciaTiros();
+					IniciaPowerUp();
+					IniciaBombas();
+					ColocaDefenders();
+					ColocaInvaders();
+
+					jogo->Dados.nivel++;
+				}
+			}
 		}
 
 		if (jogo->Dados.nivel > 3) {
@@ -778,6 +793,40 @@ void IniciaInvaders() {
 	}
 	//jogo->Dados.nInvaders = 1;
 	jogo->Dados.nivel = 1;
+}
+
+void IniciaInvadersNivel2() {
+
+	int i = 0;
+	for (i = 0; i < MaxInvaders; i++) {
+		jogo->Invaders[i].area.x = 0;
+		jogo->Invaders[i].area.y = 0;
+		jogo->Invaders[i].area.altura = AlturaInvader;
+		jogo->Invaders[i].area.comprimento = ComprimentoInvader;
+		jogo->Invaders[i].tipo = BASICO;
+		jogo->Invaders[i].velocidade = velocidadeInvaderBase - 200;
+		jogo->Invaders[i].vidas = 2;
+		jogo->Invaders[i].id_invader = i;
+	}
+	//jogo->Dados.nInvaders = 1;
+
+}
+
+void IniciaInvadersNivel3() {
+
+	int i = 0;
+	for (i = 0; i < MaxInvaders; i++) {
+		jogo->Invaders[i].area.x = 0;
+		jogo->Invaders[i].area.y = 0;
+		jogo->Invaders[i].area.altura = AlturaInvader;
+		jogo->Invaders[i].area.comprimento = ComprimentoInvader;
+		jogo->Invaders[i].tipo = BASICO;
+		jogo->Invaders[i].velocidade = velocidadeInvaderBase - 400;
+		jogo->Invaders[i].vidas = 3;
+		jogo->Invaders[i].id_invader = i;
+	}
+	//jogo->Dados.nInvaders = 1;
+
 }
 
 void ColocaInvaders() { //Esta funcao nao esta automatizada porque ainda não temos o jogo totalmente incializado

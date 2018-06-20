@@ -14,7 +14,7 @@
 #define SinalUser (WM_USER + 1)
 
 
-#define MAXNUMEROINVADERS 40
+#define MAXNUMEROINVADERS 20
 #define NUMEROINVADERS 16
 #define MINNUMEROINVADERS 8
 
@@ -137,3 +137,5 @@ void IniciaInvaders(); //Inicialização dos invaders
 								//Função que lança as Threads que vão controlar as funcionalidades dos Invaders
 								//Uma Thread por tipo de Invader
 
+void IniciaInvadersNivel2();
+void IniciaInvadersNivel3();
