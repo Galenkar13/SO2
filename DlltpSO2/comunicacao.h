@@ -73,6 +73,8 @@ typedef enum TipoPowerUP {
 	OUTRO
 } TipoPowerUP;
 
+
+
 typedef enum TipoInvader {
 	BASICO,
 	ESQUIVO,

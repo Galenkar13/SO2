@@ -486,7 +486,7 @@ DWORD WINAPI ThreadInvadersBase()
 	WaitForSingleObject(hMutexJogo, INFINITE);
 	while (jogo->CicloDeVida == DECORRER) {
 
-
+	
 
 		for (int i = 0; i < jogo->Dados.nInvaders; i++)
 		{
@@ -519,6 +519,13 @@ DWORD WINAPI ThreadInvadersBase()
 			jogo->Dados.nivel++;
 		}
 
+		if (jogo->Dados.nivel > 3) {
+			jogo->CicloDeVida = FINAL;
+				SetEvent(hEvento);
+				ResetEvent(hEvento);
+				ReleaseMutex(hMutexJogo);
+				break;
+		}
 		
 		AtiraBomba();
 
@@ -652,6 +659,19 @@ DWORD WINAPI ThreadJogadores()
 			}
 		}
 
+		for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+			int x = jogo->Defenders[i].powerUP.duracao;
+			if (jogo->Defenders[i].powerUP.id_powerUP != -1) {
+				jogo->Defenders[i].powerUP.duracao = jogo->Defenders[i].powerUP.duracao - jogo->Dados.velocidadeDefenders;
+				if (jogo->Defenders[i].powerUP.duracao <= 0) {
+					jogo->Defenders[i].powerUP.duracao = 0;
+					jogo->Defenders[i].powerUP.id_powerUP = -1;
+					jogo->Defenders[i].powerUP.tipo = OUTRO;
+					break;
+				}
+			}
+		}
+
 	
 		SetEvent(hEvento);
 		ResetEvent(hEvento);
@@ -736,6 +756,9 @@ void IniciaDefenders()
 		jogo->Defenders[i].velocidade = 0;
 		jogo->Defenders[i].vidas = jogo->Dados.nVidas;
 		jogo->Defenders[i].proxima_jogada = OUTRA_TECLA;
+		jogo->Defenders[i].powerUP.duracao = 0;
+		jogo->Defenders[i].powerUP.id_powerUP = -1;
+		jogo->Defenders[i].powerUP.tipo = OUTRO;
 	}
 
 }
@@ -1330,7 +1353,7 @@ void MovePowerUp(int id)
 				
 				jogo->PowerUP[id].id_powerUP= -1;
 				jogo->Defenders[j].powerUP.tipo = jogo->PowerUP[id].tipo;
-				jogo->Defenders[j].powerUP.duracao = 30;
+				jogo->Defenders[j].powerUP.duracao = jogo->Dados.duracaoPowerUp;
 				switch (jogo->PowerUP[id].tipo)
 				{
 				case VIDA:
@@ -1366,70 +1389,136 @@ void MoveDefender(int id)
 	int z = jogo->Defenders[id].proxima_jogada;
 
 	int limY = (int)(500 * 0.8);
-
-	switch (jogo->Defenders[id].proxima_jogada)
-	{
-	case ESQUERDA:
-	{
-		if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
+	if (jogo->Defenders[id].powerUP.tipo == ALCOOL) {
+		switch (jogo->Defenders[id].proxima_jogada)
 		{
-			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
-		}
-
-	}
-	break;
-	case DIREITA:
-	{
-		if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
+		case DIREITA:
 		{
-			jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
-		}
-
-	}
-	break;
-	case CIMA:
-	{
-		if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
-		{
-			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
-		}
-	}
-
-	break;
-	case BAIXO:
-	{
-
-		if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
-		{
-			jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
-		}
-
-	}
-	break;
-
-	case ESPAÇO:
-	{
-		for (int j = 0; j < MaxnumTiros; j++)
-		{
-			if (jogo->Tiros[j].id_tiros == -1)
+			if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
 			{
-				jogo->Tiros[j].area.x = jogo->Defenders[id].area.x + 17;
-				jogo->Tiros[j].area.y = jogo->Defenders[id].area.y - 20;
-				jogo->Tiros[j].id_tiros = j;
-				jogo->Tiros[j].id_dono = jogo->Defenders->id_defender;
-				jogo->Dados.nTiros++;
-				break;
+				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
 			}
 
 		}
-	}
-	break;
-	default:
-		jogo->Defenders[id].proxima_jogada = NULA;
 		break;
-	}
+		case ESQUERDA:
+		{
+			if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
+			{
+				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
+			}
 
-	jogo->Defenders[id].proxima_jogada = NULA;
+		}
+		break;
+		case BAIXO:
+		{
+			if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
+			{
+				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
+			}
+		}
+
+		break;
+		case CIMA:
+		{
+
+			if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
+			{
+				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
+			}
+
+		}
+		break;
+
+		case ESPAÇO:
+		{
+			for (int j = 0; j < MaxnumTiros; j++)
+			{
+				if (jogo->Tiros[j].id_tiros == -1)
+				{
+					jogo->Tiros[j].area.x = jogo->Defenders[id].area.x + 17;
+					jogo->Tiros[j].area.y = jogo->Defenders[id].area.y - 20;
+					jogo->Tiros[j].id_tiros = j;
+					jogo->Tiros[j].id_dono = jogo->Defenders->id_defender;
+					jogo->Dados.nTiros++;
+					break;
+				}
+
+			}
+		}
+		break;
+		default:
+			jogo->Defenders[id].proxima_jogada = NULA;
+			break;
+		}
+
+		jogo->Defenders[id].proxima_jogada = NULA;
+	}
+	else {
+		switch (jogo->Defenders[id].proxima_jogada)
+		{
+		case ESQUERDA:
+		{
+			if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
+			{
+				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
+			}
+
+		}
+		break;
+		case DIREITA:
+		{
+			if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
+			{
+				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
+			}
+
+		}
+		break;
+		case CIMA:
+		{
+			if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
+			{
+				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
+			}
+		}
+
+		break;
+		case BAIXO:
+		{
+
+			if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
+			{
+				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
+			}
+
+		}
+		break;
+
+		case ESPAÇO:
+		{
+			for (int j = 0; j < MaxnumTiros; j++)
+			{
+				if (jogo->Tiros[j].id_tiros == -1)
+				{
+					jogo->Tiros[j].area.x = jogo->Defenders[id].area.x + 17;
+					jogo->Tiros[j].area.y = jogo->Defenders[id].area.y - 20;
+					jogo->Tiros[j].id_tiros = j;
+					jogo->Tiros[j].id_dono = jogo->Defenders->id_defender;
+					jogo->Dados.nTiros++;
+					break;
+				}
+
+			}
+		}
+		break;
+		default:
+			jogo->Defenders[id].proxima_jogada = NULA;
+			break;
+		}
+
+		jogo->Defenders[id].proxima_jogada = NULA;
+	}
 }
 
 void esperaThreads()
