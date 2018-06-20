@@ -1276,33 +1276,7 @@ void MoveTiro(int id) {
 
 void MovePowerUp(int id)
 {
-	/*
-	for (int j = 0; j < jogo->Dados.nDefenders; j++)
-	{
-
-		if (jogo->PowerUP[id].area.x >= jogo->Defenders[j].area.x && jogo->PowerUP[id].area.x <= (jogo->Defenders[j].area.x + jogo->Defenders[j].area.comprimento) &&
-			jogo->PowerUP[id].area.y <= jogo->Defenders[j].area.y && jogo->PowerUP[id].area.y >= (jogo->Defenders[j].area.y + jogo->Defenders[j].area.altura))
-		{
-
-			jogo->Defenders[j].powerUP.tipo = jogo->PowerUP[id].tipo;
-			jogo->Defenders[j].powerUP.duracao = jogo->PowerUP[id].duracao; //coloca propriedades do powerup no defender
-			jogo->PowerUP[id].id_powerUP = -1;
-
-
-		}
-
-		if (jogo->PowerUP[id].area.y > AlturaJanelaMAX)
-		{
-			jogo->PowerUP[id].id_powerUP = -1;  //coloca o id a -1 para desparecer do mapa
-		}
-
-		else
-		{
-			jogo->PowerUP[id].area.y++;
-		}
-	}
-	*/
-
+	
 	for (int j = 0; j < jogo->Dados.nDefenders; j++)
 	{
 		if (jogo->PowerUP[id].area.x >= jogo->Defenders[j].area.x && jogo->PowerUP[id].area.x <= (jogo->Defenders[j].area.x + jogo->Defenders[j].area.comprimento) &&
@@ -1313,6 +1287,20 @@ void MovePowerUp(int id)
 				jogo->PowerUP[id].id_powerUP= -1;
 				jogo->Defenders[j].powerUP.tipo = jogo->PowerUP[id].tipo;
 				jogo->Defenders[j].powerUP.duracao = 30;
+				switch (jogo->PowerUP[id].tipo)
+				{
+				case VIDA:
+					jogo->Defenders[j].vidas++;
+					break;
+				case MAIS:
+					jogo->Dados.velocidadeInvaders = jogo->Dados.velocidadeInvaders - 200;
+					break;
+				case BATERIA:
+					jogo->Dados.velocidadeDefenders = jogo->Dados.velocidadeDefenders - 200;
+					break;
+				default:
+					break;
+				}
 				
 			}
 			break;
