@@ -109,7 +109,7 @@ int CALLBACK WinMain(
 		szTitle,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		500, 500,
+		ComprimentoJanelaMAX, AlturaJanelaMAX,
 		NULL,
 		NULL,
 		hInstance,
@@ -449,10 +449,10 @@ void VaisDesenharCRL(MsgCliGat update) {
 	_itot_s(idJogador, text2, 10, 10);
 	_itot_s(nivel, text6, 10, 10);
 
-	rect.bottom = 500;
+	rect.bottom = ComprimentoJanelaMAX;
 	rect.top = 0;
 	rect.left = 0;
-	rect.right = 500;
+	rect.right = ComprimentoJanelaMAX;
 	FillRect(hDC,&rect, GetStockObject(BLACK_BRUSH));
 	SetTextColor(hDC, RGB(255, 155, 130));
 	SetBkColor(hDC, RGB(0, 0, 0));

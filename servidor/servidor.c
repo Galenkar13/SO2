@@ -98,7 +98,7 @@ int CALLBACK WinMain(
 		szTitle,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		500, 500,
+		ComprimentoJanelaMAX, AlturaJanelaMAX,
 		NULL,
 		NULL,
 		hInstance,
@@ -1032,8 +1032,8 @@ int MoveInvaders(int verifica_sentido)
 	guardaMax.min = 0;
 	guardaMax.id = -1;
 
-	guardaMin.max = 500;
-	guardaMin.min = 500;
+	guardaMin.max = ComprimentoJanelaMAX;
+	guardaMin.min = ComprimentoJanelaMAX;
 	guardaMin.id = -1;
 
 	//DIREITA
@@ -1388,7 +1388,7 @@ void MoveDefender(int id)
 {
 	int z = jogo->Defenders[id].proxima_jogada;
 
-	int limY = (int)(500 * 0.8);
+	int limY = (int)(ComprimentoJanelaMAX * 0.8);
 	if (jogo->Defenders[id].powerUP.tipo == ALCOOL) {
 		switch (jogo->Defenders[id].proxima_jogada)
 		{
