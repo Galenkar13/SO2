@@ -628,7 +628,11 @@ DWORD WINAPI ThreadJogadores()
 		{
 			if (jogo->Defenders[i].id_defender != -1)
 			{
-				MoveDefender(i);			
+				if (jogo->Defenders[i].vidas == 0) {
+					jogo->Defenders[i].id_defender = -1;
+				}
+				else
+					MoveDefender(i);			
 
 			}
 
@@ -955,7 +959,7 @@ void AtiraBomba() {
 	//	if (jogo->Invaders[i].id_invader != -1 && jogo->Invaders[i].area.y == y_aux) {
 		if ( jogo->Invaders[i].area.y == y_aux) {
 			//res = rand() % (6 - 0) + 0;
-			if (rand() % 100 > jogo->Dados.probabilidadeInvaderDisparar) {
+			if (rand() % 100 < jogo->Dados.probabilidadeInvaderDisparar) {
 
 				for (int j = 0; j < MaxnumBombas; j++) {
 					if (jogo->Bombas[j].id_bombas == -1) {
@@ -1171,13 +1175,40 @@ void MoveBomba(int id)
 	}
 	else
 		jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 20;
-		*/
+		
 	int x;
 	int y;
 	x = jogo->Bombas[id].area.y;
 	jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 5;
 	y = jogo->Bombas[id].area.y;
-	x = 0;
+	x = 0;*/
+	
+
+	if (jogo->Bombas[id].area.y < AlturaJanelaMAX - 100)
+	{
+		//desaparece do mapa
+		for (int j = 0; j < jogo->Dados.nDefenders; j++)
+		{
+			if (jogo->Bombas[id].area.x >= jogo->Defenders[j].area.x && jogo->Bombas[id].area.x <= (jogo->Defenders[j].area.x + jogo->Defenders[j].area.comprimento) &&
+				jogo->Bombas[id].area.y >= jogo->Defenders[j].area.y && jogo->Bombas[id].area.y <= (jogo->Defenders[j].area.y + jogo->Defenders[j].area.altura))
+			{
+				if (jogo->Defenders[j].id_defender != -1) {
+
+					jogo->Bombas[id].id_bombas = -1;
+
+					if (jogo->Defenders[j].powerUP.tipo == ESCUDO)
+						break;
+					else
+						jogo->Defenders[j].vidas--;
+
+				}
+				break;
+			}
+		}
+		jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 5;
+	}
+	else
+		jogo->Bombas[id].id_bombas = -1;
 }
 
  void CriaPowerUp(int x, int y) {

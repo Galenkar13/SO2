@@ -39,9 +39,9 @@
 #define velocidadePowerUP 2000
 #define velocidadePowerUPMin 500
 
-#define ProbabilidadeTiroInvaderMax 70
-#define ProbabilidadeTiroInvader 50 //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
-#define ProbabilidadeTiroInvaderMin 40
+#define ProbabilidadeTiroInvaderMax 20
+#define ProbabilidadeTiroInvader 3 //Esquiva ProbabilidadeTiroInvader - (ProbabilidadeTiroInvader * 0.40)
+#define ProbabilidadeTiroInvaderMin 2
 
 #define DuracaoPowerUPMax 60000
 #define DuracaoPowerUP 30000//igual para todos 
