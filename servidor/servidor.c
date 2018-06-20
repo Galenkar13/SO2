@@ -1276,7 +1276,7 @@ void MoveTiro(int id) {
 
 void MovePowerUp(int id)
 {
-
+	/*
 	for (int j = 0; j < jogo->Dados.nDefenders; j++)
 	{
 
@@ -1286,6 +1286,8 @@ void MovePowerUp(int id)
 
 			jogo->Defenders[j].powerUP.tipo = jogo->PowerUP[id].tipo;
 			jogo->Defenders[j].powerUP.duracao = jogo->PowerUP[id].duracao; //coloca propriedades do powerup no defender
+			jogo->PowerUP[id].id_powerUP = -1;
+
 
 		}
 
@@ -1299,7 +1301,7 @@ void MovePowerUp(int id)
 			jogo->PowerUP[id].area.y++;
 		}
 	}
-
+	*/
 
 	for (int j = 0; j < jogo->Dados.nDefenders; j++)
 	{
@@ -1317,14 +1319,14 @@ void MovePowerUp(int id)
 		}
 	}
 
-	if (jogo->PowerUP[id].area.y > AlturaJanelaMAX)
+	if (jogo->PowerUP[id].area.y < AlturaJanelaMAX - 100)
 	{
 		//desaparece do mapa
-		jogo->PowerUP[id].id_powerUP = -1;
+	
+		jogo->PowerUP[id].area.y = jogo->PowerUP[id].area.y + 5;
 	}
 	else
-		jogo->PowerUP[id].area.y = jogo->PowerUP[id].area.y + 5;
-
+		jogo->PowerUP[id].id_powerUP = -1;
 }
 
 void MoveDefender(int id)
