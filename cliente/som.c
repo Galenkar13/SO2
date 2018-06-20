@@ -2,9 +2,13 @@
 #include "cliente.h"
 
 
-MCIERROR ReproduzirSom(LPCTSTR som)
+void ReproduzirSom(LPCTSTR som)
 {
-	return mciSendString(som, NULL, 0, NULL);
+	if (waveOutGetNumDevs() > 0)
+	{
+		waveOutSetVolume(0, 0xff00ff00);
+		PlaySound(som, NULL,  SND_ASYNC );
+	}
 }
 
 void ReproduzirMusica(LPCTSTR musica)

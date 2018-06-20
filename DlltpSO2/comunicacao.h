@@ -16,7 +16,7 @@
 
 
 #define MaxClientes 20
-#define MaxInvaders 60
+#define MaxInvaders 20
 #define MaxPowerUP 30
 #define MaxnumBombas 50
 #define MaxnumTiros 50

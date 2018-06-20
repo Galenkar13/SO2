@@ -17,25 +17,6 @@ HWND hWnd;
 HDC hDC;
 RECT rect;
 
-/*
-int _tmain() {
-
-	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
-
-	WaitForSingleObject(hThread, INFINITE);
-
-	return 0;
-
-}*/
-
-
-
-// GT_HelloWorldWin32.cpp  
-// compile with: /D_UNICODE /DUNICODE /DWIN32 /D_WINDOWS /c  
-
-//#include "resource.h"
-
-// Global variables  
 
 // The main window class name.  
 static TCHAR szWindowClass[] = _T("win32app");
@@ -47,9 +28,6 @@ static TCHAR szTitle[] = _T("Cliente - Space Invaders");
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 HINSTANCE hInst;
-
-
-//cenas cenas123;
 
 
 int CALLBACK WinMain(
@@ -144,15 +122,6 @@ int CALLBACK WinMain(
 	return (int)msg.wParam;
 }
 
-//  
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)  
-//  
-//  PURPOSE:  Processes messages for the main window.  
-//  
-//  WM_PAINT    - Paint the main window  
-//  WM_DESTROY  - post a quit message and return  
-//  
-//  
 
 	
 		LRESULT CALLBACK DialogPipe(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -222,9 +191,6 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		{
 			if (!JOGANDO_CLI) {
 				Login(hWnd);
-				//DialogBox(hInst, MAKEINTRESOURCE(IDD_FORMVIEW_Cabecalho), hWnd, NULL);
-			//	GetWindowText(GetDlgItem(hWnd, IDC_EDIT1_IP), IP_PIPE, 20);
-				//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)arrancaComunicacaoCliente, NULL, 0, NULL);
 				EnableWindow(GetParent(hWnd), TRUE);
 				EndDialog(hWnd, 0);
 				break;
@@ -257,12 +223,8 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 {
 
 	//AQUI E QUE E PARA TRATAR AS TECLAS
-
-	//HDC hDC, MemDCExercising;
-	//HDC hDC1, MemDCExercising;
 	HDC hdc2 = NULL;
 	PAINTSTRUCT Ps;
-	//HBITMAP bmpCenas;
 	int res = 0;
 	TECLA tecla;
 	RECT rect;
@@ -347,8 +309,8 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 			case VK_SPACE:
 
 				tecla = ESPAÇO;
+				
 				Jogada(hWndJanela, tecla);
-				ReproduzirSom(MUSICA2);
 				break;
 
 				// Process other non-character keystrokes. 
@@ -358,29 +320,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 			}
 		}
 		break;
-	/*case WM_CHAR:
-		switch (wParam)
-		{
-
-		case 0x1B:
-
-			// Process an escape. 
-			res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
-			if (res == IDYES)
-			{
-				DestroyWindow(hWndJanela);
-			}
-
-			break;
-
-
-		default:
-
-			// Process displayable characters. 
-
-			break;
-		}*/
-	case WM_CLOSE:     //FECHAR JANELA (X) //ex2_ficha6 
+	case WM_CLOSE:    
 
 		res = MessageBox(hWndJanela, TEXT("Pretende Sair?"), TEXT("CONFIRMACAO...."), MB_YESNO);
 		if (res == IDYES)
@@ -474,15 +414,13 @@ void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 	TransparentBlt(hdc, area.x, area.y, largura, altura,
 		auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, CORTRANSPARENTE);
 
-	//StretchBlt(hdc, 0, 0, 500, 500,
-	//	auxDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
 
 	int err = GetLastError();
 
 	DeleteDC(auxDC);
 }
 
-void VaisDesenharCRL(MsgCliGat update) {
+void Desenhar(MsgCliGat update) {
 	int i, vidas, pontos,nivel;
 	TCHAR text[10];
 	TCHAR text1[10];

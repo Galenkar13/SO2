@@ -4,10 +4,6 @@
 
 int _tmain(int argc, LPTSTR argv[]) {
 
-//	TCHAR resp;
-
-
-	//	Jogo Jogo;
 
 
 #ifdef UNICODE 
@@ -22,22 +18,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EnviaUpdateCliente, NULL, 0, NULL);
 
-	/*	hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
-		if (hThreadEscritor!= NULL)
-			_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
-		else {
-			_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
-			return -1;
-		}*/
-
-/*		hThreadRecebeAtualizacao = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadAtualizacao, NULL, 0, 0);
-		if (hThreadRecebeAtualizacao != NULL)
-			_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
-		else {
-			_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
-			return -1;
-		}
-		*/
 		jogo->Invaders[20].id_invader = 123;
 
 

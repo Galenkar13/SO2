@@ -15,12 +15,6 @@ static TCHAR szTitle[] = _T("Space Invaders the Game!!");
 // Forward declarations of functions included in this code module:  
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-typedef struct _cenas {
-	TCHAR yo[254];
-} cenas;
-
-cenas cenas123;
-
 HINSTANCE hInst;
 
 HWND janela;
@@ -45,7 +39,6 @@ int CALLBACK WinMain(
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	//wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 	wcex.hIcon = LoadIcon(NULL, IDI_SHIELD);
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
@@ -118,8 +111,7 @@ int CALLBACK WinMain(
 	// The parameters to ShowWindow explained:  
 	// hWnd: the value returned from CreateWindow  
 	// nCmdShow: the fourth parameter from WinMain  
-	ShowWindow(hWnd,
-		nCmdShow);
+	ShowWindow(hWnd,nCmdShow);
 	UpdateWindow(hWnd);
 
 	// Main message loop:  
@@ -133,15 +125,6 @@ int CALLBACK WinMain(
 	return (int)msg.wParam;
 }
 
-//  
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)  
-//  
-//  PURPOSE:  Processes messages for the main window.  
-//  
-//  WM_PAINT    - Paint the main window  
-//  WM_DESTROY  - post a quit message and return  
-//  
-//		
 
 BOOL RecebeConfiguracao(HWND hWnd) {
 	TCHAR aux[254];
@@ -441,41 +424,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return 0;
-}
-
-int CreateThreadsInvaders() {
-
-	hThreadInvadersBase = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersBase, 0, 0, NULL);
-	//hThreadInvadersEsquivos = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersEsquivo, 0, 0, NULL);
-	//hThreadsInvadersExtras = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadInvadersExtra, 0, 0, NULL);
-
-/*	if (hThreadInvadersBase == NULL || hThreadInvadersEsquivos == NULL || hThreadsInvadersExtras == NULL) {
-		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
-		return -1;
-	}
-
-	return 0;*/
-
-}
-
-int CreateThreadsElementosJogo()
-{
-
-	CreateThreadsInvaders();
-	hThreadBombas = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadBombas, 0, 0, NULL);
-	hThreadPowerups = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadPowerups, 0, 0, NULL);
-	hThreadTiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadTiros, 0, 0, NULL);
-	hThreadJogadores = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadJogadores, 0, 0, NULL);
-
-
-
-	if (hThreadBombas == NULL || hThreadPowerups == NULL || hThreadTiros == NULL || hThreadJogadores == NULL) {
-		_tprintf(TEXT("[Erro]Criação de objectos do Windows(%d)\n"), GetLastError());
-		return -1;
-	}
-
-	return 0;
-
 }
 
 
@@ -1231,43 +1179,6 @@ void BombaAntigueDefender(int x, int y)
 
 void MoveBomba(int id)
 {
-	//Sleep(2000);
-	//verificar se existe alguma coisa 
-	/*
-	for(int j = 0; j < jogo->Dados.nBombas; j++)
-	{
-		if (jogo->Bombas[id].area.x >= jogo->Defenders[j].area.x && jogo->Bombas[id].area.x <= (jogo->Defenders[j].area.x + jogo->Defenders[j].area.comprimento) &&
-			jogo->Bombas[id].area.y <= jogo->Defenders[j].area.y && jogo->Bombas[id].area.y >= (jogo->Defenders[j].area.y + jogo->Defenders[j].area.altura))
-		{
-			if (jogo->Defenders[j].powerUP.tipo == ESCUDO)
-				break;
-			else {
-				if (jogo->Defenders[j].id_defender != -1) {
-					jogo->Defenders[j].vidas = jogo->Defenders[j].vidas - 1; //retira vidas 
-					jogo->Bombas[id].id_bombas = -1;
-					if (jogo->Defenders[j].vidas == 0)
-						jogo->Defenders[j].id_defender = 1;
-				}
-			}
-			break;
-		}
-	}
-
-	if (jogo->Bombas[id].area.y > AlturaJanelaMAX)
-	{
-		//desaparece do mapa
-		jogo->Bombas[id].id_bombas = -1;
-	}
-	else
-		jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 20;
-		
-	int x;
-	int y;
-	x = jogo->Bombas[id].area.y;
-	jogo->Bombas[id].area.y = jogo->Bombas[id].area.y + 5;
-	y = jogo->Bombas[id].area.y;
-	x = 0;*/
-	
 
 	if (jogo->Bombas[id].area.y < AlturaJanelaMAX - 100)
 	{
@@ -1478,8 +1389,6 @@ void MoveDefender(int id)
 				}
 
 			}
-
-			
 
 		}
 		break;

@@ -27,7 +27,7 @@ DWORD WINAPI arrancaComunicacaoCliente()
 
 	_stprintf_s(lpszPipename, 255, TEXT("\\\\%s\\pipe\\mynamedpipetestes"), IP_PIPE);
 
-	BOOL log = LogonUser(TEXT("so2"), IP_PIPE, TEXT("so2"), LOGON32_LOGON_NEW_CREDENTIALS, LOGON32_PROVIDER_DEFAULT, &hUserToken);
+	BOOL log = LogonUser(TEXT("cenas"), IP_PIPE, TEXT("cenas"), LOGON32_LOGON_NEW_CREDENTIALS, LOGON32_PROVIDER_DEFAULT, &hUserToken);
 
 	log = ImpersonateLoggedOnUser(hUserToken);
 
@@ -135,8 +135,8 @@ BOOL RecebeUpdates()
 			break;
 		case ATUALIZACAO:
 		{
-			VaisDesenharCRL(update);
-			//ReproduzirMusica(MUSICA1);
+			Desenhar(update);
+	//		ReproduzirMusica(MUSICA1);
 		}
 			break;
 		default:
@@ -153,13 +153,16 @@ BOOL EnviaMensagemCLI(MsgCLI cli)
 	
 	DWORD cbWritten = 0;
 	OVERLAPPED overlWr = { 0 };
-	HANDLE writeReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+	HANDLE writeReady = CreateEvent(NULL, FALSE, FALSE, NULL);
 
 	ZeroMemory(&overlWr, sizeof(overlWr));
 
 	ResetEvent(writeReady);
 
 	overlWr.hEvent = writeReady;
+
+	if(cli.tecla == ESPAÇO)
+		ReproduzirSom(MUSICA2);
 
 	BOOL fSuccess = WriteFile(
 		hPipe,                  // pipe handle 
@@ -168,7 +171,7 @@ BOOL EnviaMensagemCLI(MsgCLI cli)
 		&cbWritten,             // bytes written 
 		&overlWr);                  //  overlapped 
 
-	WaitForSingleObject(writeReady, INFINITE);
+	WaitForSingleObject(writeReady, 50);
 
 	GetOverlappedResult(hPipe, &overlWr, &cbWritten, FALSE);
 

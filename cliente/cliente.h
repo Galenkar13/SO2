@@ -27,11 +27,11 @@ BOOL JOGANDO_CLI;
 int Jogada(HWND hWnd, TECLA x);
 
 
-MCIERROR ReproduzirSom(LPCTSTR som);
+void ReproduzirSom(LPCTSTR som);
 void ReproduzirMusica(LPCTSTR musica);
 
 
-void VaisDesenharCRL(MsgCliGat update);
+void Desenhar(MsgCliGat update);
 void CarregaBitmaps();
 
 TCHAR IP_PIPE[20];

@@ -85,9 +85,6 @@ DWORD WINAPI RecebeMensagensClientes(LPVOID param)
 
 			EnviaMensagem(msg);
 
-			_tprintf(TEXT(" TIPO %d \n"), msg.tipo_mensagem);
-			_tprintf(TEXT(" NOME  %s\n"), msg.nome);
-			_tprintf(TEXT(" ID %d \n"), msg.id);
 
 			_tprintf(TEXT("Mensagem recebida \n"));
 		}
@@ -184,8 +181,7 @@ DWORD WINAPI  EnviaUpdateCliente() {
 		update = EnviaUpdate(jogo->CicloDeVida);
 		ReleaseMutex(hMutexJogo);
 
-		_tprintf(TEXT(" ALTURA %d \n"), jogo->Dados.nDefenders);
-		_tprintf(TEXT(" ALTURA %d \n"), jogo->Dados.nDefenders);
+
 
 
 		switch (jogo->CicloDeVida)

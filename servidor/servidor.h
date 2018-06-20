@@ -85,25 +85,10 @@ HANDLE hThreadTiros;
 HANDLE hThreadJogadores;
 
 
-typedef struct _Input {
-	int numInvaders;
-	int numInvadersBase;
-	int	numInvadersEsquivo;
-	int	numInvadersOutros;
-
-	int numVidasDefenders; //numero de vidas jogadores
-
-	int probPowerUP;   //probablidade de acontecer um power up
-	int duracaoPowerUP;//quanto tempo é que esse power up dura
-
-	int probDisparo;
-
-} Input, *PInput;
 
 DWORD WINAPI ThreadConsumidor(LPVOID param); //LADO DO GATEWAY
 DWORD WINAPI ThreadInvadersBase();
-DWORD WINAPI ThreadInvadersEsquivo();
-DWORD WINAPI ThreadInvadersExtra();
+
 DWORD WINAPI ThreadBombas();
 DWORD WINAPI ThreadPowerups();
 DWORD WINAPI ThreadTiros();
@@ -113,7 +98,7 @@ DWORD WINAPI ThreadJogadores();
 void InicializaJogo();
 void ColocaInvaders();
 void ColocaDefenders();
-Input RecebeInput();
+
 void IniciaDefenders();
 void GeraPowerup(int x, int y);
 
