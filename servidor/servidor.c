@@ -1387,7 +1387,7 @@ void MoveTiro(int id) {
 		jogo->Tiros[id].id_tiros = -1;
 	}
 	else 
-		jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
+		jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 10;
 }
 
 void MovePowerUp(int id)
@@ -1435,7 +1435,7 @@ void MovePowerUp(int id)
 
 void MoveDefender(int id)
 {
-	int z = jogo->Defenders[id].proxima_jogada;
+	int z = 0;
 
 	int limY = (int)(ComprimentoJanelaMAX * 0.8);
 	if (jogo->Defenders[id].powerUP.tipo == ALCOOL) {
@@ -1443,38 +1443,86 @@ void MoveDefender(int id)
 		{
 		case DIREITA:
 		{
-			if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
-			{
-				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
-			}
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.x < jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento + 10 &&
+						jogo->Defenders[id].area.y <= jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura &&
+						jogo->Defenders[id].area.y >= jogo->Defenders[i].area.y)
+						z++;
+				}
 
+			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
+				{
+					jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
+				}
+			}
 		}
 		break;
 		case ESQUERDA:
 		{
-			if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
-			{
-				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento > jogo->Defenders[i].area.x - 10 &&
+						jogo->Defenders[id].area.y <= jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura &&
+						jogo->Defenders[id].area.y >= jogo->Defenders[i].area.y)
+						z++;
+				}
+
 			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
+				{
+					jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
+				}
+
+			}
+
+			
 
 		}
 		break;
 		case BAIXO:
 		{
-			if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
-			{
-				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.y  < jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura + 20 &&
+						jogo->Defenders[id].area.x <= jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento &&
+						jogo->Defenders[id].area.x >= jogo->Defenders[i].area.x)
+						z++;
+				}
+
 			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
+				{
+					jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
+				}
+			}
+		
 		}
 
 		break;
 		case CIMA:
 		{
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura >= jogo->Defenders[i].area.y - 20 &&
+						jogo->Defenders[id].area.x <= jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento &&
+						jogo->Defenders[id].area.x >= jogo->Defenders[i].area.x)
+						z++;
+				}
 
-			if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
-			{
-				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
 			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
+				{
+					jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
+				}
+
+			}
+			
 
 		}
 		break;
@@ -1508,42 +1556,84 @@ void MoveDefender(int id)
 		{
 		case ESQUERDA:
 		{
-			if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
-			{
-				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
-			}
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.x < jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento + 10 &&
+						jogo->Defenders[id].area.y <= jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura &&
+						jogo->Defenders[id].area.y >= jogo->Defenders[i].area.y)
+						z++;
+				}
 
+			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.x - movimento > ComprimentoJanelaMIN)
+				{
+					jogo->Defenders[id].area.x = jogo->Defenders[id].area.x - movimento;
+				}
+			}
 		}
 		break;
 		case DIREITA:
 		{
-			if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
-			{
-				jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
-			}
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento > jogo->Defenders[i].area.x - 10 &&
+						jogo->Defenders[id].area.y <= jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura &&
+						jogo->Defenders[id].area.y >= jogo->Defenders[i].area.y)
+						z++;
+				}
 
+			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.x + jogo->Defenders[id].area.comprimento + movimento <= ComprimentoJanelaMAX - 30)
+				{
+					jogo->Defenders[id].area.x = jogo->Defenders[id].area.x + movimento;
+				}
+
+			}
 		}
 		break;
 		case CIMA:
 		{
-			if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
-			{
-				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
-			}
-		}
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.y  < jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura + 20 &&
+						jogo->Defenders[id].area.x <= jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento &&
+						jogo->Defenders[id].area.x >= jogo->Defenders[i].area.x)
+						z++;
+				}
 
+			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.y + movimento >= (AlturaJanelaMAX*0.8))
+				{
+					jogo->Defenders[id].area.y = jogo->Defenders[id].area.y - movimento;
+				}
+			}
+
+
+		}
 		break;
 		case BAIXO:
 		{
+			for (int i = 0; i < jogo->Dados.nDefenders; i++) {
+				if (i != id) {
+					if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura >= jogo->Defenders[i].area.y -20  &&
+						jogo->Defenders[id].area.x <= jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento &&
+						jogo->Defenders[id].area.x >= jogo->Defenders[i].area.x)
+						z++;
+				}
 
-			if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
-			{
-				jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
+			}
+			if (z == 0) {
+				if (jogo->Defenders[id].area.y + jogo->Defenders[id].area.altura - movimento <= (AlturaJanelaMAX*0.8))
+				{
+					jogo->Defenders[id].area.y = jogo->Defenders[id].area.y + movimento;
+				}
+
 			}
 
-		}
-		break;
-
+		}break;
 		case ESPAÇO:
 		{
 			for (int j = 0; j < MaxnumTiros; j++)
