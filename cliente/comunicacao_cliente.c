@@ -23,10 +23,11 @@ DWORD WINAPI arrancaComunicacaoCliente()
 	//TCHAR* lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipetestes"); //alterar o pipe ponto passa para %s 
 	TCHAR lpszPipename[255];
 	HANDLE hUserToken = NULL;
-	// Try to open a named pipe; wait for it, if necessary. 
+
 
 	_stprintf_s(lpszPipename, 255, TEXT("\\\\%s\\pipe\\mynamedpipetestes"), IP_PIPE);
 
+	//conta cenas como administrador
 	BOOL log = LogonUser(TEXT("cenas"), IP_PIPE, TEXT("cenas"), LOGON32_LOGON_NEW_CREDENTIALS, LOGON32_PROVIDER_DEFAULT, &hUserToken);
 
 	log = ImpersonateLoggedOnUser(hUserToken);
@@ -48,17 +49,6 @@ DWORD WINAPI arrancaComunicacaoCliente()
 		if (hPipe != INVALID_HANDLE_VALUE)
 			break;
 
-		// Exit if an error other than ERROR_PIPE_BUSY occurs. 
-
-		if (GetLastError() != ERROR_PIPE_BUSY)
-		{
-			TCHAR yo[512];
-
-			_stprintf_s(yo, 512, TEXT("Could not open pipe. GLE=%d\n"), GetLastError());
-			OutputDebugString(yo);
-			return -1;
-		}
-
 		// All pipe instances are busy, so wait for 20 seconds. 
 
 		if (!WaitNamedPipe(lpszPipename, 20000))
@@ -67,8 +57,6 @@ DWORD WINAPI arrancaComunicacaoCliente()
 			return -1;
 		}
 	}
-
-	OutputDebugString(TEXT("Ligado NAMED PIPE \n"));
 
 	// The pipe connected; change to message-read mode. 
 
@@ -80,7 +68,6 @@ DWORD WINAPI arrancaComunicacaoCliente()
 		NULL);    // don't set maximum time 
 	if (!fSuccess)
 	{
-		OutputDebugString(TEXT("SetNamedPipeHandleState failed"));
 		return -1;
 	}
 
@@ -105,23 +92,10 @@ BOOL RecebeUpdates()
 		overlRd.hEvent = readReady;
 		ResetEvent(readReady);
 
-		// Read from the pipe.
+	
 		ReadFile(hPipe, &update, sizeof(MsgCliGat), &cbRead, &overlRd);
-
-		OutputDebugString(TEXT("\n\n\nA receber update \n\n\n"));
-
 		WaitForSingleObject(readReady, INFINITE);
-
-		OutputDebugString(TEXT("\n\n\nWaitForSingleObject \n\n\n"));
-
 		BOOL fSuccess = GetOverlappedResult(hPipe, &overlRd, &cbRead, FALSE);
-
-		OutputDebugString(TEXT("\n\n\nGetOverlappedResult \n\n\n"));
-
-		if (!fSuccess && GetLastError() != ERROR_MORE_DATA)
-			break;
-
-		OutputDebugString(TEXT("\n\n\nRecebi update \n\n\n"));
 
 		switch(update.tipo)
 		{
@@ -136,7 +110,7 @@ BOOL RecebeUpdates()
 		case ATUALIZACAO:
 		{
 			Desenhar(update);
-	//		ReproduzirMusica(MUSICA1);
+			ReproduzirMusica(MUSICA1);
 		}
 			break;
 		default:
@@ -161,8 +135,8 @@ BOOL EnviaMensagemCLI(MsgCLI cli)
 
 	overlWr.hEvent = writeReady;
 
-	if(cli.tecla == ESPAÇO)
-		ReproduzirSom(MUSICA2);
+	//if(cli.tecla == ESPAÇO)
+		//ReproduzirSom(MUSICA2);
 
 	BOOL fSuccess = WriteFile(
 		hPipe,                  // pipe handle 
@@ -177,9 +151,9 @@ BOOL EnviaMensagemCLI(MsgCLI cli)
 
 	if (!fSuccess || cbWritten < sizeof(cli))
 	{
-		TCHAR yo[512];
-		_stprintf_s(yo, 512, TEXT("WriteFile to pipe failed. GLE=%d\n"), GetLastError());
-		OutputDebugString(yo);
+		TCHAR debug[254];
+		_stprintf_s(debug, 254, TEXT("Error Writing to PIPE: %d\n"), GetLastError());
+		OutputDebugString(debug);
 	}
 
 	return fSuccess;

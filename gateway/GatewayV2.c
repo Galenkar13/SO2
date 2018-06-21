@@ -18,7 +18,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EnviaUpdateCliente, NULL, 0, NULL);
 
-		jogo->Invaders[20].id_invader = 123;
 
 
 	WaitForSingleObject(hThreadEscritor, INFINITE);

@@ -81,7 +81,7 @@ DWORD WINAPI RecebeMensagensClientes(LPVOID param)
 		else
 		{
 
-		//	RecebeMensagem(msg);
+
 
 			EnviaMensagem(msg);
 
@@ -90,7 +90,7 @@ DWORD WINAPI RecebeMensagensClientes(LPVOID param)
 		}
 	}
 
-	// remover cliente 
+
 	FlushFileBuffers(hPipe[aux]);
 	DisconnectNamedPipe(hPipe[aux]);
 	CloseHandle(hPipe[aux]);
@@ -106,7 +106,7 @@ DWORD WINAPI RecebeMensagensClientes(LPVOID param)
 DWORD WINAPI arrancaComunicacaoGateway()
 {
 
-	_tprintf(TEXT("\n\n Listen for pipe clients ON AND OK \n\n"));
+	_tprintf(TEXT("\n Gateway Ligado!!! Esperando Clientes \n"));
 
 
 	BOOL fConnected = FALSE;
@@ -139,7 +139,6 @@ DWORD WINAPI arrancaComunicacaoGateway()
 
 		fConnected = ConnectNamedPipe(hPipeAux, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
 
-		// TODO limitar n clientes
 		if (fConnected)
 		{
 			hPipe[index] = hPipeAux;
@@ -180,9 +179,6 @@ DWORD WINAPI  EnviaUpdateCliente() {
 		WaitForSingleObject(hMutexJogo, INFINITE);
 		update = EnviaUpdate(jogo->CicloDeVida);
 		ReleaseMutex(hMutexJogo);
-
-
-
 
 		switch (jogo->CicloDeVida)
 		{

@@ -1298,7 +1298,7 @@ void MoveTiro(int id) {
 		jogo->Tiros[id].id_tiros = -1;
 	}
 	else 
-		jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 10;
+		jogo->Tiros[id].area.y = jogo->Tiros[id].area.y - 5;
 }
 
 void MovePowerUp(int id)
