@@ -12,7 +12,7 @@
 #include "cliente.h"
 #include "resource2.h"
 
-HBITMAP Bitmaps[14];
+HBITMAP Bitmaps[15];
 HWND hWnd;
 HDC hDC;
 RECT rect;
@@ -217,7 +217,7 @@ LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	return 0;
 }
 
-void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap);
+void DesenhaElemento(HDC hdc, Area area, HBITMAP hBitmap);
 
 LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -356,7 +356,7 @@ void CarregaBitmaps() {
 	Bitmaps[10] = LoadImage(hInst, TEXT("SPBeer.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	Bitmaps[11] = LoadImage(hInst, TEXT("SIBomba.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	Bitmaps[12] = LoadImage(hInst, TEXT("SIEscudo.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	//Bitmaps[13] = LoadImage(hInst, TEXT("SIEscudo.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	Bitmaps[13] = LoadImage(hInst, TEXT("SIEstrela.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 }
 
 
@@ -385,7 +385,7 @@ int Jogada(HWND hWnd, TECLA x) {
 
 
 
-void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
+void DesenhaElemento(HDC hdc, Area area, HBITMAP hBitmap)
 {
 	BITMAP bitmap;
 	LONG largura = area.comprimento;
@@ -448,7 +448,7 @@ void Desenhar(MsgCliGat update) {
 	TextOut(hDC, 5, 5, text3, 11);
 	TextOut(hDC, 80, 5, text2, 2);
 	TextOut(hDC, 120, 5, text5, 10);
-	TextOut(hDC, 200, 5, text1, 2);
+	TextOut(hDC, 200, 5, text1, _tcslen(text1));
 	TextOut(hDC, 240, 5, text4, 6);
 	TextOut(hDC, 290, 5, text, 2);
 	TextOut(hDC, 320, 5, text7, 6);
@@ -461,37 +461,37 @@ void Desenhar(MsgCliGat update) {
 	for (i = 0; i < update.JogoCopia.Dados.nDefenders; i++) {
 		if (update.JogoCopia.Defenders[i].id_defender != -1) {
 			if (update.JogoCopia.Defenders[i].id_defender == idJogador) {
-				DesenharObjeto(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[3]);
+				DesenhaElemento(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[3]);
 			//	ReproduzirSom(MUSICA2);
 			}
 			else
-				DesenharObjeto(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[2]);
+				DesenhaElemento(hDC, update.JogoCopia.Defenders[i].area, Bitmaps[2]);
 		}
 	}
 
 	for (i = 0; i < update.JogoCopia.Dados.nInvaders; i++) {
 		if (update.JogoCopia.Invaders[i].id_invader != -1) {
 			if (i % 2 == 0) {
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[0]);
+				DesenhaElemento(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[0]);
 			}
 			else
-				DesenharObjeto(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[1]);
+				DesenhaElemento(hDC, update.JogoCopia.Invaders[i].area, Bitmaps[1]);
 		}
 	}
 
 	for (i = 0; i < update.JogoCopia.Dados.nBombas; i++) {
 		if (update.JogoCopia.Bombas[i].id_bombas != -1) {
-			DesenharObjeto(hDC, update.JogoCopia.Bombas[i].area, Bitmaps[11]);
+			DesenhaElemento(hDC, update.JogoCopia.Bombas[i].area, Bitmaps[11]);
 		}
 	}
 
 	for (i = 0; i < update.JogoCopia.Dados.nTiros; i++) {
 		if (update.JogoCopia.Tiros[i].id_tiros != -1) {
 			if (update.JogoCopia.Tiros[i].id_dono == idJogador) {
-				DesenharObjeto(hDC, update.JogoCopia.Tiros[i].area, Bitmaps[5]);
+				DesenhaElemento(hDC, update.JogoCopia.Tiros[i].area, Bitmaps[5]);
 			}
 			else
-				DesenharObjeto(hDC, update.JogoCopia.Tiros[i].area, Bitmaps[4]);
+				DesenhaElemento(hDC, update.JogoCopia.Tiros[i].area, Bitmaps[4]);
 		}
 	}
 
@@ -500,25 +500,25 @@ void Desenhar(MsgCliGat update) {
 			switch (update.JogoCopia.PowerUP[i].tipo)
 			{
 			case GELO:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[7]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[7]);
 				break;
 			case BATERIA:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[9]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[9]);
 				break;
 			case ESCUDO:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[12]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[12]);
 				break;
 			case MAIS:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[8]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[8]);
 				break;
 			case VIDA:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[6]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[6]);
 				break;
 			case ALCOOL:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[10]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[10]);
 				break;
 			case PONTUACAO_Power_UP:
-				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[10]);
+				DesenhaElemento(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[13]);
 				break;
 			default:
 				break;

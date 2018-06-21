@@ -53,15 +53,10 @@ typedef struct _BufferMensagens {
 typedef enum _CicloDeVida {
 	CRIACAO,
 	ASSOCIACAO,
-	INICIO_CICLO_JOGO,
 	DECORRER,
 	FINAL
 } CicloDeVida;
 
-typedef enum _CicloDeVidaCliente {
-	GAME,
-	NO_GAME
-} CicloDeVidaCliente;
 
 typedef enum TipoPowerUP {
 	ESCUDO,

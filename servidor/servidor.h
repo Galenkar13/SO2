@@ -89,13 +89,11 @@ DWORD WINAPI ThreadPowerups();
 DWORD WINAPI ThreadTiros();
 DWORD WINAPI ThreadJogadores();
 
-
-void InicializaJogo();
 void ColocaInvaders();
 void ColocaDefenders();
 
 void IniciaDefenders();
-void GeraPowerup(int x, int y);
+
 
 void AtiraBomba();
 void IniciaTiros();
@@ -104,12 +102,12 @@ void IniciaDenfenders();
 void IniciaPowerUp();
 
 int MoveInvaders(int verifica_sentido);
-void TiroAntigueInvader(int id);
-void BombaAntigueDefender(int x, int y);
 void MoveBomba(int id);
 void MoveTiro(int id);
 void MovePowerUp(int id);
 void MoveDefender(int id);
+
+void CriaPowerUp(int x, int y);
 
 BOOL RecebeConfiguracao(HWND hWnd);
 
@@ -124,3 +122,5 @@ void IniciaInvadersNivel3();
 LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+void esperaThreads();

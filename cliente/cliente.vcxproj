@@ -126,6 +126,9 @@
   <ItemGroup>
     <ResourceCompile Include="cliente2.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="space invaders 1.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

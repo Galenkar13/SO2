@@ -22,6 +22,8 @@ HWND janela;
 
 int sentido = 0;
 
+
+
 int CALLBACK WinMain(
 	_In_ HINSTANCE hInstance,
 	_In_ HINSTANCE hPrevInstance,
@@ -646,21 +648,6 @@ DWORD WINAPI ThreadJogadores()
 	return 0;
 }
 
-void InicializaJogo() { //acabar isto
-	int i;
-
-	for (i = 0; i < MaxClientes; i++) {
-		jogo->Defenders[i].area.x = 0;
-		jogo->Defenders[i].area.y = 0;
-		jogo->Defenders[i].area.altura = 0;
-		jogo->Defenders[i].area.comprimento = 0;
-		jogo->Defenders[i].pontos = 0;
-		jogo->Defenders[i].velocidade = 0;
-		jogo->Defenders[i].vidas = 0;
-		jogo->Defenders[i].powerUP.area.x = 0;
-	}
-
-}
 
 DWORD WINAPI ThreadConsumidor(LPVOID param) { //LADO DO SERVIDOR passar po servidor
 	int x = 0;
@@ -893,18 +880,6 @@ void IniciaPowerUp()
 
 }
 
-void IniciaJogo()
-{
-	jogo->Dados.altura = 600;
-	jogo->Dados.comprimento = 400;
-	jogo->CicloDeVida = CRIACAO;
-	IniciaInvaders();
-	IniciaTiros();
-	IniciaBombas();
-	IniciaDenfenders();
-	IniciaPowerUp();
-
-}
 
 void ColocaDefenders()
 {
@@ -915,67 +890,6 @@ void ColocaDefenders()
 		jogo->Defenders[i].area.altura = 40;
 		jogo->Defenders[i].area.comprimento = 40;
 	}
-
-}
-
-void GeraPowerup(int x, int y)
-{
-	int res;
-
-	for (int i = 0; i < jogo->Dados.nPowerUPs; i++)
-	{
-		jogo->PowerUP[i].area.x = x;
-		jogo->PowerUP[i].area.y = y;
-		srand(time(NULL));
-		res = rand() % (6 - 0) + 0;
-
-		switch (res) {
-
-		case 0:
-		{
-			jogo->PowerUP[i].tipo = ESCUDO;
-
-		}
-		break;
-		case 1:
-		{
-			jogo->PowerUP[i].tipo = GELO;
-		}
-		break;
-		case 2:
-		{
-			jogo->PowerUP[i].tipo = BATERIA;
-		}
-		break;
-		case 3:
-		{
-			jogo->PowerUP[i].tipo = MAIS;
-		}
-		break;
-
-		case 4:
-		{
-			jogo->PowerUP[i].tipo = VIDA;
-		}
-		break;
-
-		case 5:
-		{
-			jogo->PowerUP[i].tipo = ALCOOL;
-		}
-		break;
-
-		case 6:
-		{
-			jogo->PowerUP[i].tipo = PONTUACAO_Power_UP;
-		}
-		break;
-		}
-	}
-
-
-
-
 
 }
 
@@ -1124,58 +1038,6 @@ int MoveInvaders(int verifica_sentido)
 	return sentido;
 }
 
-void TiroAntigueInvader(int id)
-{
-
-	for (int i = 0; i < jogo->Dados.nTiros; i++)
-	{
-
-		if (jogo->Tiros[id].area.x >= jogo->Invaders[i].area.x && jogo->Tiros[id].area.x <= (jogo->Invaders[i].area.x + jogo->Invaders[i].area.comprimento) &&
-			jogo->Tiros[id].area.y <= jogo->Invaders[i].area.y && jogo->Tiros[id].area.y >= (jogo->Invaders[i].area.y + jogo->Invaders[i].area.altura))
-		{
-			jogo->Invaders[i].vidas = jogo->Invaders[i].vidas - 1;
-			//ou morre logo
-			//DetroiInvader
-			if (jogo->Invaders[id].vidas < 0)
-			{
-				jogo->Invaders[id].id_invader = -1;
-			}
-
-
-		}
-
-	}
-
-}
-
-void BombaAntigueDefender(int x, int y)
-{
-
-	for (int i = 0; i < jogo->Dados.nDefenders; i++)
-	{
-
-		if (jogo->Bombas[i].area.x >= jogo->Defenders[i].area.x && jogo->Bombas[i].area.x <= (jogo->Defenders[i].area.x + jogo->Defenders[i].area.comprimento) &&
-			jogo->Bombas[i].area.y <= jogo->Defenders[i].area.y && jogo->Bombas[i].area.y >= (jogo->Defenders[i].area.y + jogo->Defenders[i].area.altura))
-		{
-
-			if (jogo->Defenders[i].powerUP.tipo == ESCUDO)
-			{
-
-			}
-			else
-			{
-				jogo->Defenders[i].vidas = jogo->Defenders[i].vidas - 1; //retira vidas 
-			}
-
-
-			if (jogo->Defenders[i].vidas == 0)
-			{
-				jogo->Defenders[i].id_defender = -1;  //muda id para -1 se for = -1 não imprime no mapa
-			}
-		}
-
-	}
-}
 
 void MoveBomba(int id)
 {
@@ -1215,7 +1077,7 @@ void MoveBomba(int id)
 			jogo->PowerUP[i].id_powerUP = i;
 			jogo->PowerUP[i].area.x = x ;
 			jogo->PowerUP[i].area.y = y + 5;
-			res = rand() % (6 - 0) + 0;
+			res = rand() % (7 - 0) + 0;
 			switch (res) {
 			case 0:
 			{
@@ -1248,6 +1110,11 @@ void MoveBomba(int id)
 			case 5:
 			{
 				jogo->PowerUP[i].tipo = VIDA;
+			}
+			break;
+			case 6:
+			{
+				jogo->PowerUP[i].tipo = PONTUACAO_Power_UP;
 			}
 			break;
 			}

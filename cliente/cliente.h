@@ -32,7 +32,7 @@ MCIERROR ReproduzirSom(LPCTSTR som);
 void ReproduzirMusica(LPCTSTR musica);
 
 void Desenhar(MsgCliGat update);
-void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap);
+void DesenhaElemento(HDC hdc, Area area, HBITMAP hBitmap);
 void CarregaBitmaps();
 
 TCHAR IP_PIPE[20];
