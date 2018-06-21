@@ -145,7 +145,7 @@ BOOL EnviaMensagemCLI(MsgCLI cli)
 		&cbWritten,             // bytes written 
 		&overlWr);                  //  overlapped 
 
-	WaitForSingleObject(writeReady, 50);
+	WaitForSingleObject(writeReady, INFINITE);
 
 	GetOverlappedResult(hPipe, &overlWr, &cbWritten, FALSE);
 
