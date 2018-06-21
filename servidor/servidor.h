@@ -66,11 +66,6 @@
 #define MINVELOCIDADETIRODEFENDER 500
 
 
-int CreateThreadsInvaders();
-
-
-
-
 
 int continua = 0; //variavel temporaria enquanto não está defenido ciclo jogo
 
@@ -119,8 +114,13 @@ void MoveDefender(int id);
 BOOL RecebeConfiguracao(HWND hWnd);
 
 void IniciaInvaders(); //Inicialização dos invaders
-								//Função que lança as Threads que vão controlar as funcionalidades dos Invaders
-								//Uma Thread por tipo de Invader
+					   //Função que lança as Threads que vão controlar as funcionalidades dos Invaders
+					   //Uma Thread por tipo de Invader
 
 void IniciaInvadersNivel2();
 void IniciaInvadersNivel3();
+
+
+LRESULT CALLBACK DialogIniciar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK DialogConfigurar(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

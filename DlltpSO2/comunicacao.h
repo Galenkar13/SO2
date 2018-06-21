@@ -70,6 +70,7 @@ typedef enum TipoPowerUP {
 	MAIS,
 	VIDA,
 	ALCOOL,
+	PONTUACAO_Power_UP,
 	OUTRO
 } TipoPowerUP;
 
@@ -156,9 +157,6 @@ typedef struct _Dados {
 	int probabilidadePowerUp;
 	int nivel;
 } Dados;
-
-
-
 
 
 

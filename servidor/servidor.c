@@ -5,6 +5,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>  
+#include <time.h>
 
 // The main window class name.  
 static TCHAR szWindowClass[] = _T("win32app");
@@ -966,7 +967,7 @@ void GeraPowerup(int x, int y)
 
 		case 6:
 		{
-			jogo->PowerUP[i].tipo = OUTRO;
+			jogo->PowerUP[i].tipo = PONTUACAO_Power_UP;
 		}
 		break;
 		}
@@ -980,7 +981,6 @@ void GeraPowerup(int x, int y)
 
 void AtiraBomba() {
 	int y_aux = 0;
-	int res;
 	srand(time(NULL));
 	for (int i = 0; i < jogo->Dados.nInvaders; i++) {
 		if (jogo->Invaders[i].id_invader != -1) {
@@ -1113,7 +1113,7 @@ int MoveInvaders(int verifica_sentido)
 				{
 					if (jogo->Invaders[i].id_invader != -1)
 					{
-						jogo->Invaders[i].area.y + 10;
+						jogo->Invaders[i].area.y = jogo->Invaders[i].area.y + 10;
 					}
 				}
 				sentido = 0;
@@ -1258,19 +1258,8 @@ void MoveBomba(int id)
 
 void MoveTiro(int id) {
 	srand(time(NULL));
-	int x, y, z, k, l, m, i;
-	x = jogo->Tiros[id].area.x;
-	l = jogo->Tiros[id].area.y;
-	i = jogo->Dados.nTiros;
 	for (int j = 0; j < jogo->Dados.nTiros; j++)
 	{
-		
-	
-		y = jogo->Tiros[id].area.x;
-		k = jogo->Invaders[j].area.comprimento;
-	
-		m = jogo->Invaders[j].area.y;
-	
 		if (jogo->Tiros[id].area.x >= jogo->Invaders[j].area.x && jogo->Tiros[id].area.x <= (jogo->Invaders[j].area.x + jogo->Invaders[j].area.comprimento) &&
 			jogo->Tiros[id].area.y >= jogo->Invaders[j].area.y && jogo->Tiros[id].area.y <= (jogo->Invaders[j].area.y + jogo->Invaders[j].area.altura))
 		{
@@ -1325,6 +1314,8 @@ void MovePowerUp(int id)
 				case BATERIA:
 					jogo->Dados.velocidadeDefenders = jogo->Dados.velocidadeDefenders - 200;
 					break;
+				case PONTUACAO_Power_UP:
+					jogo->Defenders[j].pontos = jogo->Defenders[j].pontos + 50;
 				default:
 					break;
 				}

@@ -243,10 +243,13 @@ MsgCliGat EnviaUpdate(int estado) {
 	case FINAL:
 	{
 		teste.tipo = PONTUACAO;
+		TCHAR pontos[20];
 		teste.pontuacaoFinal.index = jogo->Dados.nDefenders;
-		for (i = 0; i < jogo->Dados.nDefenders; i++) {
+		for (i = 0; i < jogo->Dados.nDefenders; i++)
+		{
 			teste.pontuacaoFinal.TOP[i].pontos = jogo->Defenders[i].pontos;
-			wcscpy_s(teste.pontuacaoFinal.TOP[i].quem, sizeof(SIZE),jogo->Defenders[i].nome);
+			_tcscpy_s(teste.pontuacaoFinal.TOP[i].quem, _countof(jogo->Defenders[i].nome), jogo->Defenders[i].nome);
+
 		}
 	}
 		break;

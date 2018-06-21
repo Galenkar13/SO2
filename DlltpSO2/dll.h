@@ -28,16 +28,6 @@ HANDLE hEventLida;
 HANDLE hEvento, hMutexJogo;
 
 
-typedef enum _Direcao {
-	direita,
-	baixo,
-	cima,
-	esquerda
-} Direcao;
-
-#define MOVEMENT_INCREMENT 2
-
-
 
 #ifdef __cpluplus
 extern "C" {
@@ -49,10 +39,10 @@ extern "C" {
 	DlltpSO2 int IniciaSinc();
 	DlltpSO2 void AcabaSinc();
 	DlltpSO2 MsgCLI TrataMensagem();
-	DlltpSO2 void EnviaMensagem(MsgCLI dados); 
+	DlltpSO2 void EnviaMensagem(MsgCLI dados);
 	DlltpSO2 void IniciaBuffer();
 	DlltpSO2 MsgCliGat EnviaUpdate(int id);
-
+	BOOL APIENTRY DllMain(BOOL hModule, DWORD ul_reason_for_call, LPVOID lpreserved);
 
 #ifdef __cplusplus
 }

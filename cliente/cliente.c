@@ -227,7 +227,7 @@ LRESULT CALLBACK WndProc(HWND hWndJanela, UINT message, WPARAM wParam, LPARAM lP
 	PAINTSTRUCT Ps;
 	int res = 0;
 	TECLA tecla;
-	RECT rect;
+
 
 	switch (message)
 	{
@@ -356,7 +356,7 @@ void CarregaBitmaps() {
 	Bitmaps[10] = LoadImage(hInst, TEXT("SPBeer.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	Bitmaps[11] = LoadImage(hInst, TEXT("SIBomba.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	Bitmaps[12] = LoadImage(hInst, TEXT("SIEscudo.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-
+	//Bitmaps[13] = LoadImage(hInst, TEXT("SIEscudo.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 }
 
 
@@ -374,7 +374,6 @@ int Login(HWND hWnd) {
 }
 
 int Jogada(HWND hWnd, TECLA x) {
-	TCHAR buff[254];
 	MsgCLI mensagem_cli;
 	mensagem_cli.id = idJogador;
 	mensagem_cli.tecla = x;
@@ -388,7 +387,6 @@ int Jogada(HWND hWnd, TECLA x) {
 
 void DesenharObjeto(HDC hdc, Area area, HBITMAP hBitmap)
 {
-	RECT rect;
 	BITMAP bitmap;
 	LONG largura = area.comprimento;
 	LONG altura = area.altura;
@@ -519,6 +517,9 @@ void Desenhar(MsgCliGat update) {
 			case ALCOOL:
 				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[10]);
 				break;
+			case PONTUACAO_Power_UP:
+				DesenharObjeto(hDC, update.JogoCopia.PowerUP[i].area, Bitmaps[10]);
+				break;
 			default:
 				break;
 			}
@@ -530,7 +531,7 @@ void Desenhar(MsgCliGat update) {
 }
 
 void vaisDesenharTop10(MsgCliGat update) {
-	int i, vidas, pontos, nivel;
+	int i;
 	TCHAR text[10];
 
 	TCHAR text3[] = TEXT("Nome Jogador:");
@@ -538,24 +539,20 @@ void vaisDesenharTop10(MsgCliGat update) {
 
 	FillRect(hDC, &rect, GetStockObject(BLACK_BRUSH));
 	for (i = 0; i < update.pontuacaoFinal.index; i++) {
-		TextOut(hDC, 5, i*5, text3, _countof(text3));
-		TextOut(hDC, 100, i*5, update.pontuacaoFinal.TOP[i].quem, _countof(update.pontuacaoFinal.TOP[i].quem));
-		TextOut(hDC, 200, i * 5, text4, _countof(text4));
+		TextOut(hDC, 5, (i+1)* 30, text3, _countof(text3));
+		TextOut(hDC, 110, (i + 1) * 30, update.pontuacaoFinal.TOP[i].quem, _tcslen(update.pontuacaoFinal.TOP[i].quem));
+		TextOut(hDC, 200, (i + 1) * 30, text4, _countof(text4));
 		_itot_s(update.pontuacaoFinal.TOP[i].pontos, text, 10, 10);
-		TextOut(hDC, 300, i * 5, text, _countof(text));
+		TextOut(hDC, 310, (i + 1) * 30, text, _tcslen(text));
 	}
 	
 	InvalidateRect(hWnd, NULL, TRUE);
 
 }
 
-void ReproduzirSom(LPCTSTR som)
+MCIERROR ReproduzirSom(LPCTSTR som)
 {
-	if (waveOutGetNumDevs() > 0)
-	{
-		waveOutSetVolume(0, 0xff00ff00);
-		PlaySound(som, NULL, SND_ASYNC);
-	}
+	return mciSendString(som, NULL, 0, NULL);
 }
 
 void ReproduzirMusica(LPCTSTR musica)
@@ -566,3 +563,4 @@ void ReproduzirMusica(LPCTSTR musica)
 		PlaySound(musica, NULL, SND_NOSTOP | SND_ASYNC | SND_LOOP);
 	}
 }
+
